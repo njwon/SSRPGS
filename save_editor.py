@@ -10,17 +10,38 @@ save_slots = []
 dpg.create_context()
 
 with dpg.font_registry():
-    default_font = dpg.add_font("mononoki-Regular.ttf", 16)
-    dpg.bind_font(default_font)
+    with dpg.font("mononoki-Regular.ttf", 32) as font:
+        dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
+        dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
+        dpg.set_global_font_scale(0.5)
+        dpg.bind_font(font)
 
 with dpg.value_registry():
-    dpg.add_string_value(default_value="C", tag="player_name")
-    dpg.add_int_value(default_value=1.0, tag="player_level")
-    # dpg.add_int_value(default_value=0, tag="total_stars")
+    dpg.add_string_value(default_value="", tag="version")
+    dpg.add_string_value(default_value="", tag="player_name")
+    dpg.add_int_value(default_value=0, tag="player_level")
+    dpg.add_int_value(default_value=0, tag="player_xp")
+
+def load():
+    dpg.set_value("version", save.save_json[save_slot]["version"])
+    dpg.set_value("player_name", save.save_json[save_slot]["player_name"])
+    dpg.set_value("player_level", save.save_json[save_slot]["player_level"])
+    dpg.set_value("player_xp", save.save_json[save_slot]["player_xp"])
+
+def data_save():
+    save.save_json[save_slot]["version"] = dpg.get_value("version")
+    save.save_json[save_slot]["progress_data"]["version"] = dpg.get_value("version")
+    save.save_json[save_slot]["player_name"] = dpg.get_value("player_name")
+    save.save_json[save_slot]["progress_data"]["hero_settings"]["playerName"] = dpg.get_value("player_name")
+    save.save_json[save_slot]["player_level"] = dpg.get_value("player_level")
+    save.save_json[save_slot]["progress_data"]["xp"]["currentLevel"] = dpg.get_value("player_level")
+    save.save_json[save_slot]["player_xp"] = dpg.get_value("player_xp")
+    save.save_json[save_slot]["progress_data"]["xp"]["currentXP"] = dpg.get_value("player_xp")
 
 def load_save_file(sender, app_data):
     global save, save_slots, save_slot
 
+    dpg.configure_item("loading", show=True)
     print(app_data["selections"])
 
     # Load first file of selected
@@ -31,19 +52,23 @@ def load_save_file(sender, app_data):
         dpg.configure_item("save_slots", items=save.save_slots, default_value=save_slot)
         break
 
-    dpg.set_value("player_name", save.save_json["save_file_42"]["player_name"])
-
-    # dpg.set_value("player_level", save.save_json["save_file_42"]["player_level"])
-    # dpg.set_value("total_stars", save.save_json["save_file_42"]["total_stars"])
+    load()
+    dpg.configure_item("loading", show=False)
 
 def save_save_file():
     global save
-
-    save.save_json["save_file_42"]["player_name"] = dpg.get_value("player_name")
+    if not save_slot:
+        return
+    
+    dpg.configure_item("loading", show=True)
+    print("going to save file")
+    data_save()
     save.save("primary_save.txt")
+    print("file saved")
+    dpg.configure_item("loading", show=False)
 
 with dpg.file_dialog(
-    label="Open save file",
+    label="Открыть файл сохранения",
     directory_selector=False,
     show=False,
     tag="file_dialog",
@@ -54,44 +79,69 @@ with dpg.file_dialog(
 ):
     dpg.add_file_extension(".txt")
 
+def add_help(message):
+    last_item = dpg.last_item()
+    group = dpg.add_group(horizontal=True)
+
+    dpg.move_item(last_item, parent=group)
+    dpg.capture_next_item(lambda s: dpg.move_item(s, parent=group))
+    t = dpg.add_text("(?)", color=[0, 255, 0])
+
+    with dpg.tooltip(t):
+        dpg.add_text(message)
+
+def log(sender, app_data, user_data):
+    print(f"sender: {sender}, \t app_data: {app_data}, \t user_data: {user_data}")
+
+def change_save(sender, app_data, user_data):
+    global save, save_slot
+    save_slot = app_data
+    load()
+
 with dpg.window(tag="Editor"):
-    with dpg.tab_bar():
-        with dpg.tab(label="Settings"):
-            dpg.add_text("About:\nStone Story RPG save editor\nMade by Catalyst\nv 0.0.0")
-            dpg.add_separator()
+    with dpg.group(horizontal=True):
+        dpg.add_button(label="Открыть", callback=lambda: dpg.show_item("file_dialog"))
+        # check out simple module for details
+        dpg.add_button(label="Сохранить", callback=save_save_file)
+        with dpg.window(show=False, modal=True, no_title_bar=True, no_resize=True, tag="loading", popup=True, pos=[(600 - 64) // 2,
+            (400 - 64) // 2], width=64, height=64, min_size=[32, 32]):
+            # dpg.add_text("Запись файла")
+            dpg.add_loading_indicator(circle_count=8)
 
-            with dpg.group(horizontal=True):
-                dpg.add_button(label="Open save", callback=lambda: dpg.show_item("file_dialog"))
-                dpg.add_button(label="Save save", callback=save_save_file)
+        dpg.add_combo(label="Слот сохранения", width=196, items=[], callback=change_save, tag="save_slots")
 
-            dpg.add_combo(label="Save slot", items=[], tag="save_slots")
+    with dpg.tab_bar(track_offset=1):
+        with dpg.tab(label="Настройки"):
+            dpg.add_text("Stone Story RPG save editor\nv 0.0.0")
 
-        with dpg.tab(label="Info"):
-            dpg.add_text("info here")
-            dpg.add_input_text(label="Player name", source="player_name")
-            dpg.add_input_int(label="Player level", source="player_level")
-            # dpg.add_input_text(label="Total stars", source="total_stars")
+        with dpg.tab(label="Общее"):
+            dpg.add_input_text(label="Версия сохранения", source="version")
+            dpg.add_input_text(label="Имя персонажа", source="player_name")
+            dpg.add_input_int(label="Уровень персонажа", source="player_level")
+            add_help("Влияет на максимальное оффлайн время по формуле:\nmax_chests = 120 + 6 * player_level")
+            dpg.add_input_int(label="Очки опыта", source="player_xp")
 
-        with dpg.tab(label="Locations"):
-            dpg.add_text("locs here")
+        with dpg.tab(label="Локации"):
+            pass
 
-        with dpg.tab(label="Inventory"):
-            dpg.add_text("inv here")
+        with dpg.tab(label="Инвентарь"):
+            pass
         
-        with dpg.tab(label="Quests"):
-            dpg.add_text("quests here")
+        with dpg.tab(label="Квесты"):
+            pass
 
-        with dpg.tab(label="Other"):
-            dpg.add_text("other here")
+        with dpg.tab(label="Таймеры"):
+            pass
 
-        with dpg.tab(label="Json"):
-            dpg.add_text("json here")
+        with dpg.tab(label="JSON"):
+            pass
+
+        with dpg.tab(label="Статистика"):
+            pass
             
-dpg.create_viewport(title="Save editor", width=600, height=400)
+dpg.create_viewport(title="Редактор сохранений Stone Story RPG", width=600, height=400)
 dpg.setup_dearpygui()
 dpg.show_viewport()
 dpg.set_primary_window("Editor", True)
 dpg.start_dearpygui()
 dpg.destroy_context()
-
-# inventory

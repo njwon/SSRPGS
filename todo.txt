@@ -1,0 +1,67 @@
+Открыть файл | Сохранить | Выбрать слот
+
+Вкладки
+- настройки
+  - версия
+  - информация
+
+- Персонаж
+  - версия сохранения
+  - id сохранения
+  - имя
+  - уровень, xp
+
+- локации
+  - колонка со списком локаций
+    - lpDiff - loop diff? без понятия
+    - bT - best time
+    - aT - average time
+    - aHl - average Hp loss
+    - aHg - average Hp gain
+    - aKg - average Ki gain
+    - aRg - average resource gain
+    - d - без понятия, что это, возможно время до смерти
+
+- инвентарь
+  - ресурсы
+    - камень
+    - дерево
+    - смола
+    - деньги
+    - бронза
+
+  - список предметов +поиск
+    - для выбранного предмета
+      - id
+      - co - count
+      - dat - data?
+    - создать предмет
+
+  - косметика
+    - список prismatic
+      - open all
+      - clear all
+    - список golden
+      - open all
+      - clear all
+
+- квесты
+  - список открытых квестов
+    - reveal all?
+  - активные ежедневные квесты
+    - закрыть все?
+  - weekly
+    - mark as complete?
+
+- таймеры
+  - exit timestamp
+  - lastRewardTime
+  - skullnata
+  - crypt_intro nextTreasureAvailableDate
+  - treasure_factory
+    - uniqueDate
+    - crystalDate
+    - goldDate
+
+- JSON
+  - редактор JSON файла сохранения? BTW hardest thing D:
