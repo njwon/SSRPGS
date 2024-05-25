@@ -1,2 +1,6 @@
 .DS_Store
 __pycache__
+
+# Save files
+formatted.json
+primary_save.txt
