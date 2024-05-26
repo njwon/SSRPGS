@@ -22,6 +22,7 @@ with dpg.font_registry():
 # Set up values for save editor fields
 locations = {}
 location_names = ()
+selected_location_index = -1
 
 with dpg.value_registry():
     dpg.add_string_value(default_value="", tag="version")
@@ -34,6 +35,23 @@ with dpg.value_registry():
     dpg.add_int_value(default_value=0, tag="Tar")
     dpg.add_int_value(default_value=0, tag="Xi")
     dpg.add_int_value(default_value=0, tag="Bronze")
+
+    # For location stats
+    dpg.add_int_value(default_value=0, tag="bT")
+    dpg.add_double_value(default_value=0.0, tag="aT")
+    dpg.add_double_value(default_value=0.0, tag="aHl")
+    dpg.add_double_value(default_value=0.0, tag="aHg")
+    dpg.add_double_value(default_value=0.0, tag="aKg")
+    dpg.add_double_value(default_value=0.0, tag="aRg")
+
+    dpg.add_double_value(default_value=0.0, tag="d")
+    dpg.add_double_value(default_value=0.0, tag="Dd")
+
+    dpg.add_double_value(default_value=0.0, tag="DA")
+    dpg.add_double_value(default_value=0.0, tag="DF")
+    dpg.add_double_value(default_value=0.0, tag="DI")
+    dpg.add_double_value(default_value=0.0, tag="DP")
+    dpg.add_double_value(default_value=0.0, tag="DV")
 
 # Load values from save
 def load_values():
@@ -70,8 +88,15 @@ def save_values():
     save.save_json[save_slot]["player_xp"] = dpg.get_value("player_xp")
     save.save_json[save_slot]["progress_data"]["xp"]["currentXP"] = dpg.get_value("player_xp")
 
+    # Resources
     for resource in ("Stone", "Wood", "Tar", "Xi", "Bronze"):
         save.save_json[save_slot]["progress_data"]["inventory_data"][resource] = dpg.get_value(resource)
+
+    # Location stats for selected location
+    if selected_location_index >= 0:
+        for stat in ("bT", "aT", "aHl", "aHg", "aKg", "aRg", "d"):
+            if stat in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index]:
+                save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index][stat] = dpg.get_value(stat)
 
 def load_file():
     global save, save_slot
@@ -121,6 +146,33 @@ def change_save(sender, app_data, user_data):
     save_slot = app_data
     load_values()
 
+def select_location(sender, location_name):
+    global selected_location_index
+
+    # Save old location stats
+    if selected_location_index >= 0:
+        for stat in ("bT", "aT", "aHl", "aHg", "aKg", "aRg", "d"):
+            if stat in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index]:
+                save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index][stat] = dpg.get_value(stat)
+            
+    # Load selected location
+    dpg.configure_item("selected_location", default_value=f"Локация: {location_name}")
+
+    # Get index because stats is an array
+    selected_location_index = -1
+    for i, location in enumerate(save.save_json[save_slot]["progress_data"]["quest_data"]["stats"]):
+        if location["id"] == location_name:
+            selected_location_index = i
+            break
+    else:
+        return
+
+    for stat in ("bT", "aT", "aHl", "aHg", "aKg", "aRg", "d"):
+        if stat in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index]:
+            dpg.set_value(stat, save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index][stat])
+        else:
+            dpg.set_value(stat, 0)
+
 # GUI
 with dpg.window(tag="Editor"):
     # Loading window
@@ -138,12 +190,14 @@ with dpg.window(tag="Editor"):
     ):
         dpg.add_loading_indicator(circle_count=8)
     
+    # Header
     with dpg.group(horizontal=True):
         dpg.add_button(label="Открыть", callback=load_file)
         dpg.add_button(label="Сохранить", callback=save_file)
 
         dpg.add_combo(label="Слот сохранения", width=196, items=[], callback=change_save, tag="save_slots")
 
+    # Tabs
     with dpg.tab_bar(track_offset=1):
         with dpg.tab(label="Настройки"):
             dpg.add_text("Stone Story RPG save editor\nv 0.0.0")
@@ -168,16 +222,48 @@ with dpg.window(tag="Editor"):
 
         with dpg.tab(label="Локации"):
             with dpg.group(horizontal=True):
-                with dpg.group(width=200):
-                    dpg.add_text("Посещённые локации")
-                    dpg.add_listbox(location_names, tag="location_names", num_items=15)
-                    
-                with dpg.group(width=250):
+                    with dpg.group(width=150):
+                        dpg.add_text("Посещённые локации")
                     dpg.add_text("Информация о локации")
-                    dpg.add_input_int(label="some value")
-                    dpg.add_text("locatoin info")
-                    dpg.add_text("locatoin info")
-                    dpg.add_text("locatoin info")
+
+            with dpg.group(horizontal=True):
+                with dpg.group(width=150):
+                    dpg.add_listbox(tag="location_names", num_items=15, callback=select_location)
+                    
+                with dpg.child_window(border=False):
+                    dpg.add_text("Локация: -", tag="selected_location")
+                    dpg.add_input_int(label="Лучшее время", width=200, source="bT")
+                    add_help("Время отмеряется кадрами:\n30 кадров = 1 секунда")
+                    dpg.add_input_double(label="Среднее время", width=200, source="aT")
+                    add_help("Время отмеряется кадрами:\n30 кадров = 1 секунда")
+                    
+                    dpg.add_separator()
+                    dpg.add_text("Данные среднего забега")
+
+                    dpg.add_input_double(label="Трата оз", width=200, source="aHl")
+                    dpg.add_input_double(label="Пополнение оз", width=200, source="aHg")
+                    dpg.add_input_double(label="Получение Ки", width=200, source="aKg")
+                    dpg.add_input_double(label="Получение ресурса", width=200, source="aRg")
+                    add_help(
+                        "Для каждй локации свой ресурс:\n"
+                        "o    Камень     Каменистое плато\n"
+                        "_/`  Древесина  Каньон Дедвуд\n"
+                        "≈    Смола      Пещеры страха\n"
+                        ":.   Бронза     Бурлящая шахта\n"
+                    )
+
+                    dpg.add_separator()
+                    dpg.add_text("Урон")
+                    add_help("Обычно эти поля не встречаются")
+
+                    dpg.add_input_double(label="Нанесено урона", width=200, source="d")
+                    dpg.add_input_double(label="Получено урона", width=200, source="Dd")
+
+                    dpg.add_input_double(label="Нанесено эфиром", width=200, source="DA")
+                    dpg.add_input_double(label="Нанесено огнём", width=200, source="DF")
+                    dpg.add_input_double(label="Нанесено льдом", width=200, source="DI")
+                    dpg.add_input_double(label="Нанесено ядом", width=200, source="DP")
+                    dpg.add_input_double(label="Нанесено энергией", width=200, source="DV")
 
         with dpg.tab(label="Инвентарь"):
             pass

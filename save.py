@@ -70,13 +70,17 @@ class Save:
         self.save_slots = []
 
         # Decrypt all saves in file
-        for value in self.save_json:
-            if value.startswith("save_file_") and value != "save_file_last_id":
-                self.save_slots.append(value)
+        for field in self.save_json:
+            if field.startswith("save_file_") and field != "save_file_last_id":
+                self.save_slots.append(field)
 
-                progress_data = decrypt(self.save_json[value]["progress_data"])
+                # Decrypt only crypted blocks
+                if self.save_json[field]["encrypted"] != "True":
+                    continue
+
+                progress_data = decrypt(self.save_json[field]["progress_data"])
                 progress_json = self.jsonize(progress_data)
-                self.save_json[value]["progress_data"] = json.loads(progress_json)
+                self.save_json[field]["progress_data"] = json.loads(progress_json)
 
         # Change encrypted to False for all saves
         for save_slot in self.save_slots:
