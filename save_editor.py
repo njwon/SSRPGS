@@ -1,5 +1,6 @@
 import dearpygui.dearpygui as dpg
 from subprocess import check_output
+from natsort import natsorted
 from sys import executable
 from save import Save
 
@@ -20,36 +21,9 @@ with dpg.font_registry():
         dpg.bind_font(font)
 
 # Set up values for save editor fields
-location_names = (
-    "Каменистое плато",
-    "Каньон Дедвуд",
-    "Пещеры страха",
-    "Грибной лес",
-    "Призрачные залы",
-    "Бурлящая шахта",
-    "Ледяной хребет",
-    "Храм"
-)
-
-location_codes = {
-    name: code for name, code in zip(
-        location_names,
-        (
-            "rocky_plateau",
-            "deadwood_valley",
-            "caustic_caves",
-            "fungus_forest",
-            "undead_crypt",
-            "bronze_mine",
-            "icy_ridge",
-            "temple"
-        )
-    )
-}
-
-location_name = location_names[0]
-location_stars = "1"
-location = -1
+locations = {}
+location_names = ()
+selected_location_index = -1
 
 with dpg.value_registry():
     dpg.add_string_value(default_value="", tag="version")
@@ -93,11 +67,26 @@ def load_values():
 
         dpg.set_value(resource, save.save_json[save_slot]["progress_data"]["inventory_data"][resource])
 
-    # Get list on opened locations
-    for location in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"]:
-        # SO... I UNDERSTAND THAT THIS REALIZATION IS WRONG
+    load_locations()
 
-    change_location(location_name, location_stars)
+    # Inventory
+    inventory_item_names = [item["id"] for item in save.save_json[save_slot]["progress_data"]["inventory_data"]["itms"]]
+    dpg.configure_item("inventory", items=inventory_item_names)
+
+def load_locations(default_location=None):
+    global location_names
+
+    # Set list of locations
+    location_names = natsorted([location["id"] for location in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"]])
+    dpg.configure_item("location_names", items=location_names)
+
+    # Select first location in locations
+    if location_names:
+        dpg.configure_item("stats", show=True)
+        dpg.configure_item("location_names", default_value=default_location if default_location else location_names[0])
+        select_location(None, default_location if default_location else location_names[0])
+    else:
+        dpg.configure_item("stats", show=False)
 
 # Store values to save
 def save_values():
@@ -120,9 +109,10 @@ def save_values():
         save.save_json[save_slot]["progress_data"]["inventory_data"][resource] = dpg.get_value(resource)
 
     # Location stats for selected location
-    for stat in ("bT", "aT", "aHl", "aHg", "aKg", "aRg", "d", "Dd", "DA", "DF", "DI", "DP", "DV"):
-        if stat in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][location]:
-            save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][location][stat] = dpg.get_value(stat)
+    if selected_location_index != -1:
+        for stat in ("bT", "aT", "aHl", "aHg", "aKg", "aRg", "d", "Dd", "DA", "DF", "DI", "DP", "DV"):
+            if stat in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index] or dpg.get_value(stat):
+                save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index][stat] = dpg.get_value(stat)
 
 def load_file():
     global save, save_slot
@@ -164,56 +154,95 @@ def add_help(message):
     with dpg.tooltip(dpg.add_text("(?)", color=[0, 255, 0])):
         dpg.add_text(message)
 
-def change_save(sender, app_data, user_data):
-    global save_slot, location
+def change_save(sender, new_save_slot):
+    global save_slot, selected_location_index
 
     save_values()
-    save_slot = app_data
-    location = -1
+    save_slot = new_save_slot
+    selected_location_index = -1
     load_values()
-    change_location(location_name, location_stars)
 
-def change_location_name(sender, new_location_name):
-    change_location(new_location_name, location_stars)
+def select_location(sender, location_name):
+    global selected_location_index
+    
+    # Save old location stats
+    if selected_location_index != -1:
+        for stat in ("bT", "aT", "aHl", "aHg", "aKg", "aRg", "d", "Dd", "DA", "DF", "DI", "DP", "DV"):
+            if stat in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index] or dpg.get_value(stat):
+                save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index][stat] = dpg.get_value(stat)
 
-def change_location_stars(sender, new_location_stars):
-    change_location(location_name, new_location_stars)
+    # Get index because stats is an array
+    selected_location_index = -1
+    for i, location in enumerate(save.save_json[save_slot]["progress_data"]["quest_data"]["stats"]):
+        if location["id"] == location_name:
+            selected_location_index = i
+            break
+    else:
+        print("Location not found!")
+        return
 
-def change_location(new_location_name, new_location_stars):
-    global location_name, location_stars, location
+    for stat in ("bT", "aT", "aHl", "aHg", "aKg", "aRg", "d", "Dd", "DA", "DF", "DI", "DP", "DV"):
+        if stat in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index]:
+            dpg.set_value(stat, save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][selected_location_index][stat])
+        else:
+            dpg.set_value(stat, 0)
 
+def filter_items(sender, filter):
     if not save:
         return
     
-    # Save old location stats
-    if location != -1:
-        for stat in ("bT", "aT", "aHl", "aHg", "aKg", "aRg", "d", "Dd", "DA", "DF", "DI", "DP", "DV"):
-            if stat in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][location]:
-                save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][location][stat] = dpg.get_value(stat)
+    inventory_item_names = [item["id"] for item in save.save_json[save_slot]["progress_data"]["inventory_data"]["itms"] if filter in item["id"]]
 
-    # Determine new location index
-    location_name = new_location_name  # Translate name
-    location_stars = new_location_stars
+    dpg.configure_item("inventory", items=inventory_item_names)
 
-    print("name, stars:", new_location_name, new_location_stars)
+def add_location():
+    if not save:
+        return
+    
+    location_name = dpg.get_value("add_location_name")
+    location_stars = dpg.get_value("add_location_stars")
+    mark_as_visited = dpg.get_value("add_location_mark_as_visited")
+    
+    location = f"{location_name}{location_stars if location_stars else ''}"
 
-    # Find location index in array of stats
-    new_location_id = location_codes[new_location_name] + (new_location_stars if new_location_stars != "1" else '')
-    for i, new_location in enumerate(save.save_json[save_slot]["progress_data"]["quest_data"]["stats"]):
-        if new_location["id"] == new_location_id:
-            location = i
+    for location_stats in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"]:
+        if location_stats["id"] == location:
             break
     else:
-        # Location not found
-        print(f"Location not found")
-        return
+        # Location not in stats
+        save.save_json[save_slot]["progress_data"]["quest_data"]["stats"].append({
+            "id": location,
+            "bT": 0,
+            "aT": 0,
+            "aHl": 0,
+            "aHg": 0,
+            "aKg": 0
+        })
 
-    # Change location to another
-    for stat in ("bT", "aT", "aHl", "aHg", "aKg", "aRg", "d", "Dd", "DA", "DF", "DI", "DP", "DV"):
-        if stat in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][location]:
-            dpg.set_value(stat, save.save_json[save_slot]["progress_data"]["quest_data"]["stats"][location][stat])
+        if mark_as_visited:
+            save.save_json[save_slot]["progress_data"]["quest_data"]["has_completed"].append(location)
+
+        # Mark star level
+        if location in save.save_json[save_slot]["progress_data"]["quest_data"]["star_levels"]:
+            if save.save_json[save_slot]["progress_data"]["quest_data"]["star_levels"][location_name] < location_stars:
+                save.save_json[save_slot]["progress_data"]["quest_data"]["star_levels"][location_name] = location_stars
         else:
-            dpg.set_value(stat, 0)
+            save.save_json[save_slot]["progress_data"]["quest_data"]["star_levels"][location] = location_stars
+
+        # Mark aspiring_stars if location is last
+        if location_stars == 15:
+            if location_name in save.save_json[save_slot]["progress_data"]["quest_data"]["aspiring_star_ids"]:
+                i = save.save_json[save_slot]["progress_data"]["quest_data"]["aspiring_star_ids"].index(location_name) 
+                
+                save.save_json[save_slot]["progress_data"]["quest_data"]["aspiring_stars"][i] = str(location_stars)
+            else:
+                save.save_json[save_slot]["progress_data"]["quest_data"]["aspiring_star_ids"].append(location_name)
+                save.save_json[save_slot]["progress_data"]["quest_data"]["aspiring_stars"].append(str(location_stars))
+
+        # Update locations list
+        load_locations(location)
+
+    dpg.configure_item("add_location", show=False)
 
 # GUI
 with dpg.window(tag="Editor"):
@@ -240,7 +269,7 @@ with dpg.window(tag="Editor"):
         dpg.add_combo(label="Слот сохранения", width=196, items=[], callback=change_save, tag="save_slots")
 
     # Tabs
-    with dpg.tab_bar(track_offset=1):
+    with dpg.tab_bar():
         with dpg.tab(label="Настройки"):
             dpg.add_text("Stone Story RPG save editor\nv 0.0.0")
 
@@ -263,53 +292,101 @@ with dpg.window(tag="Editor"):
             dpg.add_input_int(label="Бронза   :.", source="Bronze")
 
         with dpg.tab(label="Локации"):
-            dpg.add_text("Локация")
-            dpg.add_combo(label="Название локации", items=location_names, default_value=location_names[0], callback=change_location_name)    
-            dpg.add_combo(label="Число звёзд", items=[f"{i}" for i in range(1, 16)], default_value="1", callback=change_location_stars)
-            add_help(
-                "Уровни локаций для звёзд:\n"
-                "★ 1-5    Белый\n"
-                "★ 6-10   Бирюзовый\n"
-                "★ 11-15  Жёлтый"
-            )
+            with dpg.group(horizontal=True):
+                with dpg.group(width=175):
+                    dpg.add_text("Посещённые локации")
+                    add_help(
+                        "Имена локаций:\n"
+                        "rocky_plateau    Каменистое плато\n"
+                        "deadwood_valley  Каньон Дедвуд\n"
+                        "caustic_caves    Пещеры страха\n"
+                        "fungus_forest    Грибной лес\n"
+                        "undead_crypt     Призрачные залы\n"
+                        "bronze_mine      Бурлящая шахта\n"
+                        "icy_ridge        Ледяной хребет\n"
+                        "temple           Храм\n\n"
+                        "Уровни:\n"
+                        "★ 1-5    Белый\n"
+                        "★ 6-10   Бирюзовый\n"
+                        "★ 11-15  Жёлтый\n"
+                    )
 
-            dpg.add_separator()
-            dpg.add_text("Время")
+                    dpg.add_listbox(tag="location_names", num_items=14, callback=select_location)
+                    dpg.add_button(label="Добавить локацию", callback=lambda _: dpg.configure_item("add_location", show=True))
 
-            dpg.add_input_int(label="Лучшее время", source="bT")
-            add_help("Время отмеряется кадрами:\n30 кадров = 1 секунда")
-            dpg.add_input_double(label="Среднее время", source="aT")
-            add_help("Время отмеряется кадрами:\n30 кадров = 1 секунда")
-            
-            dpg.add_separator()
-            dpg.add_text("Данные среднего забега")
+                    with dpg.window(
+                        label="Добавить локацию",
+                        pos=((600 - 350) // 2, (400 - 140) // 2),
+                        width=350,
+                        height=140,
+                        show=False,
+                        tag="add_location"
+                    ):
+                        dpg.add_combo(
+                            label="Название локации",
+                            items=["rocky_plateau", "deadwood_valley", "caustic_caves", "fungus_forest", "undead_crypt", "bronze_mine", "icy_ridge", "temple"],
+                            default_value="rocky_plateau",
+                            width=200,
+                            tag="add_location_name"
+                        )
+                        dpg.add_input_int(label="Число звёзд", width=200, tag="add_location_stars")
+                        dpg.add_checkbox(label="Отметить как завершённую", tag="add_location_mark_as_visited")
 
-            dpg.add_input_double(label="Трата оз", source="aHl")
-            dpg.add_input_double(label="Пополнение оз", source="aHg")
-            dpg.add_input_double(label="Получение Ки", source="aKg")
-            dpg.add_input_double(label="Получение ресурса", source="aRg")
-            add_help(
-                "Для каждй локации свой ресурс:\n"
-                "o    Камень     Каменистое плато\n"
-                "_/`  Древесина  Каньон Дедвуд\n"
-                "≈    Смола      Пещеры страха\n"
-                ":.   Бронза     Бурлящая шахта\n"
-            )
+                        with dpg.group(horizontal=True):
+                            dpg.add_button(label="Создать", callback=add_location)
+                            dpg.add_button(label="Отменить", callback=lambda _: dpg.configure_item("add_location", show=False))
+                
+                with dpg.group():
+                    dpg.add_text("Информация о локации")
+                    
+                    with dpg.child_window(tag="stats", border=False, show=False, no_scrollbar=True):
+                        dpg.add_input_int(label="Лучшее время", width=200, source="bT")
+                        add_help("Время отмеряется кадрами:\n30 кадров = 1 секунда")
+                        dpg.add_input_double(label="Среднее время", width=200, source="aT")
+                        add_help("Время отмеряется кадрами:\n30 кадров = 1 секунда")
+                        
+                        dpg.add_separator()
+                        dpg.add_text("Данные среднего забега")
 
-            dpg.add_separator()
-            dpg.add_text("Урон")
+                        dpg.add_input_double(label="Трата оз", width=200, source="aHl")
+                        dpg.add_input_double(label="Пополнение оз", width=200, source="aHg")
+                        dpg.add_input_double(label="Получение Ки", width=200, source="aKg")
+                        dpg.add_input_double(label="Получение ресурса", width=200, source="aRg")
+                        add_help(
+                            "Для каждй локации свой ресурс:\n"
+                            "o    Камень     Каменистое плато\n"
+                            "_/`  Древесина  Каньон Дедвуд\n"
+                            "≈    Смола      Пещеры страха\n"
+                            ":.   Бронза     Бурлящая шахта\n"
+                        )
 
-            dpg.add_input_double(label="Нанесено урона", source="d")
-            dpg.add_input_double(label="Получено урона", source="Dd")
+                        dpg.add_separator()
+                        dpg.add_text("Урон")
 
-            dpg.add_input_double(label="Нанесено эфиром", source="DA")
-            dpg.add_input_double(label="Нанесено огнём", source="DF")
-            dpg.add_input_double(label="Нанесено льдом", source="DI")
-            dpg.add_input_double(label="Нанесено ядом", source="DP")
-            dpg.add_input_double(label="Нанесено энергией", source="DV")
+                        dpg.add_input_double(label="Нанесено урона", width=200, source="d")
+                        dpg.add_input_double(label="Получено урона", width=200, source="Dd")
+                        
+                        dpg.add_separator()
+                        dpg.add_text("Стихийный урон")
+                        add_help("Влияет на трату стихийных рун при фарме")
+
+                        dpg.add_input_double(label="Нанесено эфиром", width=200, source="DA")
+                        dpg.add_input_double(label="Нанесено огнём", width=200, source="DF")
+                        dpg.add_input_double(label="Нанесено льдом", width=200, source="DI")
+                        dpg.add_input_double(label="Нанесено ядом", width=200, source="DP")
+                        dpg.add_input_double(label="Нанесено энергией", width=200, source="DV")
 
         with dpg.tab(label="Инвентарь"):
-            pass
+            with dpg.group(horizontal=True):
+                with dpg.group(width=175):
+                    dpg.add_text("Предметы")
+                    dpg.add_input_text(callback=filter_items)
+                    dpg.add_listbox(tag="inventory", num_items=12)
+                    dpg.add_button(label="Создать предмет")
+
+                with dpg.group():
+                    dpg.add_text("Данные предмета")
+
         
         with dpg.tab(label="Квесты"):
             pass
@@ -323,7 +400,7 @@ with dpg.window(tag="Editor"):
         with dpg.tab(label="Статистика"):
             pass
             
-dpg.create_viewport(title="Редактор сохранений Stone Story RPG", width=600, height=406)
+dpg.create_viewport(title="Редактор сохранений Stone Story RPG", width=600, height=412)
 dpg.setup_dearpygui()
 dpg.show_viewport()
 dpg.set_primary_window("Editor", True)
