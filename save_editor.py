@@ -16,7 +16,7 @@ with dpg.font_registry():
     with dpg.font("mononoki-Regular.ttf", 32) as font:
         dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
         dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
-        dpg.add_font_chars([0x2666, 0x2248, 0x2605])  # ♦ ≈ ★
+        dpg.add_font_chars([ord(c) for c in "♦≈★"])
         dpg.set_global_font_scale(0.5)
         dpg.bind_font(font)
 
@@ -54,6 +54,17 @@ with dpg.value_registry():
     dpg.add_double_value(default_value=0.0, tag="DP")
     dpg.add_double_value(default_value=0.0, tag="DV")
 
+class InventoryItem():
+    def __init__(self, index, data):
+        self.index = index
+        self.data = data
+
+    def __repr__(self):
+        return self.data["id"]
+    
+    def get_data(self):
+        return self.data
+
 # Load values from save
 def load_values():
     dpg.set_value("version", save.save_json[save_slot]["version"])
@@ -70,13 +81,14 @@ def load_values():
     load_locations()
 
     # Inventory
-    inventory_item_names = [item["id"] for item in save.save_json[save_slot]["progress_data"]["inventory_data"]["itms"]]
+    inventory_item_names = [InventoryItem(i, item) for i, item in enumerate(save.save_json[save_slot]["progress_data"]["inventory_data"]["itms"])]
     dpg.configure_item("inventory", items=inventory_item_names)
 
 def load_locations(default_location=None):
     global location_names
 
     # Set list of locations
+    print(save_slot)
     location_names = natsorted([location["id"] for location in save.save_json[save_slot]["progress_data"]["quest_data"]["stats"]])
     dpg.configure_item("location_names", items=location_names)
 
@@ -191,8 +203,7 @@ def filter_items(sender, filter):
     if not save:
         return
     
-    inventory_item_names = [item["id"] for item in save.save_json[save_slot]["progress_data"]["inventory_data"]["itms"] if filter in item["id"]]
-
+    inventory_item_names = [InventoryItem(i, item) for i, item in enumerate(save.save_json[save_slot]["progress_data"]["inventory_data"]["itms"]) if filter in item["id"]]
     dpg.configure_item("inventory", items=inventory_item_names)
 
 def add_location():
@@ -229,6 +240,21 @@ def add_location():
         else:
             save.save_json[save_slot]["progress_data"]["quest_data"]["star_levels"][location] = location_stars
 
+        # Mark location if new one
+        if location_name not in save.save_json[save_slot]["progress_data"]["quest_data"]["available"]:
+            save.save_json[save_slot]["progress_data"]["quest_data"]["available"].append(location_name)
+        else:
+            # New set of locations
+            save.save_json[save_slot]["progress_data"]["quest_data"]["stats"].append({
+                "id": location_name,
+                "lpDiff": location_stars,
+                "bT": 0,
+                "aT": 0,
+                "aHl": 0,
+                "aHg": 0,
+                "aKg": 0,
+            })
+
         # Mark aspiring_stars if location is last
         if location_stars == 15:
             if location_name in save.save_json[save_slot]["progress_data"]["quest_data"]["aspiring_star_ids"]:
@@ -243,6 +269,22 @@ def add_location():
         load_locations(location)
 
     dpg.configure_item("add_location", show=False)
+
+def open_item(sender, item):
+    # Save data
+    # ...
+
+    dpg.delete_item("item_settings", children_only=True)
+    
+    # Recursevly parse all item setting dict
+    dpg.add_text(f"Item: {item}", parent="item_settings")
+    dpg.add_input_int(parent="item_settings", label=item, width=200)
+    print(item, type(item))
+
+def save_json():
+    if save:
+        save.save_as_json("formatted.json")
+        print("exported json")
 
 # GUI
 with dpg.window(tag="Editor"):
@@ -272,6 +314,8 @@ with dpg.window(tag="Editor"):
     with dpg.tab_bar():
         with dpg.tab(label="Настройки"):
             dpg.add_text("Stone Story RPG save editor\nv 0.0.0")
+
+            dpg.add_button(label="Экспортировать JSON", callback=save_json)
 
         with dpg.tab(label="Общее"):
             dpg.add_text("Персонаж")
@@ -312,7 +356,8 @@ with dpg.window(tag="Editor"):
                     )
 
                     dpg.add_listbox(tag="location_names", num_items=14, callback=select_location)
-                    dpg.add_button(label="Добавить локацию", callback=lambda _: dpg.configure_item("add_location", show=True))
+                    with dpg.group(horizontal=True):
+                        dpg.add_button(label="Добавить", callback=lambda _: dpg.configure_item("add_location", show=True))
 
                     with dpg.window(
                         label="Добавить локацию",
@@ -329,7 +374,7 @@ with dpg.window(tag="Editor"):
                             width=200,
                             tag="add_location_name"
                         )
-                        dpg.add_input_int(label="Число звёзд", width=200, tag="add_location_stars")
+                        dpg.add_input_int(label="Число звёзд", min_value=0, max_value=15, min_clamped=True, max_clamped=True, width=200, tag="add_location_stars")
                         dpg.add_checkbox(label="Отметить как завершённую", tag="add_location_mark_as_visited")
 
                         with dpg.group(horizontal=True):
@@ -381,13 +426,14 @@ with dpg.window(tag="Editor"):
                 with dpg.group(width=175):
                     dpg.add_text("Предметы")
                     dpg.add_input_text(callback=filter_items)
-                    dpg.add_listbox(tag="inventory", num_items=12)
+                    dpg.add_listbox(tag="inventory", num_items=12, callback=open_item)
                     dpg.add_button(label="Создать предмет")
 
                 with dpg.group():
-                    dpg.add_text("Данные предмета")
+                    dpg.add_text("Данные предмета", tag="item_info")
 
-        
+                    dpg.add_group(tag="item_settings")  # conrainer for item setting
+
         with dpg.tab(label="Квесты"):
             pass
 

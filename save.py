@@ -117,8 +117,30 @@ class Save:
         with open(file_name, "w", encoding="utf-8") as j:
             j.write(sjsonized)
 
-# Usage
-# save = Save("save.txt")
+    def save_as_json(self, file_name):
+        with open(file_name, "w", encoding="utf-8") as j:
+            j.write(json.dumps(self.save_json, indent=4, ensure_ascii=False))
+
+# save = Save("primary_save.txt")
 # save.save_json["save_file_42"]["player_name"] = "LOCALHOST"
 # save.save_json["save_file_42"]["progress_data"]["hero_settings"]["playerName"] = "LOCALHOST"
+
+# Get all unique tags from inventory items
+# unique = {}
+# def unroll(item, layer=0):
+#     if layer not in unique:
+#         unique[layer] = set()
+
+#     for key in item:
+#         unique[layer].add(key)
+        
+#         if isinstance(item[key], dict):
+#             unroll(item[key], layer+1)
+
+# for item in save.save_json["save_file_42"]["progress_data"]["inventory_data"]["itms"]:
+#     unroll(item)
+
+# from pprint import pprint
+# pprint(unique)
+
 # save.save("primary_save.txt")
