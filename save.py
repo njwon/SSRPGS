@@ -5,15 +5,22 @@ import json
 from cryptors import decrypt
 
 class Save:
-    def __init__(self, file_name):
-        self.file_name = file_name
-        self.save_file = open(file_name, "r", encoding="utf-8").read()
-        self.save_json = {}
-
-        self.save_slots = []
+    def __init__(self):
+        self.save_file_name = ""
         
-        self.open()
+        self.save_json = {}
+        self.save_slots = []
+        self.save_slot = ""
+        
+    def __getitem__(self, key):
+        return self.save_json[self.save_slot][key]
+    
+    def __setitem__(self, key, value):
+        self.save_json[self.save_slot][key] = value
 
+    def is_loaded(self):
+        return self.save_slot != ""
+    
     def jsonize(self, text):
         text = text.replace('\n\t', '\n')
 
@@ -64,8 +71,10 @@ class Save:
         
         return text
 
-    def open(self):
-        jsonized = self.jsonize(self.save_file)
+    def open(self, save_file_name):
+        jsonized = self.jsonize(open(save_file_name, "r", encoding="utf-8").read())
+        
+        self.save_file_name = save_file_name
         self.save_json = json.loads(jsonized)
         self.save_slots = []
 
@@ -85,6 +94,9 @@ class Save:
         # Change encrypted to False for all saves
         for save_slot in self.save_slots:
             self.save_json[save_slot]["encrypted"] = "False"
+
+        # Select last save as actual
+        self.save_slot = f"save_file_{self.save_json["save_file_last_id"]}"
 
     def sjsonize(self, save_json):
         text = ""
@@ -112,7 +124,10 @@ class Save:
 
         return text
 
-    def save(self, file_name):
+    def save(self, file_name=None):
+        if file_name is None:
+            file_name = self.save_file_name
+
         sjsonized = self.sjsonize(self.save_json)
         with open(file_name, "w", encoding="utf-8") as j:
             j.write(sjsonized)
@@ -121,9 +136,10 @@ class Save:
         with open(file_name, "w", encoding="utf-8") as j:
             j.write(json.dumps(self.save_json, indent=4, ensure_ascii=False))
 
-# save = Save("primary_save.txt")
-# save.save_json["save_file_42"]["player_name"] = "LOCALHOST"
-# save.save_json["save_file_42"]["progress_data"]["hero_settings"]["playerName"] = "LOCALHOST"
+# Load from json and write
+# save = Save()
+# save.save_json = json.load(open("formatted.json"))
+# save.save("primary_save.txt")
 
 # Get all unique tags from inventory items
 # unique = {}
