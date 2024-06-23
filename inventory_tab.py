@@ -38,6 +38,8 @@ class InventoryTab:
         self.save = save
     
     def load(self):
+        dpg.delete_item("item_settings", children_only=True)
+
         inventory_item_names = [InventoryItem(i, item) for i, item in enumerate(self.save["progress_data"]["inventory_data"]["itms"])]
         dpg.configure_item("inventory", items=inventory_item_names)
 

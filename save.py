@@ -52,6 +52,7 @@ class Save:
             end = match.end() + shift
 
             value = text[start:end]
+
             if value[0] == '"':
                 continue
 
@@ -62,16 +63,20 @@ class Save:
             elif value.count(":") >= 1:
                 key, value = value.split(":", 1)
 
-                if not value or value[0] == '"' or value.replace("-", "").replace(".", "", 1).isdigit():
+                # Replace boolean values by JSON format
+                if value == "True":
+                    value = "true"
+                
+                if value == "False":
+                    value = "false"
+
+                if not value or value[0] == '"' or value.replace("-", "").replace(".", "", 1).isdigit() or value in ("false", "true"):
+                    print(key, value)
                     text = f'{text[:start]}"{key}":{value}{text[end:]}'
                     shift += 2
                 else:
                     text = f'{text[:start]}"{key}":"{value}"{text[end:]}'
                     shift += 4
-
-        # Replace boolean values by JSON format
-        text = text.replace('"True"', "true")
-        text = text.replace('"False"', "false")
         
         return text
 
@@ -104,6 +109,16 @@ class Save:
 
     def sjsonize(self, save_json):
         text = ""
+
+        # Convert boolean values by SJSON format
+        def bool_to_sjson(dictionary):
+            for key in dictionary:
+                if isinstance(dictionary[key], bool):
+                    dictionary[key] = str(dictionary[key])
+                if isinstance(dictionary[key], dict):
+                    bool_to_sjson(dictionary[key])
+        
+        bool_to_sjson(save_json)
         text = json.dumps(save_json, separators=(",", ":"), ensure_ascii=False)
 
         # Remove quotes where it's possible
@@ -113,19 +128,13 @@ class Save:
             end = match.end() + shift
 
             value = text[start:end]
-
+            
             if value.count('"') > 2 or value == '""' or value[1] == " " or value.count(","):
                 continue
 
-            if value == '"true"':
-                value = '"True"'
-
-            if value == '"false"':
-                value = '"False"'
-
             text = f'{text[:start]}{value[1:-1]}{text[end:]}'
             shift -= 2
-
+        
         return text
 
     def save(self, file_name=None):
@@ -143,7 +152,8 @@ class Save:
 # Load from json and write
 # save = Save()
 # save.open("primary_save.txt")
-# save.save_as_json("formatted.json")
+# save.save_as_json("del.json")
+# save.save("del.txt")
 
 # save.save_json = json.load(open("formatted.json"))
 # save.save("primary_save.txt")
