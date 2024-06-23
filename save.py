@@ -68,6 +68,10 @@ class Save:
                 else:
                     text = f'{text[:start]}"{key}":"{value}"{text[end:]}'
                     shift += 4
+
+        # Replace boolean values by JSON format
+        text = text.replace('"True"', "true")
+        text = text.replace('"False"', "false")
         
         return text
 
@@ -84,7 +88,7 @@ class Save:
                 self.save_slots.append(field)
 
                 # Decrypt only crypted blocks
-                if self.save_json[field]["encrypted"] != "True":
+                if self.save_json[field]["encrypted"] != True:
                     continue
 
                 progress_data = decrypt(self.save_json[field]["progress_data"])
@@ -93,7 +97,7 @@ class Save:
 
         # Change encrypted to False for all saves
         for save_slot in self.save_slots:
-            self.save_json[save_slot]["encrypted"] = "False"
+            self.save_json[save_slot]["encrypted"] = False
 
         # Select last save as actual
         self.save_slot = f"save_file_{self.save_json["save_file_last_id"]}"
@@ -138,6 +142,9 @@ class Save:
 
 # Load from json and write
 # save = Save()
+# save.open("primary_save.txt")
+# save.save_as_json("formatted.json")
+
 # save.save_json = json.load(open("formatted.json"))
 # save.save("primary_save.txt")
 

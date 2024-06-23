@@ -53,6 +53,34 @@ class InventoryTab:
 
         dpg.configure_item("inventory", items=inventory_item_names)
     
+    def make_input_value(self, key, value):
+        match value:
+            case bool():
+                dpg.add_checkbox(label=key, default_value=value, parent="item_settings")
+            
+            case int():
+                dpg.add_input_int(label=key, default_value=value, parent="item_settings")
+            
+            case str():
+                dpg.add_input_text(label=key, default_value=value, parent="item_settings")
+
+            case list():
+                dpg.add_separator(parent="item_settings")
+                dpg.add_text(key, parent="item_settings")
+                for item in value:
+                    self.make_input_value(key, item)
+
+                dpg.add_separator(parent="item_settings")
+            
+            case dict():
+                dpg.add_separator(parent="item_settings")
+                dpg.add_text(key, parent="item_settings")
+
+                for folded_key in value:
+                    self.make_input_value(folded_key, value[folded_key])
+
+                dpg.add_separator(parent="item_settings")
+
     def open_item(self, _, item):
         # Save data
         # ...
@@ -70,13 +98,7 @@ class InventoryTab:
             dpg.add_text("Данные", parent="item_settings")
             
             for key in item["da"]:
-                match item["da"][key]:
-                    case int():
-                        dpg.add_input_int(label=key, default_value=item["da"][key], parent="item_settings")
-                    case str():
-                        dpg.add_input_text(label=key, default_value=item["da"][key], parent="item_settings")
-                    case list():
-                        dpg.add_input_text(label=key+"**", default_value=item["da"][key], parent="item_settings")
+                self.make_input_value(key, item["da"][key])
         
     def gui(self):
         with dpg.group(horizontal=True):
@@ -86,7 +108,7 @@ class InventoryTab:
                     dpg.add_listbox(tag="inventory", num_items=12, callback=self.open_item)
                     dpg.add_button(label="Создать предмет")
 
-                with dpg.group(width=200):
+                with dpg.child_window(border=False, no_scrollbar=True):
                     dpg.add_text("Данные предмета", tag="item_info")
 
                     dpg.add_group(tag="item_settings")  # conrainer for item setting

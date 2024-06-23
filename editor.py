@@ -4,6 +4,7 @@ from subprocess import check_output
 from sys import executable
 
 from save import Save
+
 from main_tab import MainTab
 from locations_tab import LocationsTab
 from inventory_tab import InventoryTab
