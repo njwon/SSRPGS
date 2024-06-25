@@ -71,7 +71,6 @@ class Save:
                     value = "false"
 
                 if not value or value[0] == '"' or value.replace("-", "").replace(".", "", 1).isdigit() or value in ("false", "true"):
-                    print(key, value)
                     text = f'{text[:start]}"{key}":{value}{text[end:]}'
                     shift += 2
                 else:
@@ -155,6 +154,7 @@ class Save:
 # save.save_as_json("del.json")
 # save.save("del.txt")
 
+# save = Save()
 # save.save_json = json.load(open("formatted.json"))
 # save.save("primary_save.txt")
 
@@ -170,10 +170,8 @@ class Save:
 #         if isinstance(item[key], dict):
 #             unroll(item[key], layer+1)
 
-# for item in save.save_json["save_file_42"]["progress_data"]["inventory_data"]["itms"]:
+# for item in save.save_json["save_file_40"]["progress_data"]["inventory_data"]["itms"]:
 #     unroll(item)
 
 # from pprint import pprint
 # pprint(unique)
-
-# save.save("primary_save.txt")
