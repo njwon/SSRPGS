@@ -2,6 +2,7 @@ import dearpygui.dearpygui as dpg
 
 from subprocess import check_output
 from sys import executable
+import json  # DEL
 
 from save import Save
 
@@ -58,14 +59,14 @@ class Editor:
     def dump(self):
         with loading():
             self.main_tab.dump()
-            self.locations_tab.dump()
+            # self.locations_tab.dump()
             self.save.save("primary_save.txt")
 
     def change_slot(self, _, new_save_slot):
         # Save previous values
         self.main_tab.dump()
         self.locations_tab.dump()
-        self.inventory_tab.dump()
+        # self.inventory_tab.dump()
         
         self.save.save_slot = new_save_slot
 
@@ -76,6 +77,10 @@ class Editor:
 
     def json_export(self):
         self.save.save_as_json("formatted.json")
+    
+    def json_import(self):
+        self.save.save_json = json.load(open("formatted.json"))
+        self.change_slot("", f"save_file_{self.save.save_json["save_file_last_id"]}")
 
     def gui(self):
         with dpg.window(tag="Editor"):            
@@ -90,6 +95,7 @@ class Editor:
                 with dpg.tab(label="Настройки"):
                     dpg.add_text("Stone Story RPG save editor\nv 0.0.0")
                     dpg.add_button(label="Экспортировать JSON", callback=self.json_export)
+                    dpg.add_button(label="Импортировать JSON", callback=self.json_import)
 
                 with dpg.tab(label="Общее"):
                     self.main_tab.gui()
@@ -102,12 +108,12 @@ class Editor:
 
     def run(self):
         self.gui()
+
         dpg.create_viewport(
             title="Редактор сохранений Stone Story RPG",
             width=600,
             height=412
         )
-
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.set_primary_window("Editor", True)
