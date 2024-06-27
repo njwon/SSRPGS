@@ -85,7 +85,7 @@ class InventoryTab:
         for i, item in enumerate(self.items):
             if (filter_key and filter_key in item["id"]) or not filter_key:
                 items_names.append(
-                    f"{item["id"]}{chr(i)}"  # HERE WILL BE A GIANT CRUTCH
+                    f"{item["id"]}{chr(i + 0x10ec77)}"
                 )
 
         return items_names
@@ -251,7 +251,7 @@ class InventoryTab:
         dpg.delete_item("item_settings", children_only=True)
         
         self.item_groups = set()
-        self.item = self.items[ord(item[-1])]
+        self.item = self.items[ord(item[-1]) - 0x10ec77]
 
         self.travel(self.sorting(self.item))
    

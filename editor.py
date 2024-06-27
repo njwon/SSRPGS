@@ -34,6 +34,13 @@ class Editor:
                 dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
                 dpg.add_font_chars([ord(c) for c in "♦≈★"])
                 dpg.set_global_font_scale(0.5)
+
+                # Adds ~7,5 millisecond to init time...
+                # Remap 5k of Unicode chars to indexes for inventory tab
+                dpg.add_font_range(0x10ec77, 0x10ffff)
+                for char in range(0x10ec77, 0x10ffff):
+                    dpg.add_char_remap(char, ord(" "))
+                
                 dpg.bind_font(font)
 
     def load(self):
