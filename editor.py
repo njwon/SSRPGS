@@ -119,7 +119,7 @@ class Editor:
         dpg.create_viewport(
             title="Редактор сохранений Stone Story RPG",
             width=600,
-            height=412
+            height=398,
         )
         dpg.setup_dearpygui()
         dpg.show_viewport()

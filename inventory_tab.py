@@ -1,28 +1,118 @@
 import dearpygui.dearpygui as dpg
-from json import dumps
-from math import log2
+
+items = {
+    "Top": {
+        "name": "",
+        "fields": {
+            "id": "Название",
+            "co": "Количество",
+            "da": "Данные",
+        }
+    },
+    "Style": {
+        "name": "Вид",
+        "fields": {
+            "da hI": "Взаимодействован",
+            "da sh": "Блёстки",
+            "da c": "Вид косметики",
+            "da tag": "Тег",
+            "da sig": "Сигнатура",
+        }
+    },
+    "Improvements": {
+        "name": "Улучшение",
+        "fields": {
+            "da lv": "Уровень",
+            "da lC": "Элементов",
+            "da lBU": "Улучшений",
+            "da el": "Элемент",
+        }
+    },
+    "Effects": {
+        "name": "Эффекты",
+        "fields": {
+            "da abs": "Эффекты",
+        }
+    },
+    "Items": {
+        "name": "Список предметов",
+        "fields": {
+            "da itms": "Предметы",
+            "da itms _ id": "Название",
+            "da itms _ t": "Тип редкости",
+            "da itms _ lv": "Уровень",
+            "da itms _ min": "Минимум",
+            "da itms _ max": "Максимум",
+            "da itms _ rng": "Случайный сид",
+            "da itms _ e": "Элемент",
+        }
+    },
+    "Enchantments": {
+        "name": "Чары",
+        "fields": {
+            "da ra": "Чары",
+            "da ra lv": "Уровень чар",
+            "da ra ql": "Качество чар",
+            "da ra sSS": "Сид чар",
+        }
+    },
+    "RNG's": {
+        "name": "Сиды",
+        "fields": {
+            "da rng": "Случайный сид",
+            "da rS": "Случайный суффикс",
+        }
+    },
+    "Potion": {
+        "name": "Зелье",
+        "fields": {
+            "da potion_type": "Тип",
+            "da last_type": "Последний тип",
+            "da auto_refill": "Перезалив",
+        }
+    },
+    "Costs": {
+        "name": "Затраты",
+        "fields": {
+            "da costs": "Затраты",
+            "da costs _ resource": "Ресурс",
+            "da costs _ amount": "Количество",
+            "da costs _ itemId": "Предмет",
+            "da costs _ level": "Уровень",
+        }
+    }
+}
+
+fields = {
+    "da co": 0,
+    "da hI": True,
+    "da sig": "",
+    "da hI": True,
+    "da sh": True,
+    "da c": "",
+    "da tag": "",
+    "da sig": "",
+    "da ra": {"lv": 21, "ql": 12049, "sSS": 99048},
+    "da abs": [],
+}
 
 class InventoryTab:
     def __init__(self, save):
         self.save = save
-
         self.items = None
-        self.item = None
+
         self.item_groups = set()
+        self.item_index = None
+        self.item = None
 
-    def load(self):        
+    def load(self):
         self.items = self.save["progress_data"]["inventory_data"]["itms"]
-        item_names = self.generate_items_list()
-
-        dpg.configure_item("inventory", items=item_names)
-
-        if item_names:
-            self.open_item("load", item_names[0])
+        self.filter_items("load", dpg.get_value("search_filter"))
 
     def add_ensure_one_separator(self):
-        last_item = dpg.get_item_type(dpg.last_item())
+        last_item_type = dpg.get_item_type(dpg.last_item())
 
-        if last_item != "mvAppItemType::mvSeparator":
+        if last_item_type != "mvAppItemType::mvSeparator":
             dpg.add_separator(parent="item_settings")
 
     def sorter(self, value):
@@ -51,7 +141,7 @@ class InventoryTab:
                 "rB",
                 "min",
                 "max",
-                # Enchants
+                # Enchantments
                 "ra",
                 "ql",
                 "sSS",
@@ -79,7 +169,7 @@ class InventoryTab:
 
         return sorted_dict
 
-    def generate_items_list(self, filter_key=False):
+    def generate_items_names(self, filter_key=False):
         items_names = []
 
         for i, item in enumerate(self.items):
@@ -97,120 +187,89 @@ class InventoryTab:
             self.add_ensure_one_separator()
             dpg.add_text(group, parent="item_settings")
     
-    def get_label(self, path):
-        match path:
-            # Top level
-            case ("id",):
-                return "Название"
-            case ("co",):
-                return "Количество"
-            case ("da",):
-                return "Данные"
-            
-            # Style
-            case ("da", "hI"):
-                self.check_group_label("Вид")
-                return "Взаимодействован"
-            case ("da", "sh"):
-                self.check_group_label("Вид")
-                return "Блёстки"
-            case ("da", "c"):
-                self.check_group_label("Вид")
-                return "Вид косметики"
-            case ("da", "tag"):
-                self.check_group_label("Вид")
-                return "Тег"
-            case ("da", "sig"):
-                self.check_group_label("Вид")
-                return "Сигнатура"
-            
-            # Item improvement info
-            case ("da", "lv"):
-                self.check_group_label("Прокачка")
-                return "Уровень"
-            case ("da", "lC"):
-                return "Элементов"
-            case ("da", "lBU"):
-                return "Улучшений"
-            case ("da", "el"):
-                return "Элемент"
-            
-            case ("da", "abs"):
-                self.check_group_label("Эффекты")
-                return "Эффекты"
-            
-            # Itmes list in chest
-            case ("da", "itms"):
-                self.check_group_label("Список предметов")
-                return "Предметы"
-            case ("da", "itms", _, "id"):
-                return "Название"
-            case ("da", "itms", _, "t"):
-                return "Тип редкости"
-            case ("da", "itms", _, "lv"):
-                return "Уровень"
-            case ("da", "itms", _, "min"):
-                return "Минимум"
-            case ("da", "itms", _, "max"):
-                return "Максимум"
-            case ("da", "itms", _, "rng"):
-                return "Случайный сид"
-            case ("da", "itms", _, "e"):
-                return "Элемент"
-            
-            # Enchantments
-            case ("da", "ra"):
-                self.check_group_label("Чары")
-                return "Чары"
-            case ("da", "ra", "lv"):
-                return "Уровень чар"
-            case ("da", "ra", "ql"):
-                return "Качество чар"
-            case ("da", "ra", "sSS"):
-                return "Сид чар"
-            
-            # RNG's
-            case ("da", "rng"):    
-                self.check_group_label("Сиды")
-                return "Случайный сид"
-            case ("da", "rS"):
-                self.check_group_label("Сиды")
-                return "Случайный суффикс"
-            
-            # Potion
-            case ("da", "potion_type"):
-                self.check_group_label("Зелье")
-                return "Тип"
-            case ("da", "last_type"):
-                return "Последний тип"
-            case ("da", "auto_refill"):
-                return "Перезалив"
-            
-            # Potions costs
-            case ("da", "costs"):
-                self.check_group_label("Затраты")
-                return "Затраты"
-            case ("da", "costs", _, "resource"):
-                return "Ресурс"
-            case ("da", "costs", _, "amount"):
-                return "Количество"
-            case ("da", "costs", _, "itemId"):
-                return "Предмет"
-            case ("da", "costs", _, "level"):
-                return "Уровень"
+    def match_path(self, path, match_path):
+        match_path = match_path.split()
 
-            case _:
-                return path[-1]
+        if len(path) != len(match_path):
+            return False
+
+        for a, b in zip(path, match_path):
+            if a != b and b != "_":
+                return False
+            
+        return True
+
+    def get_label(self, path):
+        for group in items:
+            for field in items[group]["fields"]:
+                if self.match_path(path, field):
+                    if items[group]["name"]:
+                        self.check_group_label(items[group]["name"])
+                    return items[group]["fields"][field]
+        
+        return path[-1]
     
     def change(self, _, value, path):
         # Pointer on last object inside of a dict
         head = self.item
         for key in path[:-1]:
             head = head[key]
-        
+
         head[path[-1]] = value
 
-        print("Changed item: ", self.item)
+        # Update item name if it was changed
+        if path == ["id"]:
+            item_names = self.generate_items_names()
+            dpg.configure_item("inventory", items=item_names)
+            dpg.configure_item("inventory", default_value=f"{self.item["id"]}{chr(self.item_index + 0x10ec77)}")
+
+        print(f"Changed field: {path[-1]}: {head[path[-1]]}")
+    
+    def add_field(self, _):
+        if not self.item:
+            return
+        
+        field = ord(dpg.get_value("add_field_name")[-1]) - 0x10ec77
+
+        path = list(fields)[field]
+        default_value = fields[path]
+
+        if isinstance(default_value, (dict, list)):
+            default_value = fields[path].copy()
+
+        path = path.split()
+        head = self.item
+        for key in path[:-1]:
+            head = head[key]
+
+        head[path[-1]] = default_value
+        print(self.item)
+        self.open_item(_, chr(self.item_index + 0x10ec77))
+        dpg.configure_item("add_field", show=False)
+
+    def remove(self, _, value, path):
+        # Pointer on last object inside of a dict
+        head = self.item
+        parent = self.item
+        for key in path[:-1]:
+            parent = head
+            head = head[key]
+        
+        if path == ['id']:  # Delete all item
+            print(f"Deleted {self.items.pop(self.item_index)["id"]}")
+
+            dpg.delete_item("item_settings", children_only=True)
+            self.load()
+            return
+
+        if len(head) == 1:  # Iterable with one item
+            if len(path) > 1:
+                del parent[path[-2]]
+        else:
+            del head[path[-1]]
+
+        self.open_item(_, chr(self.item_index + 0x10ec77))
+        print(f"Deleted field {path[-1]}")
 
     def travel(self, item, start_path=None):
         if start_path is None:
@@ -227,11 +286,17 @@ class InventoryTab:
                 case list():
                     self.travel(value, path)
                 case bool():
-                    dpg.add_checkbox(label=key_label, default_value=value, parent="item_settings", callback=self.change, user_data=path)
+                    with dpg.group(horizontal=True, parent="item_settings"):
+                        dpg.add_button(label="X", callback=self.remove, user_data=path)
+                        dpg.add_checkbox(label=key_label, default_value=value, callback=self.change, user_data=path)
                 case str():
-                    dpg.add_input_text(label=key_label, default_value=value, parent="item_settings", callback=self.change, user_data=path)
+                    with dpg.group(horizontal=True, parent="item_settings"):
+                        dpg.add_button(label="X", callback=self.remove, user_data=path)
+                        dpg.add_input_text(label=key_label, default_value=value, callback=self.change, user_data=path)
                 case int():
-                    dpg.add_input_int(label=key_label, default_value=value,parent="item_settings", callback=self.change, user_data=path)
+                    with dpg.group(horizontal=True, parent="item_settings"):
+                        dpg.add_button(label="X", callback=self.remove, user_data=path)
+                        dpg.add_input_int(label=key_label, default_value=value, callback=self.change, user_data=path)
 
             if isinstance(item, list) and isinstance(item[0], dict):
                 self.add_ensure_one_separator()
@@ -240,10 +305,12 @@ class InventoryTab:
         if not self.save.is_loaded():
             return
         
-        item_names = self.generate_items_list(filter_key)
+        item_names = self.generate_items_names(filter_key)
         last_selected_item = dpg.get_value("inventory")
 
         dpg.configure_item("inventory", items=item_names)
+        print(f"Filtering inventory by key: '{filter_key}'")
+
         if len(item_names) and last_selected_item not in item_names:
             self.open_item(_, item_names[0])
 
@@ -251,19 +318,71 @@ class InventoryTab:
         dpg.delete_item("item_settings", children_only=True)
         
         self.item_groups = set()
-        self.item = self.items[ord(item[-1]) - 0x10ec77]
+        self.item_index = ord(item[-1]) - 0x10ec77
+        self.item = self.items[self.item_index]
 
         self.travel(self.sorting(self.item))
-   
+        print(f"Selected item: {self.item}")
+
+    def add_item(self, _):
+        item = {
+            "id": "new_item",
+            "co": 1,
+            "da": {
+                "hI": False,
+            }
+        }
+
+        self.items.insert(0, item)
+        self.load()
+
     def gui(self):
+        fields_names = []
+        for i, field in enumerate(fields):
+            for group in items:
+                if field in items[group]["fields"]:
+                    fields_names.append(items[group]["fields"][field] + chr(i + 0x10ec77))
+
+        with dpg.window(
+            label="Добавить поле",
+            pos=((600 - 350) // 2, (400 - 140) // 2),
+            width=350,
+            height=140,
+            show=False,
+            tag="add_field"
+        ):
+            dpg.add_combo(
+                label="Поле",
+                width=200,
+                items=fields_names,
+                default_value=fields_names[0],
+                tag="add_field_name"
+            )
+            
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="Добавить", callback=self.add_field)
+                dpg.add_button(label="Отменить", callback=lambda _: dpg.configure_item("add_field", show=False))
+
         with dpg.group(horizontal=True):
                 with dpg.group(width=175):
                     dpg.add_text("Предметы")
-                    dpg.add_input_text(hint="Поиск", callback=self.filter_items)
+                    dpg.add_input_text(tag="search_filter", hint="Поиск", callback=self.filter_items)
                     dpg.add_listbox(tag="inventory", num_items=12, callback=self.open_item)
-                    dpg.add_button(label="Создать предмет")
+                    dpg.add_button(label="Создать предмет", callback=self.add_item)
 
                 with dpg.child_window(border=False, no_scrollbar=True):
                     dpg.add_text("Данные предмета", tag="item_info")
 
-                    dpg.add_group(tag="item_settings")  # conrainer for item setting
+                    dpg.add_child_window(
+                        height=277,
+                        border=False,
+                        no_scrollbar=True,
+                        tag="item_settings"
+                    ) # conrainer for item setting
+                    
+                    with dpg.child_window(
+                        border=False,
+                        no_scrollbar=True,
+                    ):
+                        with dpg.group(horizontal=True):
+                            dpg.add_button(label="Добавить поле", callback=lambda _: dpg.configure_item("add_field", show=True))

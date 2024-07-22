@@ -9,6 +9,9 @@ class LocationsTab:
         self.selected_location_index = None
         self.init_registry()
 
+    def filter_search(self):
+        raise NotImplementedError()
+
     def init_registry(self):
         with dpg.value_registry():
             dpg.add_int_value(default_value=0, tag="bT")
@@ -176,9 +179,9 @@ class LocationsTab:
                     "★ 11-15  Жёлтый\n"
                 )
 
-                dpg.add_listbox(tag="location_names", num_items=14, callback=self.select_location)
-                with dpg.group(horizontal=True):
-                    dpg.add_button(label="Добавить", callback=lambda _: dpg.configure_item("add_location", show=True))
+                dpg.add_input_text(hint="Поиск", callback=self.filter_search)
+                dpg.add_listbox(tag="location_names", num_items=12, callback=self.select_location)
+                dpg.add_button(label="Добавить", callback=lambda _: dpg.configure_item("add_location", show=True))
             
             with dpg.group():
                 dpg.add_text("Информация о локации")
