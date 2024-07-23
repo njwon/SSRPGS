@@ -378,7 +378,7 @@ class InventoryTab:
                         border=False,
                         no_scrollbar=True,
                         tag="item_settings"
-                    ) # conrainer for item setting
+                    )  # Conrainer for item setting
                     
                     with dpg.child_window(
                         border=False,

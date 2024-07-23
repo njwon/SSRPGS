@@ -9,6 +9,7 @@ from save import Save
 from main_tab import MainTab
 from locations_tab import LocationsTab
 from inventory_tab import InventoryTab
+from cosmetics_tab import CosmeticsTab
 
 from utils import loading
 
@@ -22,6 +23,7 @@ class Editor:
         self.main_tab = MainTab(self.save)
         self.locations_tab = LocationsTab(self.save)
         self.inventory_tab = InventoryTab(self.save)
+        self.cosmetics_tab = CosmeticsTab(self.save)
         # self.quests_tab = None
 
     def init_dpg(self):
@@ -62,6 +64,7 @@ class Editor:
         self.main_tab.load()
         self.locations_tab.load()
         self.inventory_tab.load()
+        self.cosmetics_tab.load()
 
     def dump(self):
         with loading():
@@ -74,6 +77,7 @@ class Editor:
         self.main_tab.dump()
         self.locations_tab.dump()
         # self.inventory_tab.dump()
+        # self.cosmetics_tab.dump()
         
         self.save.save_slot = new_save_slot
 
@@ -81,6 +85,7 @@ class Editor:
         self.main_tab.load()
         self.locations_tab.load()
         self.inventory_tab.load()
+        self.cosmetics_tab.load()
 
     def json_export(self):
         self.save.save_as_json("formatted.json")
@@ -112,6 +117,9 @@ class Editor:
 
                 with dpg.tab(label="Инвентарь"):
                     self.inventory_tab.gui()
+
+                with dpg.tab(label="Косметика"):
+                    self.cosmetics_tab.gui()
 
     def run(self):
         self.gui()
