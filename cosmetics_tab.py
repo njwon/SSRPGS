@@ -224,7 +224,7 @@ class CosmeticsTab:
             #         dpg.add_button(label="Сбросить цвета")
 
             # dpg.add_separator()
-            dpg.add_text("Открытые облики")
+            # dpg.add_text("Открытые облики")
 
             with dpg.table(tag="cosmetics_table", resizable=True, policy=dpg.mvTable_SizingStretchProp):
                 dpg.add_table_column(label="Предмет")

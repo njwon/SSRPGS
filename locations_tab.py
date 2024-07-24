@@ -111,6 +111,10 @@ class LocationsTab:
         if mark_as_visited:
             self.save["progress_data"]["quest_data"]["has_completed"].append(location)
 
+        # Open location in quests tab
+        if location_name not in self.save["progress_data"]["quest_data"]["available"]:
+            self.save["progress_data"]["quest_data"]["available"].append(location_name)
+
         # Mark location if new one
         if location_name not in self.save["progress_data"]["quest_data"]["available"]:
             self.save["progress_data"]["quest_data"]["available"].append(location_name)

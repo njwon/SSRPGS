@@ -2,7 +2,6 @@ import dearpygui.dearpygui as dpg
 
 from subprocess import check_output
 from sys import executable
-import json  # DEL
 
 from save import Save
 
@@ -10,6 +9,8 @@ from main_tab import MainTab
 from locations_tab import LocationsTab
 from inventory_tab import InventoryTab
 from cosmetics_tab import CosmeticsTab
+from progress_tab import ProgressTab
+from quests_tab import QuestsTab
 
 from utils import loading
 
@@ -24,7 +25,8 @@ class Editor:
         self.locations_tab = LocationsTab(self.save)
         self.inventory_tab = InventoryTab(self.save)
         self.cosmetics_tab = CosmeticsTab(self.save)
-        # self.quests_tab = None
+        self.quests_tab = QuestsTab(self.save)
+        self.progress_tab = ProgressTab(self.save)
 
     def init_dpg(self):
         dpg.create_context()
@@ -65,6 +67,8 @@ class Editor:
         self.locations_tab.load()
         self.inventory_tab.load()
         self.cosmetics_tab.load()
+        self.quests_tab.load()
+        self.progress_tab.load()
 
     def dump(self):
         with loading():
@@ -86,13 +90,30 @@ class Editor:
         self.locations_tab.load()
         self.inventory_tab.load()
         self.cosmetics_tab.load()
+        self.quests_tab.load()
+        self.progress_tab.load()
 
     def json_export(self):
         self.save.save_as_json("formatted.json")
     
     def json_import(self):
-        self.save.save_json = json.load(open("formatted.json"))
-        self.change_slot("", f"save_file_{self.save.save_json["save_file_last_id"]}")
+        self.save.open_from_json("formatted.json")
+        
+        self.change_slot("", self.save.save_slot)
+
+        dpg.configure_item(
+            "save_slots",
+            items=self.save.save_slots,
+            default_value=self.save.save_slot
+        )
+        
+        # Load data to tabs
+        self.main_tab.load()
+        self.locations_tab.load()
+        self.inventory_tab.load()
+        self.cosmetics_tab.load()
+        self.quests_tab.load()
+        self.progress_tab.load()
 
     def gui(self):
         with dpg.window(tag="Editor"):            
@@ -112,6 +133,9 @@ class Editor:
                 with dpg.tab(label="Общее"):
                     self.main_tab.gui()
 
+                with dpg.tab(label="Прогресс"):
+                    self.progress_tab.gui()
+
                 with dpg.tab(label="Локации"):
                     self.locations_tab.gui()
 
@@ -120,6 +144,7 @@ class Editor:
 
                 with dpg.tab(label="Косметика"):
                     self.cosmetics_tab.gui()
+
 
     def run(self):
         self.gui()

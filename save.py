@@ -144,6 +144,16 @@ class Save:
         with open(file_name, "w", encoding="utf-8") as j:
             j.write(sjsonized)
 
+    def open_from_json(self, save_file_name):
+        self.save_file_name = save_file_name
+        
+        self.save_json = json.load(open(save_file_name))
+        self.save_slots = []
+        for field in self.save_json:
+            if field.startswith("save_file_") and field != "save_file_last_id":
+                self.save_slots.append(field)
+        self.save_slot = f"save_file_{self.save_json["save_file_last_id"]}"
+
     def save_as_json(self, file_name):
         with open(file_name, "w", encoding="utf-8") as j:
             j.write(json.dumps(self.save_json, indent=4, ensure_ascii=False))
