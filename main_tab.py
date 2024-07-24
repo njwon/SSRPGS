@@ -5,64 +5,46 @@ from utils import add_help
 class MainTab:
     def __init__(self, save):
         self.save = save
-        self.init_registry()
+        self.progress_data = None
 
     def load(self):
-        dpg.set_value("version", self.save["version"])
-        dpg.set_value("player_name", self.save["player_name"])
-        dpg.set_value("player_level", self.save["player_level"])
-        dpg.set_value("player_xp", self.save["player_xp"])
+        self.progress_data = self.save["progress_data"]
+
+        dpg.configure_item("version", default_value=self.progress_data["version"])
+        dpg.configure_item("player_name", default_value=self.progress_data["hero_settings"]["playerName"])
+        dpg.configure_item("player_level", default_value=self.progress_data["xp"]["currentLevel"])
+        dpg.configure_item("player_xp", default_value=self.progress_data["xp"]["currentXP"])
 
         for resource in ("Stone", "Wood", "Tar", "Xi", "Bronze"):
             if resource not in self.save["progress_data"]["inventory_data"]:
                 self.save["progress_data"]["inventory_data"][resource] = 0
             
-            dpg.set_value(resource, self.save["progress_data"]["inventory_data"][resource])
+            dpg.configure_item(resource, default_value=self.save["progress_data"]["inventory_data"][resource])
 
-    def dump(self):
-        self.save["version"] = dpg.get_value("version")
-        self.save["progress_data"]["version"] = dpg.get_value("version")
+    def change(self, _, value, path):
+        # Pointer on last object inside of a dict
+        head = self.progress_data
+        for key in path[:-1]:
+            head = head[key]
 
-        self.save["player_name"] = dpg.get_value("player_name")
-        self.save["progress_data"]["hero_settings"]["playerName"] = dpg.get_value("player_name")
+        head[path[-1]] = value
 
-        self.save["player_level"] = dpg.get_value("player_level")
-        self.save["progress_data"]["xp"]["currentLevel"] = dpg.get_value("player_level")
-
-        self.save["player_xp"] = dpg.get_value("player_xp")
-        self.save["progress_data"]["xp"]["currentXP"] = dpg.get_value("player_xp")
-
-        for resource in ("Stone", "Wood", "Tar", "Xi", "Bronze"):
-            self.save["progress_data"]["inventory_data"][resource] = dpg.get_value(resource)
-
-    def init_registry(self):
-        with dpg.value_registry():
-            dpg.add_string_value(default_value="", tag="version")
-            dpg.add_string_value(default_value="", tag="player_name")
-            dpg.add_int_value(default_value=0, tag="player_level")
-            dpg.add_int_value(default_value=0, tag="player_xp")
-
-            dpg.add_int_value(default_value=0, tag="Stone")
-            dpg.add_int_value(default_value=0, tag="Wood")
-            dpg.add_int_value(default_value=0, tag="Tar")
-            dpg.add_int_value(default_value=0, tag="Xi")
-            dpg.add_int_value(default_value=0, tag="Bronze")
+        print(f"Changed field: {path[-1]}: {head[path[-1]]}")
 
     def gui(self):
         dpg.add_text("Персонаж")
 
-        dpg.add_input_text(label="Версия сохранения", source="version")
-        dpg.add_input_text(label="Имя персонажа", source="player_name")
-        dpg.add_input_int(label="Уровень персонажа", source="player_level")
+        dpg.add_input_text(label="Версия сохранения", tag="version", callback=self.change, user_data=["version"])
+        dpg.add_input_text(label="Имя персонажа", tag="player_name", callback=self.change, user_data=["hero_settings", "playerName"])
+        dpg.add_input_int(label="Уровень персонажа", tag="player_level", callback=self.change, user_data=["xp", "currentLevel"])
         add_help("Влияет на предел подбора сундуков:\nlimit = 100 + 5 * player_level")
-        dpg.add_input_int(label="Очки опыта", source="player_xp")
+        dpg.add_input_int(label="Очки опыта", tag="player_xp", callback=self.change, user_data=["xp","currentXP"])
 
         dpg.add_separator()
         dpg.add_text("Ресурсы")
 
-        dpg.add_input_int(label="Камни    o", source="Stone")
-        dpg.add_input_int(label="Дерево  _/`", source="Wood")
-        dpg.add_input_int(label="Смола    ≈", source="Tar")
-        dpg.add_input_int(label="Ки       @", source="Xi")
-        dpg.add_input_int(label="Бронза   :.", source="Bronze")
-    
+        dpg.add_input_int(label="Камни    o", tag="Stone", callback=self.change, user_data=( "inventory_data", "Stone"))
+        dpg.add_input_int(label="Дерево  _/`", tag="Wood", callback=self.change, user_data=( "inventory_data", "Wood"))
+        dpg.add_input_int(label="Смола    ≈", tag="Tar", callback=self.change, user_data=( "inventory_data", "Tar"))
+        dpg.add_input_int(label="Ки       @", tag="Xi", callback=self.change, user_data=( "inventory_data", "Xi"))
+        dpg.add_input_int(label="Бронза   :.", tag="Bronze", callback=self.change, user_data=( "inventory_data", "Bronze"))

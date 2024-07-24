@@ -72,13 +72,13 @@ class Editor:
 
     def dump(self):
         with loading():
-            self.main_tab.dump()
+            # self.main_tab.dump()
             # self.locations_tab.dump()
             self.save.save("primary_save.txt")
 
     def change_slot(self, _, new_save_slot):
         # Save previous values
-        self.main_tab.dump()
+        # self.main_tab.dump()
         self.locations_tab.dump()
         # self.inventory_tab.dump()
         # self.cosmetics_tab.dump()
