@@ -3,78 +3,81 @@ from natsort import natsorted
 
 from utils import add_help
 
+stats = {
+    "time_values": {
+        "bT": "Лучшее время",
+        "aT": "Среднее время",
+    },
+    "average_values": {
+        "aHl": "Трата оз",
+        "aHg": "Пополнение оз",
+        "aKg": "Получение Ки",
+        "aRg": "Получение ресурса",
+    },
+    "damage_values": {
+        "d": "Нанесено урона",
+        "Dd": "Получено урона",
+    },
+    "element_damage_values": {
+        "DA": "Нанесено эфиром",
+        "DF": "Нанесено огнём",
+        "DI": "Нанесено льдом",
+        "DP": "Нанесено ядом",
+        "DV": "Нанесено энергией",
+    }
+}
+
+locations = (
+    "rocky_plateau",
+    "deadwood_valley",
+    "caustic_caves",
+    "fungus_forest",
+    "undead_crypt",
+    "bronze_mine",
+    "icy_ridge",
+    "temple"
+)
+
 class LocationsTab:
     def __init__(self, save):
         self.save = save
-        self.selected_location_index = None
-        self.init_registry()
+        self.location = None
+        self.stats = None
 
     def filter_search(self):
         raise NotImplementedError()
 
-    def init_registry(self):
-        with dpg.value_registry():
-            dpg.add_int_value(default_value=0, tag="bT")
-            dpg.add_double_value(default_value=0.0, tag="aT")
-            dpg.add_double_value(default_value=0.0, tag="aHl")
-            dpg.add_double_value(default_value=0.0, tag="aHg")
-            dpg.add_double_value(default_value=0.0, tag="aKg")
-            dpg.add_double_value(default_value=0.0, tag="aRg")
+    def load(self):
+        self.stats = self.save["progress_data"]["quest_data"]["stats"]
 
-            dpg.add_double_value(default_value=0.0, tag="d")
-            dpg.add_double_value(default_value=0.0, tag="Dd")
-
-            dpg.add_double_value(default_value=0.0, tag="DA")
-            dpg.add_double_value(default_value=0.0, tag="DF")
-            dpg.add_double_value(default_value=0.0, tag="DI")
-            dpg.add_double_value(default_value=0.0, tag="DP")
-            dpg.add_double_value(default_value=0.0, tag="DV")
-
-    def dump(self):
-        if self.selected_location_index is None:
-            return
-        
-        for stat in ("bT", "aT", "aHl", "aHg", "aKg", "aRg", "d", "Dd", "DA", "DF", "DI", "DP", "DV"):
-            if stat in self.save["progress_data"]["quest_data"]["stats"][self.selected_location_index] or dpg.get_value(stat):
-                self.save["progress_data"]["quest_data"]["stats"][self.selected_location_index][stat] = dpg.get_value(stat)
-
-    def load(self, default_location=None):
-        # Set list of locations
         location_names = natsorted([location["id"] for location in self.save["progress_data"]["quest_data"]["stats"]])
+        
         dpg.configure_item("location_names", items=location_names)
 
-        # Select first location in locations
-        if location_names:
+        if self.stats:
             dpg.configure_item("stats", show=True)
-            
-            if default_location is None:
-                default_location = location_names[0]
-
-            dpg.configure_item("location_names", default_value=default_location)
-            self.select_location("load", default_location)
+            self.select_location("load", self.stats[0]["id"])
         else:
-            self.selected_location_index = None
             dpg.configure_item("stats", show=False)
 
     def select_location(self, _, location_name):
-        # Dump old location
-        self.dump()
-
-        # Get index because stats is an array
-        self.selected_location_index = None
-        
-        for i, location in enumerate(self.save["progress_data"]["quest_data"]["stats"]):
+        self.location = None
+        for location in self.stats:
             if location["id"] == location_name:
-                self.selected_location_index = i
+                self.location = location
                 break
-
-        for stat in ("bT", "aT", "aHl", "aHg", "aKg", "aRg", "d", "Dd", "DA", "DF", "DI", "DP", "DV"):
-            if stat in self.save["progress_data"]["quest_data"]["stats"][self.selected_location_index]:
-                dpg.set_value(stat, self.save["progress_data"]["quest_data"]["stats"][self.selected_location_index][stat])
-            else:
-                dpg.set_value(stat, 0)
+        else:
+            print(f"Location {location_name} not found!")
+        
+        for stat_group in stats:
+            for stat in stats[stat_group]:
+                if stat in self.location:
+                    dpg.configure_item(stat, default_value=self.location[stat])
+                else:
+                    dpg.configure_item(stat, default_value=0)
 
     def add_location(self):
+        # TODO: Open stats!
         dpg.configure_item("add_location", show=False)
 
         if not self.save.is_loaded():
@@ -141,6 +144,10 @@ class LocationsTab:
         # Update locations list
         self.load(default_location=location)
 
+    def change(self, _, value, stat):
+        self.location[stat] = value
+        print(f"Changed field: {stat}: {self.location[stat]}")
+
     def gui(self):
         with dpg.window(
             label="Добавить локацию",
@@ -152,17 +159,31 @@ class LocationsTab:
         ):
             dpg.add_combo(
                 label="Название локации",
-                items=["rocky_plateau", "deadwood_valley", "caustic_caves", "fungus_forest", "undead_crypt", "bronze_mine", "icy_ridge", "temple"],
-                default_value="rocky_plateau",
+                items=locations,
+                default_value=locations[0],
                 width=200,
                 tag="add_location_name"
             )
-            dpg.add_input_int(label="Число звёзд", min_value=0, max_value=15, min_clamped=True, max_clamped=True, width=200, tag="add_location_stars")
-            dpg.add_checkbox(label="Отметить как завершённую", tag="add_location_mark_as_visited")
+            dpg.add_input_int(
+                label="Число звёзд",
+                min_value=0,
+                max_value=15,
+                min_clamped=True,
+                max_clamped=True,
+                width=200,
+                tag="add_location_stars"
+            )
+            dpg.add_checkbox(
+                label="Отметить как завершённую",
+                tag="add_location_mark_as_visited"
+            )
 
             with dpg.group(horizontal=True):
                 dpg.add_button(label="Создать", callback=self.add_location)
-                dpg.add_button(label="Отменить", callback=lambda _: dpg.configure_item("add_location", show=False))
+                dpg.add_button(
+                    label="Отменить",
+                    callback=lambda _: dpg.configure_item("add_location", show=False)
+                )
 
         with dpg.group(horizontal=True):
             with dpg.group(width=175):
@@ -184,25 +205,47 @@ class LocationsTab:
                 )
 
                 dpg.add_input_text(hint="Поиск", callback=self.filter_search)
-                dpg.add_listbox(tag="location_names", num_items=12, callback=self.select_location)
-                dpg.add_button(label="Добавить", callback=lambda _: dpg.configure_item("add_location", show=True))
+                dpg.add_listbox(
+                    tag="location_names",
+                    num_items=12,
+                    callback=self.select_location
+                )
+                dpg.add_button(
+                    label="Добавить",
+                    callback=lambda _: dpg.configure_item("add_location", show=True)
+                )
             
             with dpg.group():
                 dpg.add_text("Информация о локации")
-                
-                with dpg.child_window(tag="stats", border=False, show=False, no_scrollbar=True):
-                    dpg.add_input_int(label="Лучшее время", width=200, source="bT")
-                    add_help("Время отмеряется кадрами:\n30 кадров = 1 секунда")
-                    dpg.add_input_double(label="Среднее время", width=200, source="aT")
-                    add_help("Время отмеряется кадрами:\n30 кадров = 1 секунда")
+                add_help("Время отмеряется кадрами:\n30 кадров = 1 секунда")
+
+                with dpg.child_window(
+                    tag="stats",
+                    border=False,
+                    show=False,
+                    no_scrollbar=True
+                ):
+                    for time_value in stats["time_values"]:
+                        dpg.add_input_int(
+                            label=stats["time_values"][time_value],
+                            tag=time_value,
+                            width=200,
+                            callback=self.change,
+                            user_data=time_value
+                        )
                     
                     dpg.add_separator()
                     dpg.add_text("Данные среднего забега")
 
-                    dpg.add_input_double(label="Трата оз", width=200, source="aHl")
-                    dpg.add_input_double(label="Пополнение оз", width=200, source="aHg")
-                    dpg.add_input_double(label="Получение Ки", width=200, source="aKg")
-                    dpg.add_input_double(label="Получение ресурса", width=200, source="aRg")
+                    for average_value in stats["average_values"]:
+                        dpg.add_input_double(
+                            label=stats["average_values"][average_value],
+                            tag=average_value,
+                            width=200,
+                            callback=self.change,
+                            user_data=average_value
+                        )
+
                     add_help(
                         "Для каждй локации свой ресурс:\n"
                         "o    Камень     Каменистое плато\n"
@@ -214,15 +257,24 @@ class LocationsTab:
                     dpg.add_separator()
                     dpg.add_text("Урон")
 
-                    dpg.add_input_double(label="Нанесено урона", width=200, source="d")
-                    dpg.add_input_double(label="Получено урона", width=200, source="Dd")
+                    for damage_value in stats["damage_values"]:
+                        dpg.add_input_double(
+                            label=stats["damage_values"][damage_value],
+                            tag=damage_value,
+                            width=200,
+                            callback=self.change,
+                            user_data=damage_value
+                        )
                     
                     dpg.add_separator()
                     dpg.add_text("Стихийный урон")
                     add_help("Влияет на трату стихийных рун при фарме")
 
-                    dpg.add_input_double(label="Нанесено эфиром", width=200, source="DA")
-                    dpg.add_input_double(label="Нанесено огнём", width=200, source="DF")
-                    dpg.add_input_double(label="Нанесено льдом", width=200, source="DI")
-                    dpg.add_input_double(label="Нанесено ядом", width=200, source="DP")
-                    dpg.add_input_double(label="Нанесено энергией", width=200, source="DV")
+                    for element_damage_type in stats["element_damage_values"]:
+                        dpg.add_input_double(
+                            label=stats["element_damage_values"][element_damage_type],
+                            tag=element_damage_type,
+                            width=200,
+                            callback=self.change,
+                            user_data=element_damage_type
+                        )
