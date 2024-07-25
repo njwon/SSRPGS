@@ -41,28 +41,39 @@ locations = (
 class LocationsTab:
     def __init__(self, save):
         self.save = save
-        self.location = None
-        self.stats = None
+        self.quest_data = None
 
-    def filter_search(self):
-        raise NotImplementedError()
+        self.location = None
 
     def load(self):
-        self.stats = self.save["progress_data"]["quest_data"]["stats"]
+        self.quest_data = self.save["progress_data"]["quest_data"]
+        self.filter_search("load", "")
 
-        location_names = natsorted([location["id"] for location in self.save["progress_data"]["quest_data"]["stats"]])
-        
-        dpg.configure_item("location_names", items=location_names)
+    def filter_search(self, _, filter_key=""):
+        location_names = natsorted([
+            location["id"] for location in self.quest_data["stats"]
+            if filter_key in location["id"]
+        ])
 
-        if self.stats:
-            dpg.configure_item("stats", show=True)
-            self.select_location("load", self.stats[0]["id"])
-        else:
+        if not location_names:        
+            dpg.configure_item("location_names", items=location_names)
             dpg.configure_item("stats", show=False)
+            
+            print("No locations available")
+            return
+        
+        # Select last selected location or first of available
+        location_to_select = location_names[0]
+        if self.location and self.location["id"] in location_names:
+            location_to_select = self.location["id"]
+
+        dpg.configure_item("stats", show=True)
+        dpg.configure_item("location_names", items=location_names, default_value=location_to_select)
+        self.select_location("load", location_to_select)
 
     def select_location(self, _, location_name):
         self.location = None
-        for location in self.stats:
+        for location in self.quest_data["stats"]:
             if location["id"] == location_name:
                 self.location = location
                 break
@@ -82,67 +93,56 @@ class LocationsTab:
 
         if not self.save.is_loaded():
             return
-        
+
         location_name = dpg.get_value("add_location_name")
         location_stars = dpg.get_value("add_location_stars")
-        mark_as_visited = dpg.get_value("add_location_mark_as_visited")
+        is_completed = dpg.get_value("add_location_mark_as_completed")
         
         location = f"{location_name}{location_stars if location_stars else ''}"
+        
+        # Exit if location already in stats
+        for location_stats in self.quest_data["stats"]:
+            if location_stats["id"] == location:
+                print(f"Location {location} already exists!")
+                dpg.configure_item("location_names", default_value=location)
+                self.select_location("add_location", location)
+                return
 
         # Mark star level
-        if location_name in self.save["progress_data"]["quest_data"]["star_levels"]:
-            if self.save["progress_data"]["quest_data"]["star_levels"][location_name] < location_stars:
-                self.save["progress_data"]["quest_data"]["star_levels"][location_name] = location_stars
+        star_levels = self.quest_data["star_levels"]
+
+        if location_name in star_levels:
+            if star_levels[location_name] < location_stars:
+                star_levels[location_name] = location_stars
         else:
-            self.save["progress_data"]["quest_data"]["star_levels"][location] = location_stars
+            star_levels[location] = location_stars
 
-        # Exit if location exists
-        for location_stats in self.save["progress_data"]["quest_data"]["stats"]:
-            if location_stats["id"] == location:
-                return
-    
-        # Location not in stats
-        self.save["progress_data"]["quest_data"]["stats"].append({
-            "id": location,
-            "bT": 0,
-            "aT": 0,
-            "aHl": 0,
-            "aHg": 0,
-            "aKg": 0
-        })
+        # Create location
+        dpg.configure_item("stats", show=True)
+        self.quest_data["stats"].append({"id": location})
+        
+        if is_completed:
+            self.quest_data["has_completed"].append(location)
 
-        if mark_as_visited:
-            self.save["progress_data"]["quest_data"]["has_completed"].append(location)
-
-        # Open location in quests tab
-        if location_name not in self.save["progress_data"]["quest_data"]["available"]:
-            self.save["progress_data"]["quest_data"]["available"].append(location_name)
-
-        # Mark location if new one
-        if location_name not in self.save["progress_data"]["quest_data"]["available"]:
-            self.save["progress_data"]["quest_data"]["available"].append(location_name)
-            self.save["progress_data"]["quest_data"]["stats"].append({
+        if location_name not in self.quest_data["available"]:
+            # TODO: merge with progress tab because it conflicts in "available" list!
+            print(f"New set for {location_name} location created")
+            self.quest_data["available"].append(location_name)
+            self.quest_data["stats"].append({
                 "id": location_name,
                 "lpDiff": location_stars,
-                "bT": 0,
-                "aT": 0,
-                "aHl": 0,
-                "aHg": 0,
-                "aKg": 0,
             })
 
         # Mark aspiring_stars if location is last
         if location_stars == 15:
-            if location_name in self.save["progress_data"]["quest_data"]["aspiring_star_ids"]:
-                i = self.save["progress_data"]["quest_data"]["aspiring_star_ids"].index(location_name) 
-                
-                self.save["progress_data"]["quest_data"]["aspiring_stars"][i] = str(location_stars)
+            if location_name in self.quest_data["aspiring_star_ids"]:
+                i = self.quest_data["aspiring_star_ids"].index(location_name) 
+                self.quest_data["aspiring_stars"][i] = str(location_stars)
             else:
-                self.save["progress_data"]["quest_data"]["aspiring_star_ids"].append(location_name)
-                self.save["progress_data"]["quest_data"]["aspiring_stars"].append(str(location_stars))
+                self.quest_data["aspiring_star_ids"].append(location_name)
+                self.quest_data["aspiring_stars"].append(str(location_stars))
 
-        # Update locations list
-        self.load(default_location=location)
+        self.load()
 
     def change(self, _, value, stat):
         self.location[stat] = value
@@ -166,7 +166,8 @@ class LocationsTab:
             )
             dpg.add_input_int(
                 label="Число звёзд",
-                min_value=0,
+                default_value=3,
+                min_value=3,
                 max_value=15,
                 min_clamped=True,
                 max_clamped=True,
@@ -175,7 +176,7 @@ class LocationsTab:
             )
             dpg.add_checkbox(
                 label="Отметить как завершённую",
-                tag="add_location_mark_as_visited"
+                tag="add_location_mark_as_completed"
             )
 
             with dpg.group(horizontal=True):
