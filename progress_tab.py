@@ -27,6 +27,65 @@ available_workbench = {
     "anvil": "Улучшить предметы",
 }
 
+TODO = (
+    "find_shelter",
+    "rocky_plateau",
+    "build_door",
+    "deadwood_valley",
+    "build_workstation",
+    "craft_shovel",
+    "craft_hatchet",
+    "prospect_cliff",
+    "clean_sword",
+    "upgrade_workstation_2",
+    "craft_canoe",
+    "dig_cave",
+    "caustic_caves",
+    "craft_anvil_hammer",
+    "craft_anvil",
+    "anvil",
+    "cross_deadwood_river",
+    "bronze_gate",
+    "upgrade_workstation_3",
+    "craft_grappling_hook",
+    "utility_belt",
+    "waterfall",
+    "fungus_forest",
+    "undead_crypt_intro",
+    "undead_crypt",
+    "bronze_mine",
+    "upgrade_workstation_4",
+    "make_cauldron",
+    "icy_ridge",
+    "break_apart_items",
+    "make_fire_pit",
+    "light_fire",
+    "cauldron_fetch_water",
+    "brew_potion",
+    "upgrade_cauldron",
+    "broken_bridge",
+    "fuse_enchantments",
+    "make_planks",
+    "fix_bridge",
+    "cross_bridge",
+    "temple",
+    "automate",
+    "make_bowl",
+    "mutate",
+    "fetch_water",
+    "prepare_paint",
+    "make_paintbrush",
+    "upgrade_ouroboros",
+    "upgrade_star_stone",
+    "fetch_water_yellow",
+    "prepare_paint_yellow",
+    "craft_fishing_rod",
+    "craft_goal_book",
+    "craft_grappling_hook_lv2",
+    "mushroom_shop",
+    "uulaa_shop"
+)
+
 all_quests = list(available_locations | available_workbench)
 
 class ProgressTab:
@@ -44,8 +103,7 @@ class ProgressTab:
         dpg.configure_item("all_workbench", default_value=all_workbench_opened)
         
         for quest in all_quests:
-            if quest in self.quests:
-                dpg.configure_item(quest, default_value=quest in self.quests)
+            dpg.configure_item(quest, default_value=quest in self.quests)
     
     def switch(self, _, value, quest):
         if not self.save.is_loaded():
