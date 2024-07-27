@@ -75,8 +75,6 @@ class CosmeticsTab:
         # user_data=("golden", True)
 
         for item in items:
-            print("Loaded", item)
-
             golden = False
             golden_is_new = False
             index = self.get_index(item, "golden")
