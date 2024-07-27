@@ -21,12 +21,13 @@ class Editor:
 
         self.save = Save()
 
+        # settings_tab
         self.main_tab = MainTab(self.save)
+        self.progress_tab = ProgressTab(self.save)
         self.locations_tab = LocationsTab(self.save)
         self.inventory_tab = InventoryTab(self.save)
         self.cosmetics_tab = CosmeticsTab(self.save)
         self.quests_tab = QuestsTab(self.save)
-        self.progress_tab = ProgressTab(self.save)
 
     def init_dpg(self):
         dpg.create_context()
@@ -75,21 +76,15 @@ class Editor:
             self.save.save("primary_save.txt")
 
     def change_slot(self, _, new_save_slot):
-        # Save previous values
-        # self.main_tab.dump()
-        # self.locations_tab.dump()
-        # self.inventory_tab.dump()
-        # self.cosmetics_tab.dump()
-        
         self.save.save_slot = new_save_slot
 
         # Sync values to fields
         self.main_tab.load()
+        self.progress_tab.load()
         self.locations_tab.load()
         self.inventory_tab.load()
         self.cosmetics_tab.load()
         self.quests_tab.load()
-        self.progress_tab.load()
 
     def json_export(self):
         self.save.save_as_json("formatted.json")
@@ -107,11 +102,11 @@ class Editor:
         
         # Load data to tabs
         self.main_tab.load()
+        self.progress_tab.load()
         self.locations_tab.load()
         self.inventory_tab.load()
         self.cosmetics_tab.load()
         self.quests_tab.load()
-        self.progress_tab.load()
 
     def gui(self):
         with dpg.window(tag="Editor"):            
@@ -143,6 +138,8 @@ class Editor:
                 with dpg.tab(label="Косметика"):
                     self.cosmetics_tab.gui()
 
+                with dpg.tab(label="Квесты"):
+                    self.quests_tab.gui()
 
     def run(self):
         self.gui()

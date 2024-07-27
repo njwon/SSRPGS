@@ -119,18 +119,37 @@ class LocationsTab:
         else:
             star_levels[location_name] = location_stars
 
+        print(f"Location {location_name} star level now is {star_levels[location_name]}")
+
         # Create location
         dpg.configure_item("stats", show=True)
-        self.quest_data["stats"].append({"id": location})
+        self.quest_data["stats"].append({
+            "id": location,
+            "bT": 0,
+            "aT": 0,
+            "aHl": 0,
+            "aHg": 0,
+            "aKg": 0
+        })
         
         # Check if previous stars completed
         for stars in range(1, location_stars):
             previous_location = f"{location_name}{stars}"
 
+            if location_name not in self.quest_data["has_completed"]:
+                self.quest_data["has_completed"].append(location_name)
+
             if previous_location not in self.quest_data["has_completed"]:
                 print(f"Mark as completed {previous_location}")
                 if stars >= 3:
-                    self.quest_data["stats"].append({"id": previous_location})
+                    self.quest_data["stats"].append({
+                        "id": previous_location,
+                        "bT": 0,
+                        "aT": 0,
+                        "aHl": 0,
+                        "aHg": 0,
+                        "aKg": 0
+                    })
                 self.quest_data["has_completed"].append(previous_location)
 
         if is_completed:

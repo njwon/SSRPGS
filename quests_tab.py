@@ -3,9 +3,75 @@ import dearpygui.dearpygui as dpg
 class QuestsTab:
     def __init__(self, save):
         self.save = save
+        self.events = None
+
+    def change(self, _, value, path):
+        # Pointer on last object inside of a dict
+        head = self.save["progress_data"]
+        for key in path[:-1]:
+            head = head[key]
+
+        head[path[-1]] = value
+
+        print(f"Changed field: {path[-1]}: {head[path[-1]]}")
       
     def load(self):
-        pass
+        self.events = self.save["progress_data"]["events"]
+
+        dpg.delete_item("events", children_only=True)
+
+        for sId in self.events["sIds"]:
+            with dpg.group(parent="events"):
+                dpg.add_text(f"Событие {sId}")
+
+                if "pp" in self.events[sId]:
+                    premium_prizes = self.events[sId]["pp"]
+                else:
+                    self.events[sId]["pp"] = False
+
+                dpg.add_checkbox(
+                    label="Премиум-награды",
+                    default_value=premium_prizes,
+                    callback=self.change,
+                    user_data=("events", sId, "pp")
+                )
+
+                dpg.add_input_int(
+                    label="Целей завершено",
+                    default_value=self.events[sId]["rwds"]["rp"],
+                    callback=self.change,
+                    user_data=("events", sId, "rwds", "rp")
+                )
+
+                dpg.add_text("Прогресс целей")
+
+                for task_id in self.events[sId]["objs"]["ids"]:
+                    task_progress = 0
+
+                    # Check task progress and zero it if not exists
+                    if task_id in self.events[sId]["objs"]:
+                        if "p" in self.events[sId]["objs"][task_id]:
+                            task_progress = self.events[sId]["objs"][task_id]["p"]
+                        else:
+                            self.events[sId]["objs"][task_id]["p"] = 0
+                    else:
+                        self.events[sId]["objs"][task_id] = {"p": 0}
+                    
+                    dpg.add_input_int(
+                        label=task_id,
+                        default_value=task_progress,
+                        callback=self.change,
+                        user_data=("events", sId, "objs", task_id, "p")
+                    )
 
     def gui(self):
-        dpg.add_text("Открытые места")
+        dpg.add_text("Ежедневные квесты")
+
+        dpg.add_separator()
+        dpg.add_text("Еженедельный квест")
+
+        dpg.add_separator()
+
+        dpg.add_group(tag="events")
+        # dpg.add_input_int("Целей завершено")
+        # dpg.add_group()  # Targets

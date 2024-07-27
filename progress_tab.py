@@ -27,6 +27,7 @@ available_workbench = {
     "anvil": "Улучшить предметы",
 }
 
+# TODO: Realize wtf if should be there
 TODO = (
     "find_shelter",
     "rocky_plateau",
