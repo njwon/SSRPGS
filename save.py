@@ -2,8 +2,6 @@ from cryptors import encrypt, decrypt
 from re import finditer
 import json
 
-from cryptors import decrypt
-
 class Save:
     def __init__(self):
         self.save_file_name = ""
@@ -23,13 +21,19 @@ class Save:
     
     def jsonize(self, text):
         text = text.replace('\n\t', '\n')
+        text = text.replace('\\[', '\\\\［')
+        text = text.replace('\\]', '\\\\］')
 
         # Escape array values (colons)
         shift = 0
-        for m in finditer(r"\[([^{]+?,)*?[^{]*?\]", text):
+        for m in finditer(r"\".*?\"|\[([^{]+?,)*?[^{]*?\]", text):
+            if m.group(0)[0] != "[":
+                continue
+            
             array = m.group(0).replace("\n", '')
             start_len = len(m.group(0))
             inner_shift = 0
+
             for match in finditer(r"\".*?\"|[^,\[\]]+", array):
                 start = match.start() + inner_shift
                 end = match.end() + inner_shift
@@ -44,7 +48,7 @@ class Save:
             end = m.end() + shift
             text = f'{text[:start]}{array}{text[end:]}'
             shift += -start_len + len(array)
-            
+
         # Add quotes to all values
         shift = 0
         for match in finditer(r"\".*?\"|[^{}\[\],\n\"]+", text):
@@ -53,7 +57,7 @@ class Save:
 
             value = text[start:end]
 
-            if value[0] == '"':
+            if text[start] == '"':
                 continue
 
             if value.count(":") == 0:
@@ -77,8 +81,11 @@ class Save:
                     text = f'{text[:start]}"{key}":"{value}"{text[end:]}'
                     shift += 4
         
-        return text
+        text = text.replace('\\\\［', '\\\\[')
+        text = text.replace('\\\\］', '\\\\]')
 
+        return text
+    
     def open(self, save_file_name):
         jsonized = self.jsonize(open(save_file_name, "r", encoding="utf-8").read())
         
@@ -97,6 +104,10 @@ class Save:
 
                 progress_data = decrypt(self.save_json[field]["progress_data"])
                 progress_json = self.jsonize(progress_data)
+                
+                # print("SLIM_JSON:", progress_data)
+                # print("JSONIZED_TEXT:", progress_json)
+
                 self.save_json[field]["progress_data"] = json.loads(progress_json)
 
         # Change encrypted to False for all saves
