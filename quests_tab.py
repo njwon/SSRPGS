@@ -1,9 +1,5 @@
 import dearpygui.dearpygui as dpg
 
-legends = {
-    
-}
-
 class QuestsTab:
     def __init__(self, save):
         self.save = save
@@ -34,7 +30,7 @@ class QuestsTab:
                     quest["completed"] = False
                 
                 dpg.add_checkbox(
-                    label=f"{quest["customQuestId"]} ({quest["status"]})",
+                    label=f"{quest["customQuestId"]}",
                     default_value=quest["completed"],
                     callback=self.change,
                     user_data=("custom_quests", "active", i, "completed")
@@ -50,10 +46,7 @@ class QuestsTab:
                     callback=self.change,
                     user_data=("weekly_quest", "activeQuest", "completed")
                 )
-
-        # Lenegds
-
-
+            
         # Events
         dpg.delete_item("events", children_only=True)
         for sId in self.events["sIds"]:
@@ -110,9 +103,5 @@ class QuestsTab:
             dpg.add_separator()
             dpg.add_text("Еженедельный квест")
             dpg.add_group(tag="weekly")
-
-            dpg.add_separator()
-            dpg.add_text("Легенды")
-            dpg.add_group(tag="legends")
 
             dpg.add_group(tag="events")

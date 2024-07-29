@@ -105,8 +105,8 @@ class Save:
                 progress_data = decrypt(self.save_json[field]["progress_data"])
                 progress_json = self.jsonize(progress_data)
                 
-                print("SLIM_JSON:", progress_data)
-                print("JSONIZED_TEXT:", progress_json)
+                # print("SLIM_JSON:", progress_data)
+                # print("JSONIZED_TEXT:", progress_json)
 
                 self.save_json[field]["progress_data"] = json.loads(progress_json)
 
