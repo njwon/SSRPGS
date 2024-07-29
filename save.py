@@ -105,8 +105,8 @@ class Save:
                 progress_data = decrypt(self.save_json[field]["progress_data"])
                 progress_json = self.jsonize(progress_data)
                 
-                # print("SLIM_JSON:", progress_data)
-                # print("JSONIZED_TEXT:", progress_json)
+                print("SLIM_JSON:", progress_data)
+                print("JSONIZED_TEXT:", progress_json)
 
                 self.save_json[field]["progress_data"] = json.loads(progress_json)
 
@@ -139,12 +139,15 @@ class Save:
 
             value = text[start:end]
             
-            if value.count('"') > 2 or value == '""' or value[1] == " " or value.count(","):
+            if value.count('"') > 2 or value == '""' or value[1] == " " or value.count(",") or (value.count("[") + value.count("]")):
                 continue
 
             text = f'{text[:start]}{value[1:-1]}{text[end:]}'
             shift -= 2
-        
+
+        text = text.replace('\\\\[', '\\[')
+        text = text.replace('\\\\]', '\\]')
+
         return text
 
     def save(self, file_name=None):
