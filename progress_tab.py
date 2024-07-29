@@ -114,10 +114,13 @@ class ProgressTab:
         self.legends = None
 
     def load(self):
+        if "records" not in self.save["progress_data"]["custom_quests"]:
+            self.save["progress_data"]["custom_quests"]["records"] = []
+
         self.quests = self.save["progress_data"]["quest_data"]["available"]
         self.legends = self.save["progress_data"]["custom_quests"]["revealed"]
         self.records = self.save["progress_data"]["custom_quests"]["records"]
-        
+
         all_locations_opened = all([quest in self.quests for quest in available_locations])
         all_workbench_opened = all([quest in self.quests for quest in available_workbench])
         all_legends_opened = all([legend in self.legends for legend in legends])
@@ -175,7 +178,7 @@ class ProgressTab:
     
     def gui(self):
         with dpg.child_window(no_scrollbar=True, border=False):
-            with dpg.table(header_row=False):
+            with dpg.table(header_row=False, resizable=True):
                 dpg.add_table_column()
                 dpg.add_table_column()
 
