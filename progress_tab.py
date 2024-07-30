@@ -128,7 +128,7 @@ class ProgressTab:
         dpg.configure_item("all_locations", default_value=all_locations_opened)
         dpg.configure_item("all_workbench", default_value=all_workbench_opened)
         dpg.configure_item("all_legends", default_value=all_legends_opened)
-        
+
         for quest in all_quests:
             dpg.configure_item(quest, default_value=quest in self.quests)
 
@@ -142,7 +142,7 @@ class ProgressTab:
         if value and quest not in self.quests:
             self.quests.append(quest)
             print(f"Opened {quest}")
-        
+
         if not value and quest in self.quests:
             self.quests.pop(self.quests.index(quest))
             print(f"Closed {quest}")
@@ -153,20 +153,24 @@ class ProgressTab:
 
             for i, legend_data in enumerate(self.records):
                 if legend_data["questId"] == legend:
-                    self.records.pop(i)
+                    self.records[i]["unlocked"] = False
                     print(f"Deleted {legend} legend")
                     return
-        
+
         if value and legend not in self.legends:
             self.legends.append(legend)
-            self.records.append(
-                {
+            for i, legend_data in enumerate(self.records):
+                if legend_data["questId"] == legend:
+                    legend_data["unlocked"] = True
+                    break
+            else:
+                self.records.append({
                     "questId": legend,
                     "unlocked": True
-                }
-            )
+                })
+
             print(f"Opened {legend} legend")
-    
+
     def switch_all(self, _, value, function_and_values):
         function, values = function_and_values
         if not self.save.is_loaded():
@@ -175,7 +179,7 @@ class ProgressTab:
         for quest in values:
             dpg.configure_item(quest, default_value=value)
             function(_, value, quest)
-    
+
     def gui(self):
         with dpg.child_window(no_scrollbar=True, border=False):
             with dpg.table(header_row=False, resizable=True):
@@ -224,7 +228,7 @@ class ProgressTab:
                             callback=self.switch_all,
                             user_data=(self.switch_legend, legends)
                         )
-                        
+
                         with dpg.group(parent="legends"):
                             for legend in legends:
                                 dpg.add_checkbox(

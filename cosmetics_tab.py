@@ -143,12 +143,7 @@ class CosmeticsTab:
     def open_all(self, _, value, group):
         if not self.cosmetics:
             return
-        
-        dpg.configure_item(f"{group}-new", default_value=value, show=value)
-        
-        if group == "prismatic":
-            dpg.configure_item(f"extra", default_value=(0, 0, 0), show=value)
-
+    
         for item in items:
             self.open(_, value, (group, item))
             dpg.configure_item(f"{item}-{group}", default_value=value)

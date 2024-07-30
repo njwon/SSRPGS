@@ -1,6 +1,8 @@
-from cryptors import encrypt, decrypt
 from re import finditer
 import json
+import copy
+
+from cryptors import encrypt, decrypt
 
 class Save:
     def __init__(self):
@@ -154,7 +156,7 @@ class Save:
         if file_name is None:
             file_name = self.save_file_name
 
-        sjsonized = self.sjsonize(self.save_json)
+        sjsonized = self.sjsonize(copy.deepcopy(self.save_json))
         with open(file_name, "w", encoding="utf-8") as j:
             j.write(sjsonized)
 
