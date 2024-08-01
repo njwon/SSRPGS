@@ -11,6 +11,7 @@ from inventory_tab import InventoryTab
 from cosmetics_tab import CosmeticsTab
 from progress_tab import ProgressTab
 from quests_tab import QuestsTab
+from times_tab import TimesTab
 
 from utils import loading
 
@@ -28,6 +29,7 @@ class Editor:
         self.inventory_tab = InventoryTab(self.save)
         self.cosmetics_tab = CosmeticsTab(self.save)
         self.quests_tab = QuestsTab(self.save)
+        self.times_tab = TimesTab(self.save)
 
     def init_dpg(self):
         dpg.create_context()
@@ -70,6 +72,7 @@ class Editor:
         self.cosmetics_tab.load()
         self.quests_tab.load()
         self.progress_tab.load()
+        self.times_tab.load()
 
     def dump(self):
         with loading():
@@ -85,6 +88,7 @@ class Editor:
         self.inventory_tab.load()
         self.cosmetics_tab.load()
         self.quests_tab.load()
+        self.times_tab.load()
 
     def json_export(self):
         self.save.save_as_json("formatted.json")
@@ -107,14 +111,15 @@ class Editor:
         self.inventory_tab.load()
         self.cosmetics_tab.load()
         self.quests_tab.load()
+        self.times_tab.load()
 
     def gui(self):
-        with dpg.window(tag="Editor"):            
+        with dpg.window(tag="Editor"):  
             # Header
             with dpg.group(horizontal=True):
                 dpg.add_button(label="Открыть", callback=self.load)
                 dpg.add_button(label="Сохранить", callback=self.dump)
-                dpg.add_combo(label="Слот сохранения", width=196, items=[], callback=self.change_slot, tag="save_slots")
+                dpg.add_combo(label="Слот сохранения", width=300, items=[], callback=self.change_slot, tag="save_slots")
                 
             # Tabs
             with dpg.tab_bar():
@@ -140,6 +145,9 @@ class Editor:
 
                 with dpg.tab(label="Квесты"):
                     self.quests_tab.gui()
+
+                with dpg.tab(label="Время"):
+                    self.times_tab.gui()
 
     def run(self):
         self.gui()
