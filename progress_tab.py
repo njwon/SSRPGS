@@ -189,7 +189,7 @@ class ProgressTab:
 
                 with dpg.table_row():
                     with dpg.group():
-                        dpg.add_text(i18n["locations_"])
+                        dpg.add_text(i18n["locations_group"])
                         dpg.add_checkbox(
                             label=i18n["all_locations"],
                             tag="all_locations",
@@ -205,7 +205,7 @@ class ProgressTab:
                                 user_data=quest
                             )
 
-                        dpg.add_text(i18n["workbench_"])
+                        dpg.add_text(i18n["workbench_group"])
                         dpg.add_checkbox(
                             label=i18n["workbench_all"],
                             tag="all_workbench",
@@ -222,7 +222,7 @@ class ProgressTab:
                             )
 
                     with dpg.group():
-                        dpg.add_text(i18n["legends_"])
+                        dpg.add_text(i18n["legends_group"])
                         dpg.add_checkbox(
                             label=i18n["legends_all"],
                             tag="all_legends",

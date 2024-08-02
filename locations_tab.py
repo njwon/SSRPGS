@@ -16,7 +16,7 @@ stats = {
         "aRg": "average_resource_gain",
     },
     "damage_values": {
-        "d": "damage" ,
+        "d": "damage_dealt" ,
         "Dd": "damage_devoured",
     },
     "element_damage_values": {
@@ -201,7 +201,7 @@ class LocationsTab:
                 tag="add_location_name"
             )
             dpg.add_input_int(
-                label=i18n["stars"],
+                label=i18n["location_stars"],
                 default_value=3,
                 min_value=3,
                 max_value=15,
@@ -211,7 +211,7 @@ class LocationsTab:
                 tag="add_location_stars"
             )
             dpg.add_checkbox(
-                label=i18n["mark_as_completed"],
+                label=i18n["mark_location_as_completed"],
                 tag="add_location_mark_as_completed"
             )
 

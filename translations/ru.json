@@ -1,16 +1,25 @@
 {
+    "language": "Язык",
+    "language-name": "Русский",
+    "language-auto": "Автоматически",
+    "language_info": "Изменения вступят в силу\nпосле перезагрузки",
+
     "title": "Редактор сохранений Stone Story RPG",
     "info_label": "Информация",
-    "language": "Язык",
-    "language-auto": "Автоматически",
-    "language-name": "Русский",
-
-    "language_info": "Изменения вступят в силу\nпосле перезагрузки",
     "info": "Файлы сохранения\n* primary_save.txt - Основной файл сохранения.\n* backup.txt - Резервная копия сохранения, создаваемая игрой.\n\n* Обязательно создавайте резервные копии ваших сохранений.\n* Избыток лишает ценности.\n\nВы можете экспортировать расшифрованное сохранение как JSON файл,\nчтобы получить возможность редактировать все поля данных, а не\nтолько те, что представлены тут.\n\nSSRPGS v1.0.0 by Catalyst",
-    "settings": "Настройки",
+
+    "search": "Поиск",
     "open": "Открыть",
     "save": "Сохранить",
+    "create": "Создать",
+    "cancel": "Отменить",
     "save_slot": "Слот сохранения",
+    
+    "add": "Добавить",
+    "field": "Поле",
+    "add_field": "Добавить поле",
+    
+    "settings": "Настройки",
     "major_tab": "Главная",
     "main_tab": "Общее",
     "progress_tab": "Прогресс",
@@ -19,12 +28,13 @@
     "cosmetics_tab": "Косметика",
     "quests_tab": "Квесты",
     "times_tab": "Время",
-    
+
     "player": "Персонаж",
     "name": "Имя",
     "level": "Уровень",
-    "max_afk_chests_info": "Влияет на предел подбора сундуков:\nlimit = 100 + 5 * player_level",
     "xp": "Очки опыта",
+    "max_afk_chests_info": "Влияет на предел подбора сундуков:\nlimit = 100 + 5 * player_level",
+
     "resources": "Ресурсы",
     "stone": "Камни    o",
     "wood": "Дерево  _/`",
@@ -32,32 +42,32 @@
     "ki": "Ки       @",
     "bronze": "Бронза   :.",
 
-    "locations_": "Локации",
-    "all_locations": "Все локации",
-    "workbench_": "Верстак",
+    "workbench_group": "Верстак",
     "workbench_all": "Все утилиты",
-    "legends_": "Легенды",
-    "legends_all": "Все легенды",
-    
-    "add_location": "Добавить локацию",
-    "location_name": "Название локации",
-    "stars": "Число звёзд",
-    "mark_as_completed": "Отметить как завершённую",
-    "create": "Создать",
-    "cancel": "Отменить",
-    "visited_locations": "Посещённые локации",
-    "locations_list_info": "Имена локаций:\nrocky_plateau    Каменистое плато\ndeadwood_valley  Каньон Дедвуд\ncaustic_caves    Пещеры страха\nfungus_forest    Грибной лес\nundead_crypt     Призрачные залы\nbronze_mine      Бурлящая шахта\nicy_ridge        Ледяной хребет\ntemple           Храм\n\nУровни:\n★ 1-5    Белый\n★ 6-10   Бирюзовый\n★ 11-15  Жёлтый\n",
-    "search": "Поиск",
-    "add": "Добавить",
+    "workbench": {
+        "mutate": "Изменить",
+        "automate": "Автоматизировать",
+        "fuse_enchantments": "Выковать чары",
+        "break_apart_items": "Сломать предметы",
+        "brew_potion": "Сварить зелье",
+        "anvil": "Улучшить предметы"
+    },
+
+    "locations_group": "Локации",
     "location_information": "Информация о локации",
-    "time_measured_in_frames_info": "Время отмеряется кадрами:\n30 кадров = 1 секунда",
-    "average_run_data": "Данные среднего забега",
+    "all_locations": "Все локации",
+    "visited_locations": "Посещённые локации",
+    "location_name": "Название локации",
+    "location_stars": "Число звёзд",
+    "add_location": "Добавить локацию",
+    "mark_location_as_completed": "Отметить как завершённую",
+    "locations_list_info": "Имена локаций:\nrocky_plateau    Каменистое плато\ndeadwood_valley  Каньон Дедвуд\ncaustic_caves    Пещеры страха\nfungus_forest    Грибной лес\nundead_crypt     Призрачные залы\nbronze_mine      Бурлящая шахта\nicy_ridge        Ледяной хребет\ntemple           Храм\n\nУровни:\n★ 1-5    Белый\n★ 6-10   Бирюзовый\n★ 11-15  Жёлтый\n",
     "location_resources_info": "Для каждй локации свой ресурс:\no    Камень     Каменистое плато\n_/`  Древесина  Каньон Дедвуд\n≈    Смола      Пещеры страха\n:.   Бронза     Бурлящая шахта\n",
+    "average_run_data": "Данные среднего забега",
+    "time_measured_in_frames_info": "Время отмеряется кадрами:\n30 кадров = 1 секунда",
     "damage": "Урон",
     "element_damage": "Стихийный урон",
     "element_damage_affect_on_rune_info": "Влияет на трату стихийных рун при фарме",
-
-
     "locations": {
         "temple": "Храм",
         "cross_bridge": "Переход по посту",
@@ -82,7 +92,7 @@
         "average_heal_gain": "Пополнение оз",
         "average_ki_gain": "Получение Ки",
         "average_resource_gain": "Получение ресурса",
-        "damage": "Нанесено урона",
+        "damage_dealt": "Нанесено урона",
         "damage_devoured": "Получено урона",
         "devoured_aether": "Нанесено эфиром",
         "devoured_fire": "Нанесено огнём",
@@ -90,14 +100,9 @@
         "devoured_poison": "Нанесено ядом",
         "devoured_vigor": "Нанесено энергией"
     },
-    "workbench": {
-        "mutate": "Изменить",
-        "automate": "Автоматизировать",
-        "fuse_enchantments": "Выковать чары",
-        "break_apart_items": "Сломать предметы",
-        "brew_potion": "Сварить зелье",
-        "anvil": "Улучшить предметы"
-    },
+
+    "legends_group": "Легенды",
+    "legends_all": "Все легенды",
     "legends": {
         "epic_croaked": "Наквакать беду",
         "epic_roof_overhead": "Камнеголовый: крыша над головой",
@@ -116,10 +121,15 @@
         "epic_burnout": "Выгорание"
     },
 
+    "item": "Предмет",
+    "items": "Предметы",
+    "all_items": "Все предметы",
+    "create_item": "Создать предмет",
+    "item_data": "Данные предмета",
     "item_info": {
         "name": "Название",
         "count": "Количество",
-        "data":  "Данные",
+        "data": "Данные",
         "style": "Вид",
         "has_interacted": "Взаимодействован",
         "shiny": "Блёстки",
@@ -153,13 +163,7 @@
         "amount": "Количество",
         "item_name": "Предмет"
     },
-    "add_field": "Добавить поле",
-    "field": "Поле",
-    "items": "Предметы",
-    "create_item": "Создать предмет",
-    "item_data": "Данные предмета",
-    "all_items": "Все предметы",
-    "item": "Предмет",
+    
     "golden": "Позолота",
     "opened": "Есть",
     "prismatic": "Преломление",
@@ -222,16 +226,17 @@
         "poison_wand": "Жезл яда",
         "vigor_wand": "Жезл силы"
     },
-    "active_quests": "Активные квесты",
-    "weekly_quest": "Еженедельный квест",
+
     "event": "Событие",
     "dates": "Даты",
+    "active_quests": "Активные квесты",
+    "weekly_quest": "Еженедельный квест",
     "premium_awards": "Премиум-награды",
     "tasks_completed": "Целей завершено",
     "tasks_progress": "Прогресс целей",
     "next_epic": "Следующая легенда",
-    "basic_quest": "Базовый квест",
     "epic_spawn_pending": "Спавн легенды отложен",
+    "basic_quest": "Базовый квест",
     
     "active_offline_run": "Активный оффлайн забег",
     "location": "Локация",
@@ -239,14 +244,16 @@
     "treasures_per_cycle": "Сокровищ за цикл",
     "start_time": "Время начала",
     "seed": "Сид",
-
     "rewards": "Награды",
+
     "last_reward_time": "Последнее награждение",
     "last_reward_time_cheating_info": "Если оффлайн забег начался раньше времени\nпоследнего награждения, то игрок не получит\nсундуков за фарм",
+    
     "skullnata": "Черепушка-пиньята",
+    
     "treasure_factory": "Фабрика сокровищ",
     "unique_date": "Уникальная дата",
     "crystal_date": "Дата кристаллов",
     "gold_date": "Дата золота",
-    "next_treasure": ""
+    "next_treasure": "Следующее сокровище"
 }
