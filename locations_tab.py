@@ -2,28 +2,29 @@ import dearpygui.dearpygui as dpg
 from natsort import natsorted
 
 from utils import add_help
+from translations import *
 
 stats = {
     "time_values": {
-        "bT": "Лучшее время",
-        "aT": "Среднее время",
+        "bT": "best_time",
+        "aT": "average_time",
     },
     "average_values": {
-        "aHl": "Трата оз",
-        "aHg": "Пополнение оз",
-        "aKg": "Получение Ки",
-        "aRg": "Получение ресурса",
+        "aHl": "average_heal_loss",
+        "aHg": "average_heal_gain",
+        "aKg": "average_ki_gain",
+        "aRg": "average_resource_gain",
     },
     "damage_values": {
-        "d": "Нанесено урона",
-        "Dd": "Получено урона",
+        "d": "damage" ,
+        "Dd": "damage_devoured",
     },
     "element_damage_values": {
-        "DA": "Нанесено эфиром",
-        "DF": "Нанесено огнём",
-        "DI": "Нанесено льдом",
-        "DP": "Нанесено ядом",
-        "DV": "Нанесено энергией",
+        "DA": "devoured_aether",
+        "DF": "devoured_fire",
+        "DI": "devoured_ice",
+        "DP": "devoured_poison",
+        "DV": "devoured_vigor",
     }
 }
 
@@ -185,7 +186,7 @@ class LocationsTab:
 
     def gui(self):
         with dpg.window(
-            label="Добавить локацию",
+            label=i18n["add_location"],
             pos=((600 - 350) // 2, (400 - 140) // 2),
             width=350,
             height=140,
@@ -193,14 +194,14 @@ class LocationsTab:
             tag="add_location"
         ):
             dpg.add_combo(
-                label="Название локации",
+                label=i18n["location_name"],
                 items=locations,
                 default_value=locations[0],
                 width=200,
                 tag="add_location_name"
             )
             dpg.add_input_int(
-                label="Число звёзд",
+                label=i18n["stars"],
                 default_value=3,
                 min_value=3,
                 max_value=15,
@@ -210,38 +211,24 @@ class LocationsTab:
                 tag="add_location_stars"
             )
             dpg.add_checkbox(
-                label="Отметить как завершённую",
+                label=i18n["mark_as_completed"],
                 tag="add_location_mark_as_completed"
             )
 
             with dpg.group(horizontal=True):
-                dpg.add_button(label="Создать", callback=self.add_location)
+                dpg.add_button(label=i18n["create"], callback=self.add_location)
                 dpg.add_button(
-                    label="Отменить",
+                    label=i18n["cancel"],
                     callback=lambda _: dpg.configure_item("add_location", show=False)
                 )
 
         with dpg.group(horizontal=True):
             with dpg.group(width=175):
-                dpg.add_text("Посещённые локации")
-                add_help(
-                    "Имена локаций:\n"
-                    "rocky_plateau    Каменистое плато\n"
-                    "deadwood_valley  Каньон Дедвуд\n"
-                    "caustic_caves    Пещеры страха\n"
-                    "fungus_forest    Грибной лес\n"
-                    "undead_crypt     Призрачные залы\n"
-                    "bronze_mine      Бурлящая шахта\n"
-                    "icy_ridge        Ледяной хребет\n"
-                    "temple           Храм\n\n"
-                    "Уровни:\n"
-                    "★ 1-5    Белый\n"
-                    "★ 6-10   Бирюзовый\n"
-                    "★ 11-15  Жёлтый\n"
-                )
+                dpg.add_text(i18n["visited_locations"])
+                add_help(i18n["locations_list_info"])
 
                 dpg.add_input_text(
-                    hint="Поиск",
+                    hint=i18n["search"],
                     tag="filter_search",
                     callback=self.filter_search
                 )
@@ -251,13 +238,13 @@ class LocationsTab:
                     callback=self.select_location
                 )
                 dpg.add_button(
-                    label="Добавить",
+                    label=i18n["add"],
                     callback=lambda _: dpg.configure_item("add_location", show=True)
                 )
             
             with dpg.group():
-                dpg.add_text("Информация о локации")
-                add_help("Время отмеряется кадрами:\n30 кадров = 1 секунда")
+                dpg.add_text(i18n["location_information"])
+                add_help(i18n["time_measured_in_frames_info"])
 
                 with dpg.child_window(
                     tag="stats",
@@ -267,7 +254,7 @@ class LocationsTab:
                 ):
                     for time_value in stats["time_values"]:
                         dpg.add_input_int(
-                            label=stats["time_values"][time_value],
+                            label=i18n["location_stats"][stats["time_values"][time_value]],
                             tag=time_value,
                             width=200,
                             callback=self.change,
@@ -275,31 +262,25 @@ class LocationsTab:
                         )
                     
                     dpg.add_separator()
-                    dpg.add_text("Данные среднего забега")
+                    dpg.add_text(i18n["average_run_data"])
 
                     for average_value in stats["average_values"]:
                         dpg.add_input_double(
-                            label=stats["average_values"][average_value],
+                            label=i18n["location_stats"][stats["average_values"][average_value]],
                             tag=average_value,
                             width=200,
                             callback=self.change,
                             user_data=average_value
                         )
 
-                    add_help(
-                        "Для каждй локации свой ресурс:\n"
-                        "o    Камень     Каменистое плато\n"
-                        "_/`  Древесина  Каньон Дедвуд\n"
-                        "≈    Смола      Пещеры страха\n"
-                        ":.   Бронза     Бурлящая шахта\n"
-                    )
+                    add_help(i18n["location_resources_info"])
 
                     dpg.add_separator()
-                    dpg.add_text("Урон")
+                    dpg.add_text(i18n["damage"])
 
                     for damage_value in stats["damage_values"]:
                         dpg.add_input_double(
-                            label=stats["damage_values"][damage_value],
+                            label=i18n["location_stats"][stats["damage_values"][damage_value]],
                             tag=damage_value,
                             width=200,
                             callback=self.change,
@@ -307,12 +288,12 @@ class LocationsTab:
                         )
                     
                     dpg.add_separator()
-                    dpg.add_text("Стихийный урон")
-                    add_help("Влияет на трату стихийных рун при фарме")
+                    dpg.add_text(i18n["damage"])
+                    add_help(i18n["element_damage_affect_on_rune_info"])
 
                     for element_damage_type in stats["element_damage_values"]:
                         dpg.add_input_double(
-                            label=stats["element_damage_values"][element_damage_type],
+                            label=i18n["location_stats"][stats["element_damage_values"][element_damage_type]],
                             tag=element_damage_type,
                             width=200,
                             callback=self.change,

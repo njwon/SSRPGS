@@ -1,84 +1,85 @@
 import dearpygui.dearpygui as dpg
+from translations import *
 
 items = {
     "Top": {
         "name": "",
         "fields": {
-            "id": "Название",
-            "co": "Количество",
-            "da": "Данные",
+            "id": "name",
+            "co": "count",
+            "da": "data",
         }
     },
     "Style": {
-        "name": "Вид",
+        "name": "style",
         "fields": {
-            "da hI": "Взаимодействован",
-            "da sh": "Блёстки",
-            "da c": "Вид косметики",
-            "da tag": "Тег",
-            "da sig": "Сигнатура",
+            "da hI": "has_interacted",
+            "da sh": "shiny",
+            "da c": "cosmetics",
+            "da tag": "tag",
+            "da sig": "signature",
         }
     },
     "Improvements": {
-        "name": "Улучшение",
+        "name": "improvements",
         "fields": {
-            "da lv": "Уровень",
-            "da lC": "Элементов",
-            "da lBU": "Улучшений",
-            "da el": "Элемент",
+            "da lv": "level",
+            "da lC": "lost_item_elements",
+            "da lBU": "lost_item_upgrades",
+            "da el": "element",
         }
     },
     "Effects": {
-        "name": "Эффекты",
+        "name": "effects",
         "fields": {
-            "da abs": "Эффекты",
+            "da abs": "effects",
         }
     },
     "Items": {
-        "name": "Список предметов",
+        "name": "items_list",
         "fields": {
-            "da itms": "Предметы",
-            "da itms _ id": "Название",
-            "da itms _ t": "Тип редкости",
-            "da itms _ lv": "Уровень",
-            "da itms _ min": "Минимум",
-            "da itms _ max": "Максимум",
-            "da itms _ rng": "Случайный сид",
-            "da itms _ e": "Элемент",
+            "da itms": "items",
+            "da itms _ id": "name",
+            "da itms _ t": "rarity_type",
+            "da itms _ lv": "level",
+            "da itms _ min": "minimum",
+            "da itms _ max": "maximum",
+            "da itms _ rng": "random_seed",
+            "da itms _ e": "element",
         }
     },
     "Enchantments": {
-        "name": "Чары",
+        "name": "enchantments",
         "fields": {
-            "da ra": "Чары",
-            "da ra lv": "Уровень чар",
-            "da ra ql": "Качество чар",
-            "da ra sSS": "Сид чар",
+            "da ra": "enchantments",
+            "da ra lv": "enchantments_level",
+            "da ra ql": "enchantments_quality",
+            "da ra sSS": "enchantments_seed",
         }
     },
     "RNG's": {
-        "name": "Сиды",
+        "name": "seeds",
         "fields": {
-            "da rng": "Случайный сид",
-            "da rS": "Случайный суффикс",
+            "da rng": "random_seed",
+            "da rS": "random_suffix",
         }
     },
     "Potion": {
-        "name": "Зелье",
+        "name": "potion",
         "fields": {
-            "da potion_type": "Тип",
-            "da last_type": "Последний тип",
-            "da auto_refill": "Перезалив",
+            "da potion_type": "potion_type",
+            "da last_type": "last_type",
+            "da auto_refill": "auto_refill",
         }
     },
     "Costs": {
-        "name": "Затраты",
+        "name": "costs",
         "fields": {
-            "da costs": "Затраты",
-            "da costs _ resource": "Ресурс",
-            "da costs _ amount": "Количество",
-            "da costs _ itemId": "Предмет",
-            "da costs _ level": "Уровень",
+            "da costs": "costs",
+            "da costs _ resource": "resource",
+            "da costs _ amount": "amount",
+            "da costs _ itemId": "item_name",
+            "da costs _ level": "level",
         }
     }
 }
@@ -95,6 +96,41 @@ fields = {
     "da ra": {"lv": 21, "ql": 12049, "sSS": 99048},
     "da abs": [],
 }
+
+
+sorting_order = [
+    # Top level
+    "id",
+    "co",
+    "da",
+    # Item info
+    "hI",
+    "sh",
+    "c",
+    "co",
+    "tag",
+    "sig",
+    # Item level
+    "lv",
+    "el",
+    "lC",
+    "lBU",
+    # Chest items
+    "itms",
+    "t",
+    "e",
+    "showC",
+    "rB",
+    "min",
+    "max",
+    # Enchantments
+    "ra",
+    "ql",
+    "sSS",
+    # RNG seeds
+    "rng",
+    "rS",
+]
 
 class InventoryTab:
     def __init__(self, save):
@@ -116,42 +152,8 @@ class InventoryTab:
             dpg.add_separator(parent="item_settings")
 
     def sorter(self, value):
-            stats = [
-                # Top level
-                "id",
-                "co",
-                "da",
-                # Item info
-                "hI",
-                "sh",
-                "c",
-                "co",
-                "tag",
-                "sig",
-                # Item level
-                "lv",
-                "el",
-                "lC",
-                "lBU",
-                # Chest items
-                "itms",
-                "t",
-                "e",
-                "showC",
-                "rB",
-                "min",
-                "max",
-                # Enchantments
-                "ra",
-                "ql",
-                "sSS",
-                # RNG seeds
-                "rng",
-                "rS",
-            ]
-
-            key, value = value
-            return stats.index(key) if key in stats else len(stats) - 3
+        key, value = value
+        return sorting_order.index(key) if key in sorting_order else len(sorting_order) - 3
     
     def sorting(self, item):
         sorted_dict_items = []
@@ -204,8 +206,8 @@ class InventoryTab:
             for field in items[group]["fields"]:
                 if self.match_path(path, field):
                     if items[group]["name"]:
-                        self.check_group_label(items[group]["name"])
-                    return items[group]["fields"][field]
+                        self.check_group_label(i18n["item_info"][items[group]["name"]])
+                    return i18n["item_info"][items[group]["fields"][field]]
         
         return path[-1]
     
@@ -341,10 +343,12 @@ class InventoryTab:
         for i, field in enumerate(fields):
             for group in items:
                 if field in items[group]["fields"]:
-                    fields_names.append(items[group]["fields"][field] + chr(i + 0x10ec77))
+                    fields_names.append(
+                        i18n["item_info"][items[group]["fields"][field]] + chr(i + 0x10ec77)
+                    )
 
         with dpg.window(
-            label="Добавить поле",
+            label=i18n["add_field"],
             pos=((600 - 350) // 2, (400 - 140) // 2),
             width=350,
             height=140,
@@ -352,7 +356,7 @@ class InventoryTab:
             tag="add_field"
         ):
             dpg.add_combo(
-                label="Поле",
+                label=i18n["field"],
                 width=200,
                 items=fields_names,
                 default_value=fields_names[0],
@@ -360,18 +364,18 @@ class InventoryTab:
             )
             
             with dpg.group(horizontal=True):
-                dpg.add_button(label="Добавить", callback=self.add_field)
-                dpg.add_button(label="Отменить", callback=lambda _: dpg.configure_item("add_field", show=False))
+                dpg.add_button(label=i18n["add"], callback=self.add_field)
+                dpg.add_button(label=i18n["cancel"], callback=lambda _: dpg.configure_item("add_field", show=False))
 
         with dpg.group(horizontal=True):
                 with dpg.group(width=175):
-                    dpg.add_text("Предметы")
-                    dpg.add_input_text(tag="search_filter", hint="Поиск", callback=self.filter_items)
+                    dpg.add_text(i18n["items"])
+                    dpg.add_input_text(tag="search_filter", hint=i18n["search"], callback=self.filter_items)
                     dpg.add_listbox(tag="inventory", num_items=12, callback=self.open_item)
-                    dpg.add_button(label="Создать предмет", callback=self.add_item)
+                    dpg.add_button(label=i18n["create_item"], callback=self.add_item)
 
                 with dpg.child_window(border=False, no_scrollbar=True):
-                    dpg.add_text("Данные предмета", tag="item_info")
+                    dpg.add_text(i18n["item_data"], tag="item_info")
 
                     dpg.add_child_window(
                         height=277,
@@ -385,4 +389,4 @@ class InventoryTab:
                         no_scrollbar=True,
                     ):
                         with dpg.group(horizontal=True):
-                            dpg.add_button(label="Добавить поле", callback=lambda _: dpg.configure_item("add_field", show=True))
+                            dpg.add_button(label=i18n["add_field"], callback=lambda _: dpg.configure_item("add_field", show=True))

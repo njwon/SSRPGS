@@ -13,21 +13,8 @@ from progress_tab import ProgressTab
 from quests_tab import QuestsTab
 from times_tab import TimesTab
 
-from utils import loading
-
-info = """Файлы сохранения
-* primary_save.txt - Основной файл сохранения.
-* backup.txt - Резервная копия сохранения, создаваемая игрой.
-
-* Обязательно создавайте резервные ваших сохранений.
-* Избыток лишает ценности.
-
-Вы можете экспортировать расшифрованное сохранение как JSON файл,
-чтобы получить возможность редактировать все поля данных, а не
-только те, что представлены тут.
-
-SSRPGS v1.0.0 by Catalyst
-"""
+from translations import *
+from utils import loading, add_help
 
 class Editor:
     def __init__(self):
@@ -64,7 +51,9 @@ class Editor:
                 dpg.bind_font(font)
 
     def load(self):
-        save_file = check_output([executable, "get_file.py"])  # I don't know what's wrong with dpg
+        save_file = check_output(
+            [executable, "get_file.py"]
+        )  # I don't know what's wrong with dpg
         
         if not save_file:
             return
@@ -93,18 +82,20 @@ class Editor:
         
         # Load data to tabs
         self.main_tab.load()
+        self.progress_tab.load()
         self.locations_tab.load()
         self.inventory_tab.load()
         self.cosmetics_tab.load()
         self.quests_tab.load()
-        self.progress_tab.load()
         self.times_tab.load()
 
     def dump(self):
         if not self.save.is_loaded():
             return
 
-        save_file = check_output([executable, "save_file.py", self.save.save_file_name])  # I don't know what's wrong with dpg
+        save_file = check_output(
+            [executable, "save_file.py", self.save.save_file_name]
+        )  # I don't know what's wrong with dpg
 
         save_file = str(save_file, encoding="utf-8")
         print(f"Gathered save file {save_file}")
@@ -138,19 +129,16 @@ class Editor:
             # Header
             with dpg.menu_bar():
                 dpg.add_menu_item(
-                    label="Открыть",
+                    label=i18n["open"],
                     callback=self.load
                 )
                 dpg.add_menu_item(
-                    label="Сохранить",
+                    label=i18n["save"],
                     callback=self.dump
                 )
 
-                # dpg.add_menu_item(label="Импортировать JSON", callback=self.json_import) 
-                # dpg.add_menu_item(label="Экспортировать JSON", callback=self.json_export)
-
                 dpg.add_combo(
-                    label="Слот сохранения",
+                    label=i18n["save_slot"],
                     width=295,
                     items=[],
                     callback=self.change_slot,
@@ -159,52 +147,48 @@ class Editor:
                 
             # Tabs
             with dpg.tab_bar():
-                with dpg.tab(label="Главная"):
+                with dpg.tab(label=i18n["major_tab"]):
                     with dpg.child_window(
                         no_scrollbar=True,
                         border=False
                     ):
-                        dpg.add_text("Информация")
-                        dpg.add_text(info)
+                        dpg.add_text(i18n["info_label"])
+                        dpg.add_text(i18n["info"])
 
                         dpg.add_separator()
-                        dpg.add_text("Настройки")
+                        dpg.add_text(i18n["settings"])
                         dpg.add_combo(
-                            items=["Русский", "English"],
-                            default_value="Русский",
-                            label="Язык",
-                            width=100
+                            label=i18n["language"],
+                            default_value=i18n["language-name"],
+                            items=available_languages
                         )
+                        add_help(i18n["language_info"])
 
-                with dpg.tab(label="Общее"):
+                with dpg.tab(label=i18n["main_tab"]):
                     self.main_tab.gui()
 
-                with dpg.tab(label="Прогресс"):
+                with dpg.tab(label=i18n["progress_tab"]):
                     self.progress_tab.gui()
 
-                with dpg.tab(label="Локации"):
+                with dpg.tab(label=i18n["locations_tab"]):
                     self.locations_tab.gui()
 
-                with dpg.tab(label="Инвентарь"):
+                with dpg.tab(label=i18n["inventory_tab"]):
                     self.inventory_tab.gui()
 
-                with dpg.tab(label="Косметика"):
+                with dpg.tab(label=i18n["cosmetics_tab"]):
                     self.cosmetics_tab.gui()
 
-                with dpg.tab(label="Квесты"):
+                with dpg.tab(label=i18n["quests_tab"]):
                     self.quests_tab.gui()
 
-                with dpg.tab(label="Время"):
+                with dpg.tab(label=i18n["times_tab"]):
                     self.times_tab.gui()
 
     def run(self):
         self.gui()
 
-        dpg.create_viewport(
-            title="Редактор сохранений Stone Story RPG",
-            width=600,
-            height=398,
-        )
+        dpg.create_viewport(title=i18n["title"], width=600, height=398)
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.set_primary_window("Editor", True)

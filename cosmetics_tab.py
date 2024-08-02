@@ -1,61 +1,62 @@
 import dearpygui.dearpygui as dpg
+from translations import *
 
-items = [
-    'aether_talisman:AEther',
-    'fire_talisman:Fire',
-    'bardiche',
-    'bashing_shield',
-    'blade_of_god',
-    'compound_shield',
-    'crossbow',
-    'cult_mask',
-    'crusader_shield:Vigor',
-    'dashing_shield',
-    'heavy_hammer',
-    'quarterstaff',
-    'repeating_crossbow',
-    'shield',
-    'skeleton_arm',
-    'socketed_crossbow:AEther',
-    'socketed_crossbow:Fire',
-    'socketed_crossbow:Ice',
-    'socketed_crossbow:Poison',
-    'socketed_crossbow:Vigor',
-    'socketed_hammer:AEther',
-    'socketed_hammer:Fire',
-    'socketed_hammer:Ice',
-    'socketed_hammer:Poison',
-    'socketed_hammer:Vigor',
-    'socketed_long_sword:AEther',
-    'socketed_long_sword:Fire',
-    'socketed_long_sword:Ice',
-    'socketed_long_sword:Poison',
-    'socketed_long_sword:Vigor',
-    'socketed_shield:AEther',
-    'socketed_shield:Fire',
-    'socketed_shield:Ice',
-    'socketed_shield:Poison',
-    'socketed_shield:Vigor',
-    'socketed_staff',
-    'socketed_staff:AEther',
-    'socketed_staff:Fire',
-    'socketed_staff:Ice',
-    'socketed_staff:Poison',
-    'socketed_staff:Vigor',
-    'socketed_sword:AEther',
-    'socketed_sword:Fire',
-    'socketed_sword:Ice',
-    'socketed_sword:Poison',
-    'socketed_sword:Vigor',
-    'sword',
-    'tower_shield',
-    'wand',
-    'wand:AEther',
-    'wand:Fire',
-    'wand:Ice',
-    'wand:Poison',
-    'wand:Vigor'
-]
+items = {
+    "aether_talisman:AEther": "aether_talisman",
+    "fire_talisman:Fire": "fire_talisman",
+    "bardiche": "bardiche",
+    "bashing_shield": "bashing_shield",
+    "blade_of_god": "blade_of_god",
+    "compound_shield": "compound_shield",
+    "crossbow": "crossbow",
+    "cult_mask": "cult_mask",
+    "crusader_shield:Vigor": "crusader_shield",
+    "dashing_shield": "dashing_shield",
+    "heavy_hammer": "heavy_hammer",
+    "quarterstaff": "quarterstaff",
+    "repeating_crossbow": "repeating_crossbow",
+    "shield": "shield",
+    "skeleton_arm": "skeleton_arm",
+    "socketed_crossbow:AEther": "aether_socketed_crossbow",
+    "socketed_crossbow:Fire": "fire_socketed_crossbow",
+    "socketed_crossbow:Ice": "ice_socketed_crossbow",
+    "socketed_crossbow:Poison": "poison_socketed_crossbow",
+    "socketed_crossbow:Vigor": "vigor_socketed_crossbow",
+    "socketed_hammer:AEther": "aether_socketed_hammer",
+    "socketed_hammer:Fire": "fire_socketed_hammer",
+    "socketed_hammer:Ice": "ice_socketed_hammer",
+    "socketed_hammer:Poison": "poison_socketed_hammer",
+    "socketed_hammer:Vigor": "vigor_socketed_hammer",
+    "socketed_long_sword:AEther": "aether_socketed_long_sword",
+    "socketed_long_sword:Fire": "fire_socketed_long_sword",
+    "socketed_long_sword:Ice": "ice_socketed_long_sword",
+    "socketed_long_sword:Poison": "poison_socketed_long_sword",
+    "socketed_long_sword:Vigor": "vigor_socketed_long_sword",
+    "socketed_shield:AEther": "aether_socketed_shield",
+    "socketed_shield:Fire": "fire_socketed_shield",
+    "socketed_shield:Ice": "ice_socketed_shield",
+    "socketed_shield:Poison": "poison_socketed_shield",
+    "socketed_shield:Vigor": "vigor_socketed_shield",
+    "socketed_staff": "socketed_staff",
+    "socketed_staff:AEther": "aether_socketed_staff",
+    "socketed_staff:Fire": "fire_socketed_staff",
+    "socketed_staff:Ice": "ice_socketed_staff",
+    "socketed_staff:Poison": "poison_socketed_staff",
+    "socketed_staff:Vigor": "vigor_socketed_staff",
+    "socketed_sword:AEther": "aether_socketed_sword",
+    "socketed_sword:Fire": "fire_socketed_sword",
+    "socketed_sword:Ice": "ice_socketed_sword",
+    "socketed_sword:Poison": "poison_socketed_sword",
+    "socketed_sword:Vigor": "vigor_socketed_sword",
+    "sword": "sword",
+    "tower_shield": "tower_shield",
+    "wand": "wand",
+    "wand:AEther": "aether_wand",
+    "wand:Fire": "fire_wand",
+    "wand:Ice": "ice_wand",
+    "wand:Poison": "poison_wand",
+    "wand:Vigor": "vigor_wand"
+}
 
 class CosmeticsTab:
     def __init__(self, save):
@@ -219,22 +220,22 @@ class CosmeticsTab:
                 dpg.add_table_column()
                 
                 with dpg.table_row():
-                    dpg.add_text("Предмет")
-                    dpg.add_text("Позолота")
-                    dpg.add_text("Преломление")
+                    dpg.add_text(i18n["item"])
+                    dpg.add_text(i18n["golden"])
+                    dpg.add_text(i18n["prismatic"])
 
                 with dpg.table_row():
-                    dpg.add_text("Все предметы")
+                    dpg.add_text(i18n["all_items"])
 
                     with dpg.group(horizontal=True):
                         dpg.add_checkbox(
-                            label="Есть",
+                            label=i18n["opened"],
                             tag="golden",
                             callback=self.open_all,
                             user_data=("golden")
                         )
                         dpg.add_checkbox(
-                            label="Новая",
+                            label=i18n["golden_new"],
                             tag="golden-new",
                             callback=self.mark_all,
                             user_data=("golden")
@@ -242,20 +243,20 @@ class CosmeticsTab:
 
                     with dpg.group(horizontal=True):
                         dpg.add_checkbox(
-                            label="Есть",
+                            label=i18n["opened"],
                             tag="prismatic",
                             callback=self.open_all,
                             user_data=("prismatic")
                         )
                         dpg.add_checkbox(
-                            label="Новое",
+                            label=i18n["prismatic_new"],
                             tag="prismatic-new",
                             callback=self.mark_all,
                             user_data=("prismatic")
                         )
                     
                         dpg.add_color_edit(
-                            label="Цвет",
+                            label=i18n["color"],
                             tag="extra",
                             callback=self.colors_all,
                             user_data=("extra"),
@@ -268,17 +269,17 @@ class CosmeticsTab:
 
                 for item in items:
                     with dpg.table_row():
-                        dpg.add_text(item)
+                        dpg.add_text(i18n["cosmetics"][items[item]])
 
                         with dpg.group(horizontal=True):
                             dpg.add_checkbox(
-                                label="Есть",
+                                label=i18n["opened"],
                                 tag=f"{item}-golden",
                                 callback=self.open,
                                 user_data=("golden", item)
                             )
                             dpg.add_checkbox(
-                                label="Новая",
+                                label=i18n["golden_new"],
                                 tag=f"{item}-golden-new",
                                 callback=self.mark,
                                 user_data=("golden", item)
@@ -286,20 +287,20 @@ class CosmeticsTab:
 
                         with dpg.group(horizontal=True):
                             dpg.add_checkbox(
-                                label="Есть",
+                                label=i18n["opened"],
                                 tag=f"{item}-prismatic",
                                 callback=self.open,
                                 user_data=("prismatic", item)
                             )
                             dpg.add_checkbox(
-                                label="Новое",
+                                label=i18n["prismatic_new"],
                                 tag=f"{item}-prismatic-new",
                                 callback=self.mark,
                                 user_data=("prismatic", item)
                             )
                         
                             dpg.add_color_edit(
-                                label="Цвет",
+                                label=i18n["color"],
                                 tag=f"{item}-extra",
                                 no_alpha=True,
                                 display_mode=dpg.mvColorEdit_hex,

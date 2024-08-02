@@ -1,5 +1,5 @@
 import dearpygui.dearpygui as dpg
-from utils import add_help
+from translations import *
 
 class QuestsTab:
     def __init__(self, save):
@@ -30,7 +30,6 @@ class QuestsTab:
                 default_value=self.quests[value]
             )
         
-
         dpg.configure_item("daily_and_weekly", show=False)
 
         # Active quests
@@ -38,7 +37,7 @@ class QuestsTab:
         if len(self.quests["active"]):
             dpg.configure_item("daily_and_weekly", show=True)
             with dpg.group(parent="daily"):
-                dpg.add_text("Активные квесты")
+                dpg.add_text(i18n["active_quests"])
                 for i, quest in enumerate(self.quests["active"]):
                     if "completed" not in quest:
                         quest["completed"] = False
@@ -55,7 +54,7 @@ class QuestsTab:
         if "activeQuest" in self.weekly:
             dpg.configure_item("daily_and_weekly", show=True)
             with dpg.group(parent="weekly"):
-                dpg.add_text("Еженедельный квест")
+                dpg.add_text(i18n["weekly_quest"])
                 dpg.add_checkbox(
                     label=self.weekly["activeQuest"]["type"],
                     default_value=self.weekly["activeQuest"]["completed"],
@@ -69,7 +68,7 @@ class QuestsTab:
             for sId in self.events["sIds"]:
                 with dpg.group(parent="events"):
                     dpg.add_separator()
-                    dpg.add_text(f"Событие {sId}")
+                    dpg.add_text(f"{i18n["event"]} {sId}")
 
                     if not "pp" in self.events[sId]:
                         self.events[sId]["pp"] = False
@@ -77,21 +76,21 @@ class QuestsTab:
                     premium_prizes = self.events[sId]["pp"]
 
                     dpg.add_checkbox(
-                        label="Премиум-награды",
+                        label=i18n["premium_awards"],
                         default_value=premium_prizes,
                         callback=self.change,
                         user_data=("events", sId, "pp")
                     )
 
                     dpg.add_input_int(
-                        label="Целей завершено",
+                        label=i18n["tasks_completed"],
                         default_value=self.events[sId]["rwds"]["rp"],
                         callback=self.change,
                         user_data=("events", sId, "rwds", "rp")
                     )
 
                     if self.events[sId]["objs"]["ids"]:
-                        dpg.add_text("Прогресс целей")
+                        dpg.add_text(i18n["tasks_progress"])
 
                         for task_id in self.events[sId]["objs"]["ids"]:
                             task_progress = 0
@@ -115,21 +114,21 @@ class QuestsTab:
     def gui(self):
         with dpg.child_window(border=False, no_scrollbar=True):
             with dpg.group(tag="dates"):
-                dpg.add_text("Даты")
+                dpg.add_text(i18n["dates"])
                 dpg.add_input_text(
-                    label="Базовый квест",
+                    label=i18n["basic_quest"],
                     tag="basicQuestDate",
                     callback=self.change,
                     user_data=("custom_quests", "basicQuestDate")
                 )
                 dpg.add_input_text(
-                    label="Следующая легенда",
+                    label=i18n["next_epic"],
                     tag="nextSpawnDate",
                     callback=self.change,
                     user_data=("custom_quests", "nextSpawnDate")
                 )
                 dpg.add_checkbox(
-                    label="Спавн легенды отложен",
+                    label=i18n["epic_spawn_pending"],
                     tag="epicSpawnPending",
                     callback=self.change,
                     user_data=("custom_quests", "epicSpawnPending")

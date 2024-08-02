@@ -1,4 +1,5 @@
 import dearpygui.dearpygui as dpg
+from translations import *
 from utils import add_help
 
 class TimesTab:
@@ -26,36 +27,36 @@ class TimesTab:
         if "activeRun" in self.quest_data:
             with dpg.group(parent="active_run"):
                 dpg.add_separator()
-                dpg.add_text("Активный оффлайн забег")
+                dpg.add_text(i18n["active_offline_run"])
 
                 active_run = self.quest_data["activeRun"]
 
                 dpg.add_input_text(
-                    label="Локация",
+                    label=i18n["location"],
                     default_value=active_run["questId"],
                     callback=self.change,
                     user_data=("quest_data", "activeRun", "questId")
                 )
                 dpg.add_input_int(
-                    label="Сложность",
+                    label=i18n["difficulty"],
                     default_value=active_run["difficulty"],
                     callback=self.change,
                     user_data=("quest_data", "activeRun", "difficulty")
                 )
                 dpg.add_input_int(
-                    label="Сокровищ за цикл",
+                    label=i18n["treasures_per_cycle"],
                     default_value=active_run["treasuresPerLoop"],
                     callback=self.change,
                     user_data=("quest_data", "activeRun", "treasuresPerLoop")
                 )
                 dpg.add_input_text(
-                    label="Время начала",
+                    label=i18n["start_time"],
                     default_value=active_run["startTime"],
                     callback=self.change,
                     user_data=("quest_data", "activeRun", "startTime")
                 )
                 dpg.add_input_int(
-                    label="Сид",
+                    label=i18n["seed"],
                     default_value=active_run["seed"],
                     callback=self.change,
                     user_data=("quest_data", "activeRun", "seed")
@@ -67,24 +68,20 @@ class TimesTab:
             if "lastRewardTime" in self.quest_data \
             or "skullnata" in self.quest_data:
                 dpg.add_separator()
-                dpg.add_text("Награды")
+                dpg.add_text(i18n["rewards"])
 
             if "lastRewardTime" in self.quest_data:
                 dpg.add_input_text(
-                    label="Последнее награждение",
+                    label=i18n["last_reward_time"],
                     default_value=self.save["progress_data"]["quest_data"]["lastRewardTime"],
                     callback=self.change,
                     user_data=("quest_data", "lastRewardTime")
                 )
-                add_help(
-                    "Если оффлайн забег начался раньше времени\n"
-                    "последнего награждения, то игрок не получит\n"
-                    "сундуков за фарм"
-                )
+                add_help(i18n["last_reward_time_cheating_info"])
 
             if "skullnata" in self.save["progress_data"]["quest_data"]:
                 dpg.add_input_text(
-                    label="Черепушка-пиньята",
+                    label=i18n["skullnata"],
                     default_value=self.save["progress_data"]["quest_data"]["skullnata"],
                     callback=self.change,
                     user_data=("quest_data", "skullnata")
@@ -104,30 +101,30 @@ class TimesTab:
             no_scrollbar=True,
             border=False
         ):
-            dpg.add_text("Фабрика сокровищ")
+            dpg.add_text(i18n["treasure_factory"])
             dpg.add_input_text(
-                label="Уникальная дата",
+                label=i18n["unique_date"],
                 tag="uniqueDate",
                 callback=self.change,
                 user_data=("treasure_factory", "uniqueDate")
             )
             dpg.add_input_text(
-                label="Дата кристаллов",
+                label=i18n["crystal_date"],
                 tag="crystalDate",
                 callback=self.change,
                 user_data=("treasure_factory", "crystalDate")
             )
             dpg.add_input_text(
-                label="Дата золота",
+                label=i18n["gold_date"],
                 tag="goldDate",
                 callback=self.change,
                 user_data=("treasure_factory", "goldDate")
             )
 
             dpg.add_separator()
-            dpg.add_text("Призрачные врата")
+            dpg.add_text(i18n["locations"]["undead_crypt_intro"])
             dpg.add_input_text(
-                label="Следующее сокровище",
+                label=i18n["next_treasure"],
                 tag="nextTreasureAvailableDate",
                 callback=self.change,
                 user_data=("crypt_intro", "nextTreasureAvailableDate")

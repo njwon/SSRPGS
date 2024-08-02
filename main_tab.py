@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
-
 from utils import add_help
+from translations import *
 
 class MainTab:
     def __init__(self, save):
@@ -49,56 +49,56 @@ class MainTab:
             border=False,
             no_scrollbar=True
         ):            
-            dpg.add_text("Персонаж")
+            dpg.add_text(i18n["player"])
             dpg.add_input_text(
-                label="Имя",
+                label=i18n["name"],
                 tag="player_name",
                 callback=self.change,
                 user_data=["hero_settings", "playerName"]
             )
             dpg.add_input_int(
-                label="Уровень",
+                label=i18n["level"],
                 tag="player_level",
                 callback=self.change,
                 user_data=["xp", "currentLevel"]
             )
-            add_help("Влияет на предел подбора сундуков:\nlimit = 100 + 5 * player_level")
+            add_help(i18n["max_afk_chests_info"])
             dpg.add_input_int(
-                label="Очки опыта",
+                label=i18n["xp"],
                 tag="player_xp",
                 callback=self.change,
                 user_data=["xp","currentXP"]
             )
 
             dpg.add_separator()
-            dpg.add_text("Ресурсы")
+            dpg.add_text(i18n["resources"])
             dpg.add_input_int(
-                label="Камни    o",
+                label=i18n["stone"],
                 tag="Stone",
                 callback=self.change,
-                user_data=( "inventory_data", "Stone")
+                user_data=("inventory_data", "Stone")
             )
             dpg.add_input_int(
-                label="Дерево  _/`",
+                label=i18n["wood"],
                 tag="Wood",
                 callback=self.change,
-                user_data=( "inventory_data", "Wood")
+                user_data=("inventory_data", "Wood")
             )
             dpg.add_input_int(
-                label="Смола    ≈",
+                label=i18n["tar"],
                 tag="Tar",
                 callback=self.change,
-                user_data=( "inventory_data", "Tar")
+                user_data=("inventory_data", "Tar")
             )
             dpg.add_input_int(
-                label="Ки       @",
+                label=i18n["ki"],
                 tag="Xi",
                 callback=self.change,
-                user_data=( "inventory_data", "Xi")
+                user_data=("inventory_data", "Xi")
             )
             dpg.add_input_int(
-                label="Бронза   :.",
+                label=i18n["bronze"],
                 tag="Bronze",
                 callback=self.change,
-                user_data=( "inventory_data", "Bronze")
+                user_data=("inventory_data", "Bronze")
             )
