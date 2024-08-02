@@ -140,7 +140,7 @@ class Save:
             end = match.end() + shift
 
             value = text[start:end]
-            
+
             if value.count('"') > 2 or value == '""' or value[1] == " " or value.count(",") or (value.count("[") + value.count("]")):
                 continue
 
@@ -162,12 +162,13 @@ class Save:
 
     def open_from_json(self, save_file_name):
         self.save_file_name = save_file_name
-        
+
         self.save_json = json.load(open(save_file_name))
-        self.save_slots = []
+        self.save_slots.clear()
         for field in self.save_json:
             if field.startswith("save_file_") and field != "save_file_last_id":
                 self.save_slots.append(field)
+
         self.save_slot = f"save_file_{self.save_json["save_file_last_id"]}"
 
     def save_as_json(self, file_name):

@@ -1,4 +1,5 @@
 import dearpygui.dearpygui as dpg
+from utils import add_help
 
 class QuestsTab:
     def __init__(self, save):
@@ -21,50 +22,21 @@ class QuestsTab:
         self.events = self.save["progress_data"]["events"]
         self.quests = self.save["progress_data"]["custom_quests"]
         self.weekly = self.save["progress_data"]["weekly_quest"]
+
+        # Dates
+        for value in ("nextSpawnDate", "epicSpawnPending", "basicQuestDate"):
+            dpg.configure_item(
+                value,
+                default_value=self.quests[value]
+            )
         
-        # Active offline run
-        dpg.delete_item("active_run", children_only=True)
-        if "activeRun" in self.save["progress_data"]["quest_data"]:
-            with dpg.group(parent="active_run"):
-                dpg.add_separator()
-                dpg.add_text("Активный оффлайн забег")
 
-                active_run = self.save["progress_data"]["quest_data"]["activeRun"]
-
-                dpg.add_input_text(
-                    label="Локация",
-                    default_value=active_run["questId"],
-                    callback=self.change,
-                    user_data=("quest_data", "activeRun", "questId")
-                )
-                dpg.add_input_int(
-                    label="Сложность",
-                    default_value=active_run["difficulty"],
-                    callback=self.change,
-                    user_data=("quest_data", "activeRun", "difficulty")
-                )
-                dpg.add_input_int(
-                    label="Сокровищ за цикл",
-                    default_value=active_run["treasuresPerLoop"],
-                    callback=self.change,
-                    user_data=("quest_data", "activeRun", "treasuresPerLoop")
-                )
-                dpg.add_input_text(
-                    label="Время начала",
-                    default_value=active_run["startTime"],
-                    callback=self.change,
-                    user_data=("quest_data", "activeRun", "startTime")
-                )
-                dpg.add_input_int(
-                    label="Сид",
-                    default_value=active_run["seed"],
-                    callback=self.change,
-                    user_data=("quest_data", "activeRun", "seed")
-                )
+        dpg.configure_item("daily_and_weekly", show=False)
 
         # Active quests
         dpg.delete_item("daily", children_only=True)
         if len(self.quests["active"]):
+            dpg.configure_item("daily_and_weekly", show=True)
             with dpg.group(parent="daily"):
                 dpg.add_text("Активные квесты")
                 for i, quest in enumerate(self.quests["active"]):
@@ -81,6 +53,7 @@ class QuestsTab:
         # Weekly
         dpg.delete_item("weekly", children_only=True)
         if "activeQuest" in self.weekly:
+            dpg.configure_item("daily_and_weekly", show=True)
             with dpg.group(parent="weekly"):
                 dpg.add_text("Еженедельный квест")
                 dpg.add_checkbox(
@@ -141,13 +114,35 @@ class QuestsTab:
 
     def gui(self):
         with dpg.child_window(border=False, no_scrollbar=True):
-            with dpg.table(header_row=False, resizable=True):
-                dpg.add_table_column()
-                dpg.add_table_column()
-                
-                with dpg.table_row():
-                    dpg.add_group(tag="daily")
-                    dpg.add_group(tag="weekly")
-            
-            dpg.add_group(tag="active_run")
+            with dpg.group(tag="dates"):
+                dpg.add_text("Даты")
+                dpg.add_input_text(
+                    label="Базовый квест",
+                    tag="basicQuestDate",
+                    callback=self.change,
+                    user_data=("custom_quests", "basicQuestDate")
+                )
+                dpg.add_input_text(
+                    label="Следующая легенда",
+                    tag="nextSpawnDate",
+                    callback=self.change,
+                    user_data=("custom_quests", "nextSpawnDate")
+                )
+                dpg.add_checkbox(
+                    label="Спавн легенды отложен",
+                    tag="epicSpawnPending",
+                    callback=self.change,
+                    user_data=("custom_quests", "epicSpawnPending")
+                )
+
+            with dpg.group(tag="daily_and_weekly", show=False):
+                dpg.add_separator()
+                with dpg.table(header_row=False, resizable=True):
+                    dpg.add_table_column()
+                    dpg.add_table_column()
+                    
+                    with dpg.table_row():
+                        dpg.add_group(tag="daily")
+                        dpg.add_group(tag="weekly")
+
             dpg.add_group(tag="events")

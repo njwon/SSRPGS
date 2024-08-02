@@ -15,6 +15,20 @@ from times_tab import TimesTab
 
 from utils import loading
 
+info = """Файлы сохранения
+* primary_save.txt - Основной файл сохранения.
+* backup.txt - Резервная копия сохранения, создаваемая игрой.
+
+* Обязательно создавайте резервные ваших сохранений.
+* Избыток лишает ценности.
+
+Вы можете экспортировать расшифрованное сохранение как JSON файл,
+чтобы получить возможность редактировать все поля данных, а не
+только те, что представлены тут.
+
+SSRPGS v1.0.0 by Catalyst
+"""
+
 class Editor:
     def __init__(self):
         self.init_dpg()
@@ -22,7 +36,6 @@ class Editor:
 
         self.save = Save()
 
-        # settings_tab
         self.main_tab = MainTab(self.save)
         self.progress_tab = ProgressTab(self.save)
         self.locations_tab = LocationsTab(self.save)
@@ -56,8 +69,21 @@ class Editor:
         if not save_file:
             return
 
-        with loading():
-            self.save.open(save_file)
+        save_file = str(save_file, encoding="utf-8")
+        print(f"Gathered save file {save_file}")
+
+        if save_file.endswith(".txt"):
+            print("Loading as .txt")
+            with loading():
+                self.save.open(save_file)
+
+        elif save_file.endswith(".json"):
+            print("Loading as .json")
+            self.save.open_from_json("formatted.json")
+        
+        else:
+            print(f"Loading denied")
+            return
 
         dpg.configure_item(
             "save_slots",
@@ -75,8 +101,25 @@ class Editor:
         self.times_tab.load()
 
     def dump(self):
-        with loading():
-            self.save.save("primary_save.txt")
+        if not self.save.is_loaded():
+            return
+
+        save_file = check_output([executable, "save_file.py", self.save.save_file_name])  # I don't know what's wrong with dpg
+
+        save_file = str(save_file, encoding="utf-8")
+        print(f"Gathered save file {save_file}")
+
+        if save_file.endswith(".txt"):
+            with loading():
+                self.save.save(save_file)
+                print("Saved as .txt")
+
+        elif save_file.endswith(".json"):
+            self.save.save_as_json(save_file)
+            print("Saved as .json")
+
+        else:
+            print("Saving denied")
 
     def change_slot(self, _, new_save_slot):
         self.save.save_slot = new_save_slot
@@ -89,44 +132,49 @@ class Editor:
         self.cosmetics_tab.load()
         self.quests_tab.load()
         self.times_tab.load()
-
-    def json_export(self):
-        self.save.save_as_json("formatted.json")
     
-    def json_import(self):
-        self.save.open_from_json("formatted.json")
-        
-        self.change_slot("", self.save.save_slot)
-
-        dpg.configure_item(
-            "save_slots",
-            items=self.save.save_slots,
-            default_value=self.save.save_slot
-        )
-        
-        # Load data to tabs
-        self.main_tab.load()
-        self.progress_tab.load()
-        self.locations_tab.load()
-        self.inventory_tab.load()
-        self.cosmetics_tab.load()
-        self.quests_tab.load()
-        self.times_tab.load()
-
     def gui(self):
-        with dpg.window(tag="Editor"):  
+        with dpg.window(tag="Editor"):
             # Header
-            with dpg.group(horizontal=True):
-                dpg.add_button(label="Открыть", callback=self.load)
-                dpg.add_button(label="Сохранить", callback=self.dump)
-                dpg.add_combo(label="Слот сохранения", width=300, items=[], callback=self.change_slot, tag="save_slots")
+            with dpg.menu_bar():
+                dpg.add_menu_item(
+                    label="Открыть",
+                    callback=self.load
+                )
+                dpg.add_menu_item(
+                    label="Сохранить",
+                    callback=self.dump
+                )
+
+                # dpg.add_menu_item(label="Импортировать JSON", callback=self.json_import) 
+                # dpg.add_menu_item(label="Экспортировать JSON", callback=self.json_export)
+
+                dpg.add_combo(
+                    label="Слот сохранения",
+                    width=295,
+                    items=[],
+                    callback=self.change_slot,
+                    tag="save_slots"
+                )
                 
             # Tabs
             with dpg.tab_bar():
-                with dpg.tab(label="Настройки"):
-                    dpg.add_text("Stone Story RPG save editor\nv 0.0.0")
-                    dpg.add_button(label="Экспортировать JSON", callback=self.json_export)
-                    dpg.add_button(label="Импортировать JSON", callback=self.json_import)
+                with dpg.tab(label="Главная"):
+                    with dpg.child_window(
+                        no_scrollbar=True,
+                        border=False
+                    ):
+                        dpg.add_text("Информация")
+                        dpg.add_text(info)
+
+                        dpg.add_separator()
+                        dpg.add_text("Настройки")
+                        dpg.add_combo(
+                            items=["Русский", "English"],
+                            default_value="Русский",
+                            label="Язык",
+                            width=100
+                        )
 
                 with dpg.tab(label="Общее"):
                     self.main_tab.gui()
