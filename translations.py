@@ -18,3 +18,5 @@ with open("settings.toml", "rb") as f:
 
     else:
         i18n = json.load(open(f"translations/{language}.json"))
+
+# TODO: Remove "epic" from names

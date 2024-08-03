@@ -136,10 +136,9 @@ class Editor:
                     label=i18n["save"],
                     callback=self.dump
                 )
-
                 dpg.add_combo(
                     label=i18n["save_slot"],
-                    width=295,
+                    width=135,
                     items=[],
                     callback=self.change_slot,
                     tag="save_slots"
