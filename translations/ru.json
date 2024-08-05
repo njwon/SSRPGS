@@ -234,8 +234,8 @@
     "premium_awards": "Премиум-награды",
     "tasks_completed": "Целей завершено",
     "tasks_progress": "Прогресс целей",
-    "next_epic": "Следующая легенда",
-    "epic_spawn_pending": "Спавн легенды отложен",
+    "next_legend": "Следующая легенда",
+    "legend_spawn_pending": "Спавн легенды отложен",
     "basic_quest": "Базовый квест",
     
     "active_offline_run": "Активный оффлайн забег",

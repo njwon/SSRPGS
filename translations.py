@@ -1,22 +1,42 @@
+import locale
 import tomllib
 import json
 
-available_languages = [
-    "Русский",
-    "English"
-]
+languages = {
+    "auto": "Auto",
+    "ru": "Русский",
+    "en": "English"
+}
 
 with open("settings.toml", "rb") as f:
     settings = tomllib.load(f)
     language = settings["language"]
-    
-    if language == "auto":
-        pass  # TODO: You know...
+    is_auto = language == "auto"
+
+    # Try to set system language
+    if is_auto:
+        system_language, _ = locale.getlocale()
+        print(f"System language is {system_language}")
         
-        i18n = None
+        if system_language:
+            language = system_language[:2]
+
+    if language not in languages:
+        language = "en"
+
+    i18n = json.load(open(f"translations/{language}.json"))
+    languages["auto"] = i18n["language-auto"]
+
+    # Mark language selection as auto
+    if is_auto:
         i18n["language-name"] = i18n["language-auto"]
 
-    else:
-        i18n = json.load(open(f"translations/{language}.json"))
+def configure_language(_, language):
+    for code in languages:
+        if languages[code] != language:
+            continue
 
-# TODO: Remove "epic" from names
+        with open("settings.toml", "w") as config:
+            config.write(f'language = "{code}"\n')
+            print(f"Default language is set to {code}")
+            return

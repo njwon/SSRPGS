@@ -234,8 +234,8 @@
     "premium_awards": "Premium awards",
     "tasks_completed": "Tasks completed",
     "tasks_progress": "Tasks progress",
-    "next_epic": "Next legend",
-    "epic_spawn_pending": "Legend spawn pending",
+    "next_legend": "Next legend",
+    "legend_spawn_pending": "Legend spawn pending",
     "basic_quest": "Basic quest",
     
     "active_offline_run": "Active offline run",

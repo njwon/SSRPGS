@@ -159,7 +159,8 @@ class Editor:
                         dpg.add_combo(
                             label=i18n["language"],
                             default_value=i18n["language-name"],
-                            items=available_languages
+                            items=list(languages.values()),
+                            callback=configure_language
                         )
                         add_help(i18n["language_info"])
 

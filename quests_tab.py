@@ -122,13 +122,13 @@ class QuestsTab:
                     user_data=("custom_quests", "basicQuestDate")
                 )
                 dpg.add_input_text(
-                    label=i18n["next_epic"],
+                    label=i18n["next_legend"],
                     tag="nextSpawnDate",
                     callback=self.change,
                     user_data=("custom_quests", "nextSpawnDate")
                 )
                 dpg.add_checkbox(
-                    label=i18n["epic_spawn_pending"],
+                    label=i18n["legend_spawn_pending"],
                     tag="epicSpawnPending",
                     callback=self.change,
                     user_data=("custom_quests", "epicSpawnPending")
