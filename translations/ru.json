@@ -1,7 +1,6 @@
 {
     "language": "Язык",
     "language-name": "Русский",
-    "language-auto": "Автоматически",
     "language_info": "Изменения вступят в силу\nпосле перезагрузки",
 
     "title": "Редактор сохранений Stone Story RPG",
@@ -43,7 +42,7 @@
     "bronze": "Бронза   :.",
 
     "workbench_group": "Верстак",
-    "workbench_all": "Все утилиты",
+    "all_workbench": "Все утилиты",
     "workbench": {
         "mutate": "Изменить",
         "automate": "Автоматизировать",
@@ -102,7 +101,7 @@
     },
 
     "legends_group": "Легенды",
-    "legends_all": "Все легенды",
+    "all_legends": "Все легенды",
     "legends": {
         "epic_croaked": "Наквакать беду",
         "epic_roof_overhead": "Камнеголовый: крыша над головой",
@@ -119,6 +118,46 @@
         "epic_head_over_heels": "Вверх тормашками",
         "epic_transmutable_trials": "Испытания превращением",
         "epic_burnout": "Выгорание"
+    },
+
+    "projects_group": "Проекты",
+    "all_projects": "Все проекты",
+    "projects": {
+        "find_shelter": "Спуститься с утёса",
+        "build_door": "Построить дверь Убежища",
+        "build_workstation": "Построить верстак",
+        "craft_shovel": "Смастерить лопату",
+        "craft_hatchet": "Смастерить топор",
+        "prospect_cliff": "Разведать утёс",
+        "clean_sword": "Почистить меч",
+        "upgrade_workstation_2": "Улучшить верстак",
+        "craft_canoe": "Смастерить каноэ",
+        "dig_cave": "Раскопать трещину в стене",
+        "craft_anvil_hammer": "Смастерить молот",
+        "craft_anvil": "Смастерить наковальню",
+        "upgrade_workstation_3": "Улучшить верстак (2)",
+        "craft_grappling_hook": "Смастерить крюк-кошку",
+        "utility_belt": "Смастерить рабочий пояс",
+        "upgrade_workstation_4": "Улучшить верстак (3)",
+        "make_cauldron": "Смастерить котёл",
+        "make_fire_pit": "Подготовливаем кострище",
+        "light_fire": "Зажечь огонь",
+        "cauldron_fetch_water": "Принести воды",
+        "upgrade_cauldron": "Улучшить котёл",
+        "broken_bridge": "Сломанный мост",
+        "make_planks": "Сделать доски",
+        "fix_bridge": "Починить мост",
+        "make_bowl": "Изготовить мисочку",
+        "fetch_water": "Принести воды",
+        "prepare_paint": "Приготовить краску",
+        "make_paintbrush": "Изготовить кисть",
+        "upgrade_ouroboros": "Улучшить Уроборос",
+        "upgrade_star_stone": "Улучшить Камень Звезды",
+        "fetch_water_yellow": "Принести воды (жёлтый)",
+        "prepare_paint_yellow": "Приготовить краску",
+        "craft_fishing_rod": "Смастерить удочку",
+        "craft_goal_book": "Смастерить книгу исследований",
+        "craft_grappling_hook_lv2": "Улучшить крюк-кошку"
     },
 
     "item": "Предмет",

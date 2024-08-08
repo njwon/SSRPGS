@@ -368,25 +368,25 @@ class InventoryTab:
                 dpg.add_button(label=i18n["cancel"], callback=lambda _: dpg.configure_item("add_field", show=False))
 
         with dpg.group(horizontal=True):
-                with dpg.group(width=175):
-                    dpg.add_text(i18n["items"])
-                    dpg.add_input_text(tag="search_filter", hint=i18n["search"], callback=self.filter_items)
-                    dpg.add_listbox(tag="inventory", num_items=12, callback=self.open_item)
-                    dpg.add_button(label=i18n["create_item"], callback=self.add_item)
+            with dpg.group(width=175):
+                dpg.add_text(i18n["items"])
+                dpg.add_input_text(tag="search_filter", hint=i18n["search"], callback=self.filter_items)
+                dpg.add_listbox(tag="inventory", num_items=12, callback=self.open_item)
+                dpg.add_button(label=i18n["create_item"], callback=self.add_item)
 
-                with dpg.child_window(border=False, no_scrollbar=True):
-                    dpg.add_text(i18n["item_data"], tag="item_info")
+            with dpg.child_window(border=False, no_scrollbar=True):
+                dpg.add_text(i18n["item_data"], tag="item_info")
 
-                    dpg.add_child_window(
-                        height=277,
-                        border=False,
-                        no_scrollbar=True,
-                        tag="item_settings"
-                    )  # Conrainer for item setting
-                    
-                    with dpg.child_window(
-                        border=False,
-                        no_scrollbar=True,
-                    ):
-                        with dpg.group(horizontal=True):
-                            dpg.add_button(label=i18n["add_field"], callback=lambda _: dpg.configure_item("add_field", show=True))
+                dpg.add_child_window(
+                    height=277,
+                    border=False,
+                    no_scrollbar=True,
+                    tag="item_settings"
+                )  # Conrainer for item setting
+                
+                with dpg.child_window(
+                    border=False,
+                    no_scrollbar=True,
+                ):
+                    with dpg.group(horizontal=True):
+                        dpg.add_button(label=i18n["add_field"], callback=lambda _: dpg.configure_item("add_field", show=True))

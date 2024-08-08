@@ -1,7 +1,8 @@
 import dearpygui.dearpygui as dpg
+
 from translations import *
 
-available_locations = (
+locations = (
     "temple",
     "cross_bridge",
     "icy_ridge",
@@ -19,7 +20,7 @@ available_locations = (
     "rocky_plateau",
 )
 
-available_workbench = (
+workbench = (
     "mutate",
     "automate",
     "fuse_enchantments",
@@ -46,12 +47,9 @@ legends = (
     "epic_burnout",
 )
 
-# TODO: Realize wtf it should be there
-TODO = (
+projects = (
     "find_shelter",
-    "rocky_plateau",
     "build_door",
-    "deadwood_valley",
     "build_workstation",
     "craft_shovel",
     "craft_hatchet",
@@ -60,38 +58,21 @@ TODO = (
     "upgrade_workstation_2",
     "craft_canoe",
     "dig_cave",
-    "caustic_caves",
     "craft_anvil_hammer",
     "craft_anvil",
-    "anvil",
-    "cross_deadwood_river",
-    "bronze_gate",
     "upgrade_workstation_3",
     "craft_grappling_hook",
     "utility_belt",
-    "waterfall",
-    "fungus_forest",
-    "undead_crypt_intro",
-    "undead_crypt",
-    "bronze_mine",
     "upgrade_workstation_4",
     "make_cauldron",
-    "icy_ridge",
-    "break_apart_items",
     "make_fire_pit",
     "light_fire",
     "cauldron_fetch_water",
-    "brew_potion",
     "upgrade_cauldron",
     "broken_bridge",
-    "fuse_enchantments",
     "make_planks",
     "fix_bridge",
-    "cross_bridge",
-    "temple",
-    "automate",
     "make_bowl",
-    "mutate",
     "fetch_water",
     "prepare_paint",
     "make_paintbrush",
@@ -102,17 +83,14 @@ TODO = (
     "craft_fishing_rod",
     "craft_goal_book",
     "craft_grappling_hook_lv2",
-    "mushroom_shop",
-    "uulaa_shop"
 )
-
-all_quests = available_locations + available_workbench
 
 class ProgressTab:
     def __init__(self, save):
         self.save = save
         self.quests = None
         self.legends = None
+        self.records = None
 
     def load(self):
         if "records" not in self.save["progress_data"]["custom_quests"]:
@@ -122,21 +100,23 @@ class ProgressTab:
         self.legends = self.save["progress_data"]["custom_quests"]["revealed"]
         self.records = self.save["progress_data"]["custom_quests"]["records"]
 
-        all_locations_opened = all([quest in self.quests for quest in available_locations])
-        all_workbench_opened = all([quest in self.quests for quest in available_workbench])
+        all_locations_opened = all([quest in self.quests for quest in locations])
+        all_workbench_opened = all([quest in self.quests for quest in workbench])
+        all_projects_opened = all([quest in self.quests for quest in projects])
         all_legends_opened = all([legend in self.legends for legend in legends])
 
         dpg.configure_item("all_locations", default_value=all_locations_opened)
         dpg.configure_item("all_workbench", default_value=all_workbench_opened)
+        dpg.configure_item("all_projects", default_value=all_projects_opened)
         dpg.configure_item("all_legends", default_value=all_legends_opened)
 
-        for quest in all_quests:
+        for quest in locations + workbench + projects:
             dpg.configure_item(quest, default_value=quest in self.quests)
-
+        
         for legend in legends:
             dpg.configure_item(legend, default_value=legend in self.legends)
 
-    def switch(self, _, value, quest):
+    def switch_quest(self, _, value, quest):
         if not self.save.is_loaded():
             return
 
@@ -149,37 +129,45 @@ class ProgressTab:
             print(f"Closed {quest}")
 
     def switch_legend(self, _, value, legend):
+        if not self.save.is_loaded():
+            return
+
         if not value and legend in self.legends:
             self.legends.remove(legend)
 
+            # Get legend index from list and lock it
             for i, legend_data in enumerate(self.records):
                 if legend_data["questId"] == legend:
                     self.records[i]["unlocked"] = False
-                    print(f"Closed {legend} legend")
+                    print(f"Locked {legend} legend")
                     return
 
         if value and legend not in self.legends:
             self.legends.append(legend)
+
+            # Get legend index from list and unlock it
             for i, legend_data in enumerate(self.records):
                 if legend_data["questId"] == legend:
                     legend_data["unlocked"] = True
                     break
+
             else:
                 self.records.append({
                     "questId": legend,
                     "unlocked": True
                 })
 
-            print(f"Opened {legend} legend")
+            print(f"Unlocked {legend} legend")
 
-    def switch_all(self, _, value, function_and_values):
-        function, values = function_and_values
+    def switch_all(self, _, value, function_and_fields):
         if not self.save.is_loaded():
             return
 
-        for quest in values:
-            dpg.configure_item(quest, default_value=value)
-            function(_, value, quest)
+        function, fields = function_and_fields
+
+        for field in fields:
+            dpg.configure_item(field, default_value=value)
+            function(_, value, field)
 
     def gui(self):
         with dpg.child_window(no_scrollbar=True, border=False):
@@ -189,48 +177,69 @@ class ProgressTab:
 
                 with dpg.table_row():
                     with dpg.group():
+                        # Locations
                         dpg.add_text(i18n["locations_group"])
                         dpg.add_checkbox(
                             label=i18n["all_locations"],
                             tag="all_locations",
                             callback=self.switch_all,
-                            user_data=(self.switch, available_locations)
+                            user_data=(self.switch_quest, locations)
                         )
 
-                        for quest in available_locations:
+                        for quest in locations:
                             dpg.add_checkbox(
                                 label=i18n["locations"][quest],
                                 tag=quest,
-                                callback=self.switch,
+                                callback=self.switch_quest,
                                 user_data=quest
                             )
 
+                        # Workbench
                         dpg.add_text(i18n["workbench_group"])
                         dpg.add_checkbox(
-                            label=i18n["workbench_all"],
+                            label=i18n["all_workbench"],
                             tag="all_workbench",
                             callback=self.switch_all,
-                            user_data=(self.switch, available_workbench)
+                            user_data=(self.switch_quest, workbench)
                         )
 
-                        for quest in available_workbench:
+                        for quest in workbench:
                             dpg.add_checkbox(
                                 label=i18n["workbench"][quest],
                                 tag=quest,
-                                callback=self.switch,
+                                callback=self.switch_quest,
                                 user_data=quest
                             )
 
+                        # Projects
+                        dpg.add_text(i18n["projects_group"])
+                        dpg.add_checkbox(
+                            label=i18n["all_projects"],
+                            tag="all_projects",
+                            callback=self.switch_all,
+                            user_data=(self.switch_quest, projects)
+                        )
+
+                        with dpg.group():
+                            for project in projects:
+                                dpg.add_checkbox(
+                                    label=i18n["projects"][project],
+                                    tag=project,
+                                    callback=self.switch_quest,
+                                    user_data=project
+                                )
+
                     with dpg.group():
+                        # Legends
                         dpg.add_text(i18n["legends_group"])
                         dpg.add_checkbox(
-                            label=i18n["legends_all"],
+                            label=i18n["all_legends"],
                             tag="all_legends",
                             callback=self.switch_all,
                             user_data=(self.switch_legend, legends)
                         )
 
-                        with dpg.group(parent="legends"):
+                        with dpg.group():
                             for legend in legends:
                                 dpg.add_checkbox(
                                     label=i18n["legends"][legend],

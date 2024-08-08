@@ -1,7 +1,6 @@
 {
     "language": "Language",
     "language-name": "English",
-    "language-auto": "Auto",
     "language_info": "The changes will take effect after reboot.",
 
     "title": "Stone Story RPG save editor",
@@ -43,7 +42,7 @@
     "bronze": "Bronze   :.",
 
     "workbench_group": "Workbench",
-    "workbench_all": "All utilities",
+    "all_workbench": "All utilities",
     "workbench": {
         "mutate": "Mutate",
         "automate": "Automate",
@@ -102,7 +101,7 @@
     },
 
     "legends_group": "Legends",
-    "legends_all": "All legends",
+    "all_legends": "All legends",
     "legends": {
         "epic_croaked": "Croaked",
         "epic_roof_overhead": "Stone-Head: A Roof Overhead",
@@ -119,6 +118,46 @@
         "epic_head_over_heels": "Head Over Heels",
         "epic_transmutable_trials": "Transmutable Trials",
         "epic_burnout": "Burnout"
+    },
+
+    "projects_group": "Projects",
+    "all_projects": "All projects",
+    "projects": {
+        "find_shelter": "Descent Cliff",
+        "build_door": "Build Shelter Door",
+        "build_workstation": "Build Workstation",
+        "craft_shovel": "Craft Shovel",
+        "craft_hatchet": "Craft Hatchet",
+        "prospect_cliff": "Prospect Cilff",
+        "clean_sword": "Clean the Sword",
+        "upgrade_workstation_2": "Upgrade Workstation",
+        "craft_canoe": "Craft Canoe",
+        "dig_cave": "Dig Wall Fissure",
+        "craft_anvil_hammer": "Craft Smithy Hammer",
+        "craft_anvil": "Craft Anvil",
+        "upgrade_workstation_3": "Upgrade Workstation (2)",
+        "craft_grappling_hook": "Craft Grappling Hook",
+        "utility_belt": "Craft Utility Belt",
+        "upgrade_workstation_4": "Upgrade Workstation (3)",
+        "make_cauldron": "Make Cauldron",
+        "make_fire_pit": "Prepare Fire Pit",
+        "light_fire": "Light Fire",
+        "cauldron_fetch_water": "Fetch Water",
+        "upgrade_cauldron": "Upgrade Cauldron",
+        "broken_bridge": "Broken Bridge",
+        "make_planks": "Make Planks",
+        "fix_bridge": "Fix Bridge",
+        "make_bowl": "Make Small Bowl",
+        "fetch_water": "Fetch Water",
+        "prepare_paint": "Prepare Paint",
+        "make_paintbrush": "Make Paintbrush",
+        "upgrade_ouroboros": "Upgrade Ouroboros",
+        "upgrade_star_stone": "Upgrade Star Stone",
+        "fetch_water_yellow": "Fetch Water (yellow)",
+        "prepare_paint_yellow": "Prepare Paint",
+        "craft_fishing_rod": "Craft Fishing Rod",
+        "craft_goal_book": "Craft R&D Book",
+        "craft_grappling_hook_lv2": "Upgrade Grappling Hook"
     },
 
     "item": "Item",

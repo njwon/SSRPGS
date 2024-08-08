@@ -3,7 +3,6 @@ import tomllib
 import json
 
 languages = {
-    "auto": "Auto",
     "ru": "Русский",
     "en": "English"
 }
@@ -25,11 +24,6 @@ with open("settings.toml", "rb") as f:
         language = "en"
 
     i18n = json.load(open(f"translations/{language}.json"))
-    languages["auto"] = i18n["language-auto"]
-
-    # Mark language selection as auto
-    if is_auto:
-        i18n["language-name"] = i18n["language-auto"]
 
 def configure_language(_, language):
     for code in languages:

@@ -16,6 +16,9 @@ from times_tab import TimesTab
 from translations import *
 from utils import loading, add_help
 
+REMAP_START = 0x10ec77
+REMAP_END = 0x10ffff
+
 class Editor:
     def __init__(self):
         self.init_dpg()
@@ -44,19 +47,16 @@ class Editor:
 
                 # Adds ~7,5 millisecond to init time...
                 # Remap 5k of Unicode chars to indexes for inventory tab
-                dpg.add_font_range(0x10ec77, 0x10ffff)
-                for char in range(0x10ec77, 0x10ffff):
+                dpg.add_font_range(REMAP_START, REMAP_END)
+                for char in range(REMAP_START, REMAP_END):
                     dpg.add_char_remap(char, ord(" "))
-                
+
                 dpg.bind_font(font)
 
     def load(self):
         save_file = check_output(
             [executable, "get_file.py"]
         )  # I don't know what's wrong with dpg
-        
-        if not save_file:
-            return
 
         save_file = str(save_file, encoding="utf-8")
         print(f"Gathered save file {save_file}")
@@ -74,20 +74,14 @@ class Editor:
             print(f"Loading denied")
             return
 
+        # Update tabs
         dpg.configure_item(
             "save_slots",
             items=self.save.save_slots,
             default_value=self.save.save_slot
         )
-        
-        # Load data to tabs
-        self.main_tab.load()
-        self.progress_tab.load()
-        self.locations_tab.load()
-        self.inventory_tab.load()
-        self.cosmetics_tab.load()
-        self.quests_tab.load()
-        self.times_tab.load()
+
+        self.change_slot("load", self.save.save_slot)
 
     def dump(self):
         if not self.save.is_loaded():
@@ -109,13 +103,10 @@ class Editor:
             self.save.save_as_json(save_file)
             print("Saved as .json")
 
-        else:
-            print("Saving denied")
-
     def change_slot(self, _, new_save_slot):
         self.save.save_slot = new_save_slot
 
-        # Sync values to fields
+        # Sync values in fields
         self.main_tab.load()
         self.progress_tab.load()
         self.locations_tab.load()
@@ -128,11 +119,11 @@ class Editor:
         with dpg.window(tag="Editor"):
             # Header
             with dpg.menu_bar():
-                dpg.add_menu_item(
+                dpg.add_button(
                     label=i18n["open"],
                     callback=self.load
                 )
-                dpg.add_menu_item(
+                dpg.add_button(
                     label=i18n["save"],
                     callback=self.dump
                 )
@@ -188,7 +179,13 @@ class Editor:
     def run(self):
         self.gui()
 
-        dpg.create_viewport(title=i18n["title"], width=600, height=398)
+        dpg.create_viewport(
+            title=i18n["title"],
+            width=600,
+            height=394,
+            small_icon="icon.ico",
+            resizable=False
+        )
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.set_primary_window("Editor", True)
