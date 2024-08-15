@@ -77,6 +77,7 @@ class MainTab:
 
             dpg.add_separator()
             dpg.add_text(i18n["resources"])
+
             for resource in resources:
                 dpg.add_input_int(
                     label=resources[resource],

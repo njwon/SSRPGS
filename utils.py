@@ -1,25 +1,26 @@
 import dearpygui.dearpygui as dpg
 
 def loading():
+    class LoadingWindow:
+        def __enter__(self):
+            with dpg.window(
+                modal=True,
+                no_title_bar=True,
+                no_resize=True,
+                no_move=True,
+                tag="loading",
+                pos=[(600 - 64) // 2, (394 - 64) // 2],
+                width=64,
+                height=64,
+                min_size=[32, 32],
+                no_background=True
+            ):
+                dpg.add_loading_indicator(circle_count=8)
+
+        def __exit__(self, *_):
+            dpg.delete_item("loading")
+    
     return LoadingWindow()
-
-class LoadingWindow:
-    def __enter__(self):
-        with dpg.window(
-            modal=True,
-            no_title_bar=True,
-            no_resize=True,
-            no_move=True,
-            tag="loading",
-            pos=[(600 - 64) // 2, (400 - 64) // 2],
-            width=64,
-            height=64,
-            min_size=[32, 32]
-        ):
-            dpg.add_loading_indicator(circle_count=8)
-
-    def __exit__(self, *_):
-        dpg.delete_item("loading")
 
 # Green (?) block, on hover returns popup
 def add_help(message, parent=0):

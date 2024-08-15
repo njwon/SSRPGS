@@ -85,6 +85,7 @@ items = {
 }
 
 fields = {
+    "da lv": 1,
     "da co": 0,
     "da hI": True,
     "da sig": "",

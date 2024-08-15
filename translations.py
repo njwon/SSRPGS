@@ -7,6 +7,22 @@ languages = {
     "en": "English"
 }
 
+class TranslationDict:
+    def __init__(self, value):
+        self.value = value
+
+    def __getitem__(self, key):
+        if key in self.value:
+            return self.value[key]
+
+        return TranslationDict(key)
+    
+    def __add__(self, other):
+        return self.value + other
+
+    def __repr__(self):
+        return str(self.value)
+
 with open("settings.toml", "rb") as f:
     settings = tomllib.load(f)
     language = settings["language"]
@@ -23,7 +39,7 @@ with open("settings.toml", "rb") as f:
     if language not in languages:
         language = "en"
 
-    i18n = json.load(open(f"translations/{language}.json"))
+    i18n = TranslationDict(json.load(open(f"translations/{language}.json")))
 
 def configure_language(_, language):
     for code in languages:

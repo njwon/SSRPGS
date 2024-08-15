@@ -60,7 +60,7 @@
     "location_stars": "Число звёзд",
     "add_location": "Добавить локацию",
     "mark_location_as_completed": "Отметить как завершённую",
-    "locations_list_info": "Имена локаций:\nrocky_plateau    Каменистое плато\ndeadwood_valley  Каньон Дедвуд\ncaustic_caves    Пещеры страха\nfungus_forest    Грибной лес\nundead_crypt     Призрачные залы\nbronze_mine      Бурлящая шахта\nicy_ridge        Ледяной хребет\ntemple           Храм\n\nУровни:\n★ 1-5    Белый\n★ 6-10   Бирюзовый\n★ 11-15  Жёлтый\n",
+    "locations_list_info": "Уровни:\n★ 1-5    Белый\n★ 6-10   Бирюзовый\n★ 11-15  Жёлтый\n\nКамень Звезды x уровня определяет максимальный\n5 * x возможный уровень локации\n\nКамень Уроборос 2 уровня открывает оффлайн фарм",
     "location_resources_info": "Для каждй локации свой ресурс:\no    Камень     Каменистое плато\n_/`  Древесина  Каньон Дедвуд\n≈    Смола      Пещеры страха\n:.   Бронза     Бурлящая шахта\n",
     "average_run_data": "Данные среднего забега",
     "time_measured_in_frames_info": "Время отмеряется кадрами:\n30 кадров = 1 секунда",
@@ -97,7 +97,7 @@
         "devoured_fire": "Нанесено огнём",
         "devoured_ice": "Нанесено льдом",
         "devoured_poison": "Нанесено ядом",
-        "devoured_vigor": "Нанесено энергией"
+        "devoured_vigor": "Нанесено силой"
     },
 
     "legends_group": "Легенды",

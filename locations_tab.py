@@ -43,153 +43,130 @@ class LocationsTab:
     def __init__(self, save):
         self.save = save
         self.quest_data = None
+        self.star_levels = None
 
         self.location = None
 
     def load(self):
         self.quest_data = self.save["progress_data"]["quest_data"]
+        self.star_levels = self.save["progress_data"]["quest_data"]["star_levels"]
         self.filter_search("load", dpg.get_value("filter_search"))
 
     def filter_search(self, _, filter_key=""):
         if not self.save.is_loaded():
             return
         
+        # Get available locations by star level
+        location_names = []
+
+        for location in self.star_levels:
+            for star_level in range(3, self.star_levels[location] + 1):
+                location_names.append(f"{location}{star_level}")
+        
         location_names = natsorted([
-            location["id"] for location in self.quest_data["stats"]
-            if filter_key in location["id"]
+            location for location in location_names
+            if filter_key in location
         ])
 
-        if not location_names:        
+        if not location_names:
             dpg.configure_item("location_names", items=location_names)
             dpg.configure_item("stats", show=False)
             
             print("No locations available")
             return
-        
-        # Select last selected location or first of available
-        location_to_select = location_names[0]
-        if self.location and self.location["id"] in location_names:
-            location_to_select = self.location["id"]
 
-        dpg.configure_item("stats", show=True)
-        dpg.configure_item("location_names", items=location_names, default_value=location_to_select)
-        self.select_location("load", location_to_select)
+        # Select location for combo
+        last_selected_location = dpg.get_value("location_names")
+        if last_selected_location in location_names:
+            location_to_select = last_selected_location
+        else:
+            location_to_select = location_names[0]
+
+        dpg.configure_item(
+            "location_names",
+            items=location_names,
+            default_value=location_to_select
+        )
+        dpg.configure_item(
+            "stats",
+            show=True
+        )
+        self.select_location(
+            "load",
+            location_to_select
+        )
 
     def select_location(self, _, location_name):
         self.location = None
+
+        # Get location from list
         for location in self.quest_data["stats"]:
             if location["id"] == location_name:
                 self.location = location
                 break
-        else:
-            print(f"Location {location_name} not found!")
-        
+
+        # Load stats to fields
         for stat_group in stats:
             for stat in stats[stat_group]:
-                if stat in self.location:
+                if self.location and stat in self.location:
                     dpg.configure_item(stat, default_value=self.location[stat])
                 else:
                     dpg.configure_item(stat, default_value=0)
 
     def add_location(self):
         dpg.configure_item("add_location", show=False)
-
+ 
         if not self.save.is_loaded():
             return
 
         location_name = dpg.get_value("add_location_name")
         location_stars = dpg.get_value("add_location_stars")
-        is_completed = dpg.get_value("add_location_mark_as_completed")
-        
+
         location = f"{location_name}{location_stars}"
-        
-        # Exit if location already in stats
-        for location_stats in self.quest_data["stats"]:
-            if location_stats["id"] == location:
-                print(f"Location {location} already exists!")
-                dpg.configure_item("location_names", default_value=location)
-                self.select_location("add_location", location)
-                return
 
-        # Mark star level
-        star_levels = self.quest_data["star_levels"]
-
-        if location_name in star_levels:
-            if star_levels[location_name] < location_stars:
-                star_levels[location_name] = location_stars
-        else:
-            star_levels[location_name] = location_stars
-
-        print(f"Location {location_name} star level now is {star_levels[location_name]}")
-
-        # Create location
-        dpg.configure_item("stats", show=True)
-        self.quest_data["stats"].append({
-            "id": location,
-            "bT": 0,
-            "aT": 0,
-            "aHl": 0,
-            "aHg": 0,
-            "aKg": 0
-        })
-        
-        # Check if previous stars completed
-        for stars in range(1, location_stars):
-            previous_location = f"{location_name}{stars}"
-
-            if location_name not in self.quest_data["has_completed"]:
-                self.quest_data["has_completed"].append(location_name)
-
-            if previous_location not in self.quest_data["has_completed"]:
-                print(f"Mark as completed {previous_location}")
-                if stars >= 3:
-                    self.quest_data["stats"].append({
-                        "id": previous_location,
-                        "bT": 0,
-                        "aT": 0,
-                        "aHl": 0,
-                        "aHg": 0,
-                        "aKg": 0
-                    })
-                self.quest_data["has_completed"].append(previous_location)
-
-        if is_completed:
-            self.quest_data["has_completed"].append(location)
-
-        if location_name not in self.quest_data["available"]:
-            dpg.configure_item(location_name, default_value=True)
-            print(f"New set for {location_name} location created")
-            self.quest_data["available"].append(location_name)
-            self.quest_data["stats"].append({
-                "id": location_name,
-                "lpDiff": location_stars,
-            })
-
-        # Mark aspiring_stars if location is last
-        if location_stars == 15:
-            if location_name in self.quest_data["aspiring_star_ids"]:
-                i = self.quest_data["aspiring_star_ids"].index(location_name) 
-                self.quest_data["aspiring_stars"][i] = str(location_stars + 1)
+        # Open location by star level
+        if location_name in self.star_levels:
+            if self.star_levels[location_name] < location_stars:
+                self.star_levels[location_name] = location_stars
             else:
-                self.quest_data["aspiring_star_ids"].append(location_name)
-                self.quest_data["aspiring_stars"].append(str(location_stars + 1))
+                print(f"Location {location} already exists!")
+        else:
+            self.star_levels[location_name] = location_stars
 
-        # self.load()
-        self.filter_search("add_location", "")
+        # Check location availability
+        if location_name not in self.quest_data["available"]:
+            dpg.configure_item(  # Call to progress tab
+                location_name,
+                default_value=True
+            )
 
+            self.quest_data["available"].append(location_name)
+            print(f"Marked location {location_name} as available")
+
+        # Clear filter and open new location
         dpg.configure_item("location_names", default_value=location)
+        dpg.configure_item("filter_search", default_value="")
+
+        self.filter_search("add_location", "")
         self.select_location("add_location", location)
 
     def change(self, _, value, stat):
+        if not self.location:
+            self.location = {"id": dpg.get_value("location_names")}
+            self.quest_data["stats"].append(self.location)
+
+            print(f"Created stats for location {self.location["id"]}")
+
         self.location[stat] = value
         print(f"Changed field: {stat}: {self.location[stat]}")
 
     def gui(self):
+        # Add location window
         with dpg.window(
             label=i18n["add_location"],
-            pos=((600 - 350) // 2, (400 - 140) // 2),
+            pos=((600 - 350) // 2, (394 - 112) // 2),
             width=350,
-            height=140,
+            height=112,
             show=False,
             tag="add_location"
         ):
@@ -204,25 +181,25 @@ class LocationsTab:
                 label=i18n["location_stars"],
                 default_value=3,
                 min_value=3,
-                max_value=15,
                 min_clamped=True,
-                max_clamped=True,
                 width=200,
                 tag="add_location_stars"
             )
-            dpg.add_checkbox(
-                label=i18n["mark_location_as_completed"],
-                tag="add_location_mark_as_completed"
-            )
-
             with dpg.group(horizontal=True):
-                dpg.add_button(label=i18n["create"], callback=self.add_location)
+                dpg.add_button(
+                    label=i18n["create"],
+                    callback=self.add_location
+                )
                 dpg.add_button(
                     label=i18n["cancel"],
-                    callback=lambda _: dpg.configure_item("add_location", show=False)
+                    callback=lambda _: dpg.configure_item(
+                        "add_location",
+                        show=False
+                    )
                 )
 
         with dpg.group(horizontal=True):
+            # List of available locations
             with dpg.group(width=175):
                 dpg.add_text(i18n["visited_locations"])
                 add_help(i18n["locations_list_info"])
@@ -239,9 +216,13 @@ class LocationsTab:
                 )
                 dpg.add_button(
                     label=i18n["add"],
-                    callback=lambda _: dpg.configure_item("add_location", show=True)
+                    callback=lambda _: dpg.configure_item(
+                        "add_location",
+                        show=True
+                    )
                 )
-            
+
+            # Location stats
             with dpg.group():
                 dpg.add_text(i18n["location_information"])
                 add_help(i18n["time_measured_in_frames_info"])
@@ -252,9 +233,12 @@ class LocationsTab:
                     show=False,
                     no_scrollbar=True
                 ):
+                    # Time values
                     for time_value in stats["time_values"]:
                         dpg.add_input_int(
-                            label=i18n["location_stats"][stats["time_values"][time_value]],
+                            label=i18n["location_stats"][
+                                stats["time_values"][time_value]
+                            ],
                             tag=time_value,
                             width=200,
                             callback=self.change,
@@ -264,6 +248,7 @@ class LocationsTab:
                     dpg.add_separator()
                     dpg.add_text(i18n["average_run_data"])
 
+                    # Average values
                     for average_value in stats["average_values"]:
                         dpg.add_input_double(
                             label=i18n["location_stats"][stats["average_values"][average_value]],
@@ -275,6 +260,7 @@ class LocationsTab:
 
                     add_help(i18n["location_resources_info"])
 
+                    # Damage
                     dpg.add_separator()
                     dpg.add_text(i18n["damage"])
 
@@ -286,14 +272,17 @@ class LocationsTab:
                             callback=self.change,
                             user_data=damage_value
                         )
-                    
+
+                    # Element damage
                     dpg.add_separator()
-                    dpg.add_text(i18n["damage"])
+                    dpg.add_text(i18n["element_damage"])
                     add_help(i18n["element_damage_affect_on_rune_info"])
 
                     for element_damage_type in stats["element_damage_values"]:
                         dpg.add_input_double(
-                            label=i18n["location_stats"][stats["element_damage_values"][element_damage_type]],
+                            label=i18n["location_stats"][
+                                stats["element_damage_values"][element_damage_type]
+                            ],
                             tag=element_damage_type,
                             width=200,
                             callback=self.change,

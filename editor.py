@@ -69,7 +69,7 @@ class Editor:
         elif save_file.endswith(".json"):
             print("Loading as .json")
             self.save.open_from_json("formatted.json")
-        
+
         else:
             print(f"Loading denied")
             return
@@ -114,7 +114,7 @@ class Editor:
         self.cosmetics_tab.load()
         self.quests_tab.load()
         self.times_tab.load()
-    
+
     def gui(self):
         with dpg.window(tag="Editor"):
             # Header
@@ -134,7 +134,7 @@ class Editor:
                     callback=self.change_slot,
                     tag="save_slots"
                 )
-                
+
             # Tabs
             with dpg.tab_bar():
                 with dpg.tab(label=i18n["major_tab"]):
@@ -180,12 +180,15 @@ class Editor:
         self.gui()
 
         dpg.create_viewport(
-            title=i18n["title"],
+            title=str(i18n["title"]),
             width=600,
             height=394,
             small_icon="icon.ico",
-            resizable=False
+            resizable=False,
+            x_pos=400,
+            y_pos=400
         )
+
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.set_primary_window("Editor", True)
