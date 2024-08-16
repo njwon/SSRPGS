@@ -98,7 +98,6 @@ class Editor:
             with loading():
                 self.save.save(save_file)
                 print("Saved as .txt")
-
         elif save_file.endswith(".json"):
             self.save.save_as_json(save_file)
             print("Saved as .json")
