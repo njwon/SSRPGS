@@ -13,6 +13,9 @@
     "create": "Create",
     "cancel": "Cancel",
     "save_slot": "Save slot",
+    "copy_code": "Copy code",
+    "paste_code": "Paste code",
+    "management": "Management",
     
     "add": "Add",
     "field": "Field",

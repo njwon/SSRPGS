@@ -417,7 +417,7 @@ class InventoryTab:
             parent="item_settings",
         ):
             dpg.add_separator()
-            dpg.add_text("Управление")
+            dpg.add_text(i18n["management"])
             with dpg.group(horizontal=True):
                 dpg.add_button(
                     label=i18n["add_field"],
@@ -427,13 +427,13 @@ class InventoryTab:
                     )
                 )
                 dpg.add_button(
-                    label="Скопировать код",
+                    label=i18n["copy_code"],
                     callback=lambda _: copy(
                         json.dumps(self.item, ensure_ascii=False)
                     )
                 )
                 dpg.add_button(
-                    label="Вставить код",
+                    label=i18n["paste_code"],
                     callback=self.paste,
                 )
 
