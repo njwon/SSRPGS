@@ -1,7 +1,7 @@
 import dearpygui.dearpygui as dpg
 
-from utils import add_help
 from translations import *
+from utils import add_help
 
 resources = {
     "Stone": i18n["stone"],

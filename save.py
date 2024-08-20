@@ -177,28 +177,27 @@ class Save:
 
 # Load from json and write
 # save = Save()
-# save.open("primary_save.txt")
-# save.save_as_json("del.json")
-# save.save("del.txt")
+# save.open_from_json("formatted.json")
 
-# save = Save()
-# save.save_json = json.load(open("formatted.json"))
-# save.save("primary_save.txt")
-
-# Get all unique tags from inventory items
+# # Get all unique tags from inventory items
 # unique = {}
+# abss = set()
 # def unroll(item, layer=0):
 #     if layer not in unique:
 #         unique[layer] = set()
 
 #     for key in item:
 #         unique[layer].add(key)
+
+#         if key == "abs":
+#             for i in item[key]:
+#                 abss.add(i)
         
 #         if isinstance(item[key], dict):
-#             unroll(item[key], layer+1)
+#             unroll(item[key], layer + 1)
 
-# for item in save.save_json["save_file_40"]["progress_data"]["inventory_data"]["itms"]:
+# for item in save["progress_data"]["inventory_data"]["itms"]:
 #     unroll(item)
 
-# from pprint import pprint
-# pprint(unique)
+# print(unique)
+# print(abss)

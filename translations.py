@@ -13,7 +13,7 @@ class TranslationDict:
 
     def __getitem__(self, key):
         if key in self.value:
-            return self.value[key]
+            return TranslationDict(self.value[key])
 
         return TranslationDict(key)
     

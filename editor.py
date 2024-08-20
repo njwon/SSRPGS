@@ -184,8 +184,8 @@ class Editor:
             height=394,
             small_icon="icon.ico",
             resizable=False,
-            x_pos=400,
-            y_pos=400
+            x_pos=450,
+            y_pos=350
         )
 
         dpg.setup_dearpygui()

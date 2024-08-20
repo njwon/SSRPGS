@@ -1,8 +1,8 @@
 import dearpygui.dearpygui as dpg
 from natsort import natsorted
 
-from utils import add_help
 from translations import *
+from utils import add_help
 
 stats = {
     "time_values": {
@@ -50,7 +50,7 @@ class LocationsTab:
     def load(self):
         self.quest_data = self.save["progress_data"]["quest_data"]
         self.star_levels = self.save["progress_data"]["quest_data"]["star_levels"]
-        self.filter_search("load", dpg.get_value("filter_search"))
+        self.filter_search("load", dpg.get_value("location_filter"))
 
     def filter_search(self, _, filter_key=""):
         if not self.save.is_loaded():
@@ -145,7 +145,7 @@ class LocationsTab:
 
         # Clear filter and open new location
         dpg.configure_item("location_names", default_value=location)
-        dpg.configure_item("filter_search", default_value="")
+        dpg.configure_item("location_filter", default_value="")
 
         self.filter_search("add_location", "")
         self.select_location("add_location", location)
@@ -206,7 +206,7 @@ class LocationsTab:
 
                 dpg.add_input_text(
                     hint=i18n["search"],
-                    tag="filter_search",
+                    tag="location_filter",
                     callback=self.filter_search
                 )
                 dpg.add_listbox(
@@ -251,7 +251,9 @@ class LocationsTab:
                     # Average values
                     for average_value in stats["average_values"]:
                         dpg.add_input_double(
-                            label=i18n["location_stats"][stats["average_values"][average_value]],
+                            label=i18n["location_stats"][
+                                stats["average_values"][average_value]
+                            ],
                             tag=average_value,
                             width=200,
                             callback=self.change,
@@ -266,7 +268,9 @@ class LocationsTab:
 
                     for damage_value in stats["damage_values"]:
                         dpg.add_input_double(
-                            label=i18n["location_stats"][stats["damage_values"][damage_value]],
+                            label=i18n["location_stats"][
+                                stats["damage_values"][damage_value]
+                            ],
                             tag=damage_value,
                             width=200,
                             callback=self.change,
