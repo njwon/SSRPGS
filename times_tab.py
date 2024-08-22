@@ -2,6 +2,10 @@ import dearpygui.dearpygui as dpg
 from translations import *
 from utils import add_help
 
+# Time regex
+# \d{2}/\d{2}/\d{4}\s\d{2}:\d{2}:\d{2}
+# DD.MM.YYYY HH:MM:SS
+
 class TimesTab:
     def __init__(self, save):
         self.save = save
@@ -133,6 +137,3 @@ class TimesTab:
             dpg.add_group(tag="rewards")
 
             dpg.add_group(tag="active_run")
-
-# time regex
-# \d{2}/\d{2}/\d{4}\s\d{2}:\d{2}:\d{2}

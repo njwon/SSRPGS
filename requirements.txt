@@ -1,0 +1,4 @@
+dearpygui==1.11.1
+natsort==8.4.0
+pprp==0.2.5
+pyperclip==1.8.2

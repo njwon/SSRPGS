@@ -1,4 +1,5 @@
 import dearpygui.dearpygui as dpg
+
 from translations import *
 
 items = {
@@ -98,7 +99,7 @@ class CosmeticsTab:
             if index != -1:
                 golden = True
                 golden_is_new = self.cosmetics["golden"][index].endswith(";new")
-            
+
             prismatic = False
             prismatic_is_new = False
             extra = (0, 0, 0)
