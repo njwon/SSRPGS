@@ -13,11 +13,8 @@ from progress_tab import ProgressTab
 from quests_tab import QuestsTab
 from times_tab import TimesTab
 
-from translations import *
+from setup import *
 from utils import loading, add_help
-
-REMAP_START = 0x10ec77
-REMAP_END = 0x10ffff
 
 class Editor:
     def __init__(self):
@@ -39,17 +36,33 @@ class Editor:
 
     def init_font(self):
         with dpg.font_registry():
-            with dpg.font("mononoki-Regular.ttf", 32) as font:
+            font_file = "mononoki-Regular.ttf"
+            font_size = 32 * SCALE
+
+            with dpg.font(font_file, font_size) as font:
                 dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
                 dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
                 dpg.add_font_chars([ord(c) for c in "♦≈★"])
+
                 dpg.set_global_font_scale(0.5)
+
+                # Fix russian input (visually)
+                # if IS_NT:
+                #     dpg.add_char_remap(0xa8, 0x401)  # Ёё
+                #     dpg.add_char_remap(0xb8, 0x451)
+                    
+                #     # Othes glyphs
+                #     utf = 0x410
+                #     for i in range(0xc0, 0x100):
+                #         dpg.add_char_remap(i, utf)
+
+                #         utf += 1
 
                 # Adds ~7,5 millisecond to init time...
                 # Remap 5k of Unicode chars to indexes for inventory tab
                 dpg.add_font_range(REMAP_START, REMAP_END)
                 for char in range(REMAP_START, REMAP_END):
-                    dpg.add_char_remap(char, ord(" "))
+                    dpg.add_char_remap(char, 0x20)  # Whitespace
 
                 dpg.bind_font(font)
 
@@ -128,7 +141,7 @@ class Editor:
                 )
                 dpg.add_combo(
                     label=i18n["save_slot"],
-                    width=135,
+                    width=135 * SCALE,
                     items=[],
                     callback=self.change_slot,
                     tag="save_slots"
@@ -153,6 +166,13 @@ class Editor:
                             callback=configure_language
                         )
                         add_help(i18n["language_info"])
+
+                        if IS_NT:
+                            dpg.add_checkbox(
+                                label="Удвоить разрешение",
+                                default_value=settings["upscale"],
+                                callback=configure_scale
+                            )
 
                 with dpg.tab(label=i18n["main_tab"]):
                     self.main_tab.gui()
@@ -180,12 +200,11 @@ class Editor:
 
         dpg.create_viewport(
             title=str(i18n["title"]),
-            width=600,
-            height=394,
-            small_icon="icon.ico",
-            resizable=False,
-            x_pos=450,
-            y_pos=350
+            width=WIDTH * SCALE,
+            height=HEIGHT * SCALE + OFFSET,
+            small_icon="images/icon.ico",
+            x_pos=450 * SCALE,
+            y_pos=350 * SCALE
         )
 
         dpg.setup_dearpygui()

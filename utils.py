@@ -1,5 +1,7 @@
 import dearpygui.dearpygui as dpg
 
+from setup import *
+
 def loading():
     class LoadingWindow:
         def __enter__(self):
@@ -9,10 +11,10 @@ def loading():
                 no_resize=True,
                 no_move=True,
                 tag="loading",
-                pos=[(600 - 64) // 2, (394 - 64) // 2],
-                width=64,
-                height=64,
-                min_size=[32, 32],
+                pos=[(WIDTH - 64) // 2 * SCALE, (HEIGHT - 64) // 2 * SCALE],
+                width=64 * SCALE,
+                height=64 * SCALE,
+                min_size=[32 * SCALE, 32 * SCALE],
                 no_background=True
             ):
                 dpg.add_loading_indicator(circle_count=8)

@@ -1,7 +1,7 @@
 import dearpygui.dearpygui as dpg
 from natsort import natsorted
 
-from translations import *
+from setup import *
 from utils import add_help
 
 stats = {
@@ -164,9 +164,9 @@ class LocationsTab:
         # Add location window
         with dpg.window(
             label=i18n["add_location"],
-            pos=((600 - 350) // 2, (394 - 112) // 2),
-            width=350,
-            height=112,
+            pos=((WIDTH - 350) // 2 * SCALE, (HEIGHT - 112) // 2 * SCALE),
+            width=350 * SCALE,
+            height=112 * SCALE,
             show=False,
             tag="add_location"
         ):
@@ -174,7 +174,7 @@ class LocationsTab:
                 label=i18n["location_name"],
                 items=locations,
                 default_value=locations[0],
-                width=200,
+                width=200 * SCALE,
                 tag="add_location_name"
             )
             dpg.add_input_int(
@@ -182,7 +182,7 @@ class LocationsTab:
                 default_value=3,
                 min_value=3,
                 min_clamped=True,
-                width=200,
+                width=200 * SCALE,
                 tag="add_location_stars"
             )
             with dpg.group(horizontal=True):
@@ -198,97 +198,98 @@ class LocationsTab:
                     )
                 )
 
-        with dpg.group(horizontal=True):
-            # List of available locations
-            with dpg.group(width=175):
-                dpg.add_text(i18n["visited_locations"])
-                add_help(i18n["locations_list_info"])
+        with dpg.child_window(border=False, no_scrollbar=True):
+            with dpg.group(horizontal=True):
+                # List of available locations
+                with dpg.group(width=175 * SCALE):
+                    dpg.add_text(i18n["visited_locations"])
+                    add_help(i18n["locations_list_info"])
 
-                dpg.add_input_text(
-                    hint=i18n["search"],
-                    tag="location_filter",
-                    callback=self.filter_search
-                )
-                dpg.add_listbox(
-                    tag="location_names",
-                    num_items=12,
-                    callback=self.select_location
-                )
-                dpg.add_button(
-                    label=i18n["add"],
-                    callback=lambda _: dpg.configure_item(
-                        "add_location",
-                        show=True
+                    dpg.add_input_text(
+                        hint=i18n["search"],
+                        tag="location_filter",
+                        callback=self.filter_search
                     )
-                )
-
-            # Location stats
-            with dpg.group():
-                dpg.add_text(i18n["location_information"])
-                add_help(i18n["time_measured_in_frames_info"])
-
-                with dpg.child_window(
-                    tag="stats",
-                    border=False,
-                    show=False,
-                    no_scrollbar=True
-                ):
-                    # Time values
-                    for time_value in stats["time_values"]:
-                        dpg.add_input_int(
-                            label=i18n["location_stats"][
-                                stats["time_values"][time_value]
-                            ],
-                            tag=time_value,
-                            width=200,
-                            callback=self.change,
-                            user_data=time_value
+                    dpg.add_listbox(
+                        tag="location_names",
+                        num_items=12,
+                        callback=self.select_location
+                    )
+                    dpg.add_button(
+                        label=i18n["add"],
+                        callback=lambda _: dpg.configure_item(
+                            "add_location",
+                            show=True
                         )
-                    
-                    dpg.add_separator()
-                    dpg.add_text(i18n["average_run_data"])
+                    )
 
-                    # Average values
-                    for average_value in stats["average_values"]:
-                        dpg.add_input_double(
-                            label=i18n["location_stats"][
-                                stats["average_values"][average_value]
-                            ],
-                            tag=average_value,
-                            width=200,
-                            callback=self.change,
-                            user_data=average_value
-                        )
+                # Location stats
+                with dpg.group():
+                    dpg.add_text(i18n["location_information"])
+                    add_help(i18n["time_measured_in_frames_info"])
 
-                    add_help(i18n["location_resources_info"])
+                    with dpg.child_window(
+                        tag="stats",
+                        border=False,
+                        show=False,
+                        no_scrollbar=True
+                    ):
+                        # Time values
+                        for time_value in stats["time_values"]:
+                            dpg.add_input_int(
+                                label=i18n["location_stats"][
+                                    stats["time_values"][time_value]
+                                ],
+                                tag=time_value,
+                                width=200 * SCALE,
+                                callback=self.change,
+                                user_data=time_value
+                            )
+                        
+                        dpg.add_separator()
+                        dpg.add_text(i18n["average_run_data"])
 
-                    # Damage
-                    dpg.add_separator()
-                    dpg.add_text(i18n["damage"])
+                        # Average values
+                        for average_value in stats["average_values"]:
+                            dpg.add_input_double(
+                                label=i18n["location_stats"][
+                                    stats["average_values"][average_value]
+                                ],
+                                tag=average_value,
+                                width=200 * SCALE,
+                                callback=self.change,
+                                user_data=average_value
+                            )
 
-                    for damage_value in stats["damage_values"]:
-                        dpg.add_input_double(
-                            label=i18n["location_stats"][
-                                stats["damage_values"][damage_value]
-                            ],
-                            tag=damage_value,
-                            width=200,
-                            callback=self.change,
-                            user_data=damage_value
-                        )
+                        add_help(i18n["location_resources_info"])
 
-                    # Element damage
-                    dpg.add_separator()
-                    dpg.add_text(i18n["element_damage"])
-                    add_help(i18n["element_damage_affect_on_rune_info"])
+                        # Damage
+                        dpg.add_separator()
+                        dpg.add_text(i18n["damage"])
 
-                    for element_damage_type in stats["element_damage_values"]:
-                        dpg.add_input_double(
-                            label=i18n["location_stats"][
-                                stats["element_damage_values"][element_damage_type]
-                            ],
-                            tag=element_damage_type,
-                            width=200,
-                            callback=self.change,
-                            user_data=element_damage_type
-                        )
+                        for damage_value in stats["damage_values"]:
+                            dpg.add_input_double(
+                                label=i18n["location_stats"][
+                                    stats["damage_values"][damage_value]
+                                ],
+                                tag=damage_value,
+                                width=200 * SCALE,
+                                callback=self.change,
+                                user_data=damage_value
+                            )
+
+                        # Element damage
+                        dpg.add_separator()
+                        dpg.add_text(i18n["element_damage"])
+                        add_help(i18n["element_damage_affect_on_rune_info"])
+
+                        for element_damage_type in stats["element_damage_values"]:
+                            dpg.add_input_double(
+                                label=i18n["location_stats"][
+                                    stats["element_damage_values"][element_damage_type]
+                                ],
+                                tag=element_damage_type,
+                                width=200 * SCALE,
+                                callback=self.change,
+                                user_data=element_damage_type
+                            )

@@ -2,10 +2,7 @@ import dearpygui.dearpygui as dpg
 from pyperclip import copy, paste
 import json
 
-from translations import *
-from utils import add_help
-
-REMAP_START = 0x10ec77
+from setup import *
 
 items = {
     "Top": {
@@ -451,16 +448,16 @@ class InventoryTab:
         # Add field to item
         with dpg.window(
             label=i18n["add_field"],
-            pos=((600 - 350) // 2, (394 - 86) // 2),
-            width=350,
-            height=86,
-            min_size=(350, 0),
+            pos=((WIDTH - 350) // 2 * SCALE, (HEIGHT - 86) // 2 * SCALE),
+            width=350 * SCALE,
+            height=86 * SCALE,
+            min_size=(350 * SCALE, 0),
             show=False,
             tag="add_field"
         ):
             dpg.add_combo(
                 label=i18n["field"],
-                width=200,
+                width=200 * SCALE,
                 items=fields_names,
                 default_value=fields_names[0],
                 tag="add_field_name"
@@ -479,31 +476,32 @@ class InventoryTab:
                     )
                 )
 
-        with dpg.group(horizontal=True):
-            # List of available items
-            with dpg.group(width=175):
-                dpg.add_text(i18n["items"])
-                dpg.add_input_text(
-                    tag="item_filter",
-                    hint=i18n["search"],
-                    callback=self.filter_search
-                )
-                dpg.add_listbox(
-                    tag="inventory",
-                    num_items=12,
-                    callback=self.open_item
-                )
-                dpg.add_button(
-                    label=i18n["create_item"],
-                    callback=self.add_item
-                )
+        with dpg.child_window(border=False, no_scrollbar=True):
+            with dpg.group(horizontal=True):
+                # List of available items
+                with dpg.group(width=175 * SCALE):
+                    dpg.add_text(i18n["items"])
+                    dpg.add_input_text(
+                        tag="item_filter",
+                        hint=i18n["search"],
+                        callback=self.filter_search
+                    )
+                    dpg.add_listbox(
+                        tag="inventory",
+                        num_items=12,
+                        callback=self.open_item
+                    )
+                    dpg.add_button(
+                        label=i18n["create_item"],
+                        callback=self.add_item
+                    )
 
-            # Item info
-            with dpg.child_window(border=False, no_scrollbar=True):
-                dpg.add_text(i18n["item_data"], tag="item_info")
-                dpg.add_child_window(
-                    height=303,
-                    border=False,
-                    no_scrollbar=True,
-                    tag="item_settings"
-                )  # Conrainer for item setting
+                # Item info
+                with dpg.child_window(border=False, no_scrollbar=True):
+                    dpg.add_text(i18n["item_data"], tag="item_info")
+                    dpg.add_child_window(
+                        height=303 * SCALE,
+                        border=False,
+                        no_scrollbar=True,
+                        tag="item_settings"
+                    )  # Conrainer for item setting

@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 
-from translations import *
+from setup import *
 
 locations = (
     "temple",

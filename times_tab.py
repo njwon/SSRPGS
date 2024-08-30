@@ -1,5 +1,5 @@
 import dearpygui.dearpygui as dpg
-from translations import *
+from setup import *
 from utils import add_help
 
 # Time regex

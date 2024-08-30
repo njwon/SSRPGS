@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 
-from translations import *
+from setup import *
 from utils import add_help
 
 resources = {
@@ -44,6 +44,9 @@ class MainTab:
             dpg.configure_item(resource, default_value=default_value)
 
     def change(self, _, value, path):
+        if not self.save.is_loaded():
+            return
+
         head = self.progress_data
 
         for key in path[:-1]:

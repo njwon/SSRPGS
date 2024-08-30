@@ -89,8 +89,12 @@ class Save:
         return text
     
     def open(self, save_file_name):
-        jsonized = self.jsonize(open(save_file_name, "r", encoding="utf-8").read())
-        
+        jsonized = self.jsonize(
+            open(
+                save_file_name, "r", encoding="utf-8"
+            ).read()
+        )
+
         self.save_file_name = save_file_name
         self.save_json = json.loads(jsonized)
         self.save_slots = []
@@ -163,7 +167,7 @@ class Save:
     def open_from_json(self, save_file_name):
         self.save_file_name = save_file_name
 
-        self.save_json = json.load(open(save_file_name))
+        self.save_json = json.load(open(save_file_name, encoding="utf-8"))
         self.save_slots.clear()
         for field in self.save_json:
             if field.startswith("save_file_") and field != "save_file_last_id":
