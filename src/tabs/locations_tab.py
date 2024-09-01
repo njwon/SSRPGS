@@ -1,8 +1,8 @@
 import dearpygui.dearpygui as dpg
 from natsort import natsorted
 
-from setup import *
-from utils import add_help
+from tools.setup import *
+from tools.utils import add_help
 
 stats = {
     "time_values": {

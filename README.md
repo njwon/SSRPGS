@@ -6,8 +6,15 @@ Save editor for [Stone Story RPG](https://stonestoryrpg.com). Editor can deciphe
 pip3 install -r requirements.txt
 ```
 
+To launch editor:
+
+```bash
+cd src
+python3 editor.py
+```
+
 ### Images
-| ![Inventory tab](images/inventory_tab.png) | ![Cosmetics tab](images/cosmetics_tab.png) |
+| ![Inventory tab](screenshots/inventory_tab.png) | ![Cosmetics tab](screenshots/cosmetics_tab.png) |
 |-|-|
 
 ### Features

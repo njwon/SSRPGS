@@ -33,7 +33,7 @@ class TranslationDict:
         if key in self.value:
             return TranslationDict(self.value[key])
         return TranslationDict(key)
-    
+
     def __setitem__(self, name, new_value):
         self.value[name] = new_value
 

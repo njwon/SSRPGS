@@ -3,18 +3,18 @@ import dearpygui.dearpygui as dpg
 from subprocess import check_output
 from sys import executable
 
-from save import Save
+from save.save import Save
 
-from main_tab import MainTab
-from locations_tab import LocationsTab
-from inventory_tab import InventoryTab
-from cosmetics_tab import CosmeticsTab
-from progress_tab import ProgressTab
-from quests_tab import QuestsTab
-from times_tab import TimesTab
+from tabs.main_tab import MainTab
+from tabs.locations_tab import LocationsTab
+from tabs.inventory_tab import InventoryTab
+from tabs.cosmetics_tab import CosmeticsTab
+from tabs.progress_tab import ProgressTab
+from tabs.quests_tab import QuestsTab
+from tabs.times_tab import TimesTab
 
-from setup import *
-from utils import loading, add_help
+from tools.setup import *
+from tools.utils import loading, add_help
 
 class Editor:
     def __init__(self):
@@ -36,7 +36,7 @@ class Editor:
 
     def init_font(self):
         with dpg.font_registry():
-            font_file = "mononoki-Regular.ttf"
+            font_file = "fonts/mononoki-Regular.ttf"
             font_size = 32 * SCALE
 
             with dpg.font(font_file, font_size) as font:
@@ -68,7 +68,7 @@ class Editor:
 
     def load(self):
         save_file = check_output(
-            [executable, "get_file.py"]
+            [executable, "save/get_file.py"]
         )  # I don't know what's wrong with dpg
 
         save_file = str(save_file, encoding="utf-8")
@@ -101,7 +101,7 @@ class Editor:
             return
 
         save_file = check_output(
-            [executable, "save_file.py", self.save.save_file_name]
+            [executable, "save/save_file.py", self.save.save_file_name]
         )  # I don't know what's wrong with dpg
 
         save_file = str(save_file, encoding="utf-8")

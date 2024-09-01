@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 
-from setup import *
+from tools.setup import *
 
 items = {
     "aether_talisman:AEther": "aether_talisman",

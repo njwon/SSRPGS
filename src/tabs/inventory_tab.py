@@ -2,7 +2,7 @@ import dearpygui.dearpygui as dpg
 from pyperclip import copy, paste
 import json
 
-from setup import *
+from tools.setup import *
 
 items = {
     "Top": {

@@ -2,8 +2,6 @@ from getpass import getuser
 from tkinter import filedialog
 from os import path, name
 
-# from setup import *
-
 if name == "nt":
     initialdir = path.join(
         path.expandvars('%USERPROFILE%'),

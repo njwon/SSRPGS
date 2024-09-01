@@ -1,6 +1,7 @@
 import dearpygui.dearpygui as dpg
-from setup import *
-from utils import add_help
+
+from tools.setup import *
+from tools.utils import add_help
 
 # Time regex
 # \d{2}/\d{2}/\d{4}\s\d{2}:\d{2}:\d{2}

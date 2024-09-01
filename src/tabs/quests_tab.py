@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 
-from setup import *
+from tools.setup import *
 
 class QuestsTab:
     def __init__(self, save):

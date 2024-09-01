@@ -2,7 +2,7 @@ from re import finditer
 import json
 import copy
 
-from cryptors import encrypt, decrypt
+from .cryptors import encrypt, decrypt
 
 class Save:
     def __init__(self):
