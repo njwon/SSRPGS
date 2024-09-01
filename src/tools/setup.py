@@ -1,5 +1,6 @@
-import locale
+import dearpygui.dearpygui as dpg
 import tomllib
+import locale
 import json
 
 from os import name
@@ -65,17 +66,22 @@ def configure_language(_, language):
         if languages[code] != language:
             continue
 
-        update_settings(language=code)
+        settings["language"] = code
+
+        update_settings()
         print(f"Default language is set to {code}")
 
 def configure_scale(_, scale):
     print(f"Upscale is set to {scale}")
-    update_settings(upscale=str(scale).lower())
+    settings["upscale"] = scale
 
-def update_settings(language="auto", upscale="false"):
+    update_settings()
+    print(f"Default language is set to {scale}")
+
+def update_settings():
     with open("settings.toml", "w", encoding="utf-8") as config:
-        config.write(f'language = "{language}"\n')
-        config.write(f'upscale = {upscale}\n')
+        config.write(f'language = "{settings["language"]}"\n')
+        config.write(f'upscale = {str(settings["upscale"]).lower()}\n')
 
 # Load translation dict
 i18n = TranslationDict(
@@ -93,8 +99,89 @@ if IS_NT:
     OFFSET = 38  # Windows title bar
 
     if settings["upscale"]:
-        OFFSET = -47  # Smaler gaps between widgets
+        OFFSET = 38 * 2 - 6
         SCALE = 2
 
         import ctypes
         ctypes.windll.shcore.SetProcessDpiAwareness(2)
+
+def init_font():
+    with dpg.font_registry():
+        font_file = "fonts/mononoki-Regular.ttf"
+        font_size = 32 * SCALE
+
+        with dpg.font(font_file, font_size) as font:
+            dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
+            dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
+            dpg.add_font_chars([ord(c) for c in "♦≈★"])
+
+            dpg.set_global_font_scale(0.5)
+
+            # Fix russian input (visually)
+            # if IS_NT:
+            #     dpg.add_char_remap(0xa8, 0x401)  # Ёё
+            #     dpg.add_char_remap(0xb8, 0x451)
+                
+            #     # Othes glyphs
+            #     utf = 0x410
+            #     for i in range(0xc0, 0x100):
+            #         dpg.add_char_remap(i, utf)
+
+            #         utf += 1
+
+            # Remap 5k of Unicode chars to indexes for inventory tab
+            dpg.add_font_range(REMAP_START, REMAP_END)
+            for char in range(REMAP_START, REMAP_END):
+                dpg.add_char_remap(char, 0x20)  # Whitespace
+
+            dpg.bind_font(font)
+
+def init_theme():
+    if not (IS_NT and settings["upscale"]):
+        return
+
+    with dpg.theme() as global_theme:
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_style(
+                dpg.mvStyleVar_WindowPadding,
+                16,
+                16,
+                category=dpg.mvThemeCat_Core
+            )
+            dpg.add_theme_style(
+                dpg.mvStyleVar_FramePadding,
+                8,
+                6,
+                category=dpg.mvThemeCat_Core
+            )
+            dpg.add_theme_style(
+                dpg.mvStyleVar_CellPadding,
+                8,
+                4,
+                category=dpg.mvThemeCat_Core
+            )
+            dpg.add_theme_style(
+                dpg.mvStyleVar_ItemSpacing,
+                16,
+                8,
+                category=dpg.mvThemeCat_Core
+            )
+            dpg.add_theme_style(
+                dpg.mvStyleVar_ItemInnerSpacing,
+                8,
+                8,
+                category=dpg.mvThemeCat_Core
+            )
+            dpg.add_theme_style(
+                dpg.mvStyleVar_ScrollbarSize,
+                22,
+                category=dpg.mvThemeCat_Core
+            )
+            dpg.add_theme_style(
+                dpg.mvStyleVar_TabRounding,
+                8,
+                category=dpg.mvThemeCat_Core
+            )
+
+    dpg.bind_theme(global_theme)
+    print("Loaded NT upscaled theme")

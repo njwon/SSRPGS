@@ -18,9 +18,6 @@ from tools.utils import loading, add_help
 
 class Editor:
     def __init__(self):
-        self.init_dpg()
-        self.init_font()
-
         self.save = Save()
 
         self.main_tab = MainTab(self.save)
@@ -30,41 +27,6 @@ class Editor:
         self.cosmetics_tab = CosmeticsTab(self.save)
         self.quests_tab = QuestsTab(self.save)
         self.times_tab = TimesTab(self.save)
-
-    def init_dpg(self):
-        dpg.create_context()
-
-    def init_font(self):
-        with dpg.font_registry():
-            font_file = "fonts/mononoki-Regular.ttf"
-            font_size = 32 * SCALE
-
-            with dpg.font(font_file, font_size) as font:
-                dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
-                dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
-                dpg.add_font_chars([ord(c) for c in "♦≈★"])
-
-                dpg.set_global_font_scale(0.5)
-
-                # Fix russian input (visually)
-                # if IS_NT:
-                #     dpg.add_char_remap(0xa8, 0x401)  # Ёё
-                #     dpg.add_char_remap(0xb8, 0x451)
-                    
-                #     # Othes glyphs
-                #     utf = 0x410
-                #     for i in range(0xc0, 0x100):
-                #         dpg.add_char_remap(i, utf)
-
-                #         utf += 1
-
-                # Adds ~7,5 millisecond to init time...
-                # Remap 5k of Unicode chars to indexes for inventory tab
-                dpg.add_font_range(REMAP_START, REMAP_END)
-                for char in range(REMAP_START, REMAP_END):
-                    dpg.add_char_remap(char, 0x20)  # Whitespace
-
-                dpg.bind_font(font)
 
     def load(self):
         save_file = check_output(
@@ -196,6 +158,11 @@ class Editor:
                     self.times_tab.gui()
 
     def run(self):
+        dpg.create_context()
+        
+        init_font()
+        init_theme()
+
         self.gui()
 
         dpg.create_viewport(

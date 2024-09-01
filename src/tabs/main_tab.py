@@ -43,17 +43,18 @@ class MainTab:
 
             dpg.configure_item(resource, default_value=default_value)
 
-    def change(self, _, value, path):
+    def change(self, _, value, paths):
         if not self.save.is_loaded():
             return
 
-        head = self.progress_data
+        for path in paths:
+            head = self.save
 
-        for key in path[:-1]:
-            head = head[key]
+            for key in path[:-1]:
+                head = head[key]
 
-        head[path[-1]] = value
-        print(f"Changed field: {path[-1]}: {head[path[-1]]}")
+            head[path[-1]] = value
+            print(f"Changed field: {path[-1]}: {head[path[-1]]}")
 
     def gui(self):
         with dpg.child_window(border=False, no_scrollbar=True):
@@ -62,20 +63,29 @@ class MainTab:
                 label=i18n["name"],
                 tag="player_name",
                 callback=self.change,
-                user_data=["hero_settings", "playerName"]
+                user_data=[
+                    ["progress_data", "hero_settings", "playerName"],
+                    ["player_name"]
+                ]
             )
             dpg.add_input_int(
                 label=i18n["level"],
                 tag="player_level",
                 callback=self.change,
-                user_data=["xp", "currentLevel"]
+                user_data=[
+                    ["progress_data", "xp", "currentLevel"],
+                    ["player_level"]
+                ]
             )
             add_help(i18n["max_afk_chests_info"])
             dpg.add_input_int(
                 label=i18n["xp"],
                 tag="player_xp",
                 callback=self.change,
-                user_data=["xp","currentXP"]
+                user_data=[
+                    ["progress_data", "xp", "currentXP"],
+                    ["player_xp"]
+                ]
             )
 
             dpg.add_separator()
@@ -86,5 +96,7 @@ class MainTab:
                     label=resources[resource],
                     tag=resource,
                     callback=self.change,
-                    user_data=("inventory_data", resource)
+                    user_data=[
+                        ["progress_data", "inventory_data", resource]
+                    ]
                 )
