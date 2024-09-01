@@ -5,7 +5,7 @@ from tools.utils import add_help
 
 # Time regex
 # \d{2}/\d{2}/\d{4}\s\d{2}:\d{2}:\d{2}
-# DD.MM.YYYY HH:MM:SS
+# MM.DD.YYYY HH:MM:SS
 
 class TimesTab:
     def __init__(self, save):

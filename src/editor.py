@@ -169,7 +169,7 @@ class Editor:
 
                         if IS_NT:
                             dpg.add_checkbox(
-                                label="Удвоить разрешение",
+                                label=i18n["double_resolution"],
                                 default_value=settings["upscale"],
                                 callback=configure_scale
                             )

@@ -1,6 +1,8 @@
+# Folders
+tests
 .DS_Store
 __pycache__
 
-# Save files
+# Files
 formatted.json
 primary_save.txt
