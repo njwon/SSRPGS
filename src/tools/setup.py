@@ -8,7 +8,8 @@ from os import name
 WIDTH = 600
 HEIGHT = 394
 
-OFFSET = 0
+HEIGHT_OFFSET = 0
+WIDTH_OFFSET = 0
 SCALE = 1
 
 REMAP_START = 0x10ec77
@@ -71,12 +72,11 @@ def configure_language(_, language):
         update_settings()
         print(f"Default language is set to {code}")
 
-def configure_scale(_, scale):
-    print(f"Upscale is set to {scale}")
-    settings["upscale"] = scale
+def configure_upscale(_, upscale):
+    settings["upscale"] = upscale
 
     update_settings()
-    print(f"Default language is set to {scale}")
+    print(f"Upscale is set to {upscale}")
 
 def update_settings():
     with open("settings.toml", "w", encoding="utf-8") as config:
@@ -96,10 +96,12 @@ i18n = TranslationDict(
 # Check things for nt
 if IS_NT:
     i18n["title"] = "Stone Story RPG save editor"  # DPG don't support latin title on NT
-    OFFSET = 38  # Windows title bar
+    WIDTH_OFFSET = 26
+    HEIGHT_OFFSET = 38  # Windows magic numbers
 
     if settings["upscale"]:
-        OFFSET = 38 * 2 - 6
+        WIDTH_OFFSET = 32
+        HEIGHT_OFFSET = 38 * 2 - 6
         SCALE = 2
 
         import ctypes
@@ -180,6 +182,11 @@ def init_theme():
             dpg.add_theme_style(
                 dpg.mvStyleVar_TabRounding,
                 8,
+                category=dpg.mvThemeCat_Core
+            )
+            dpg.add_theme_style(
+                dpg.mvStyleVar_GrabMinSize,
+                20,
                 category=dpg.mvThemeCat_Core
             )
 

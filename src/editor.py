@@ -43,7 +43,7 @@ class Editor:
 
         elif save_file.endswith(".json"):
             print("Loading as .json")
-            self.save.open_from_json("formatted.json")
+            self.save.open_from_json(save_file)
 
         else:
             print(f"Loading denied")
@@ -133,7 +133,7 @@ class Editor:
                             dpg.add_checkbox(
                                 label=i18n["double_resolution"],
                                 default_value=settings["upscale"],
-                                callback=configure_scale
+                                callback=configure_upscale
                             )
 
                 with dpg.tab(label=i18n["main_tab"]):
@@ -159,7 +159,7 @@ class Editor:
 
     def run(self):
         dpg.create_context()
-        
+
         init_font()
         init_theme()
 
@@ -167,8 +167,8 @@ class Editor:
 
         dpg.create_viewport(
             title=str(i18n["title"]),
-            width=WIDTH * SCALE,
-            height=HEIGHT * SCALE + OFFSET,
+            width=WIDTH * SCALE + WIDTH_OFFSET,
+            height=HEIGHT * SCALE + HEIGHT_OFFSET,
             small_icon="images/icon.ico",
             x_pos=450 * SCALE,
             y_pos=350 * SCALE
