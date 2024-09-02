@@ -164,6 +164,9 @@
         "craft_grappling_hook_lv2": "Улучшить крюк-кошку"
     },
 
+    "inventory": "Инвентарь",
+    "clear_all": "Очистить весь",
+    "mark_all": "Отметить весь",
     "item": "Предмет",
     "items": "Предметы",
     "all_items": "Все предметы",
@@ -298,5 +301,9 @@
     "unique_date": "Уникальная дата",
     "crystal_date": "Дата кристаллов",
     "gold_date": "Дата золота",
+    "referral_scotty": "Реферальный Скотти",
+    "available": "Доступен",
+    "expires": "Истекает",
+    "brought_friends": "Приведено друзей",
     "next_treasure": "Следующее сокровище"
 }

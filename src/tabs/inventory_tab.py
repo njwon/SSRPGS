@@ -409,6 +409,22 @@ class InventoryTab:
         self.items.insert(0, {"id": "new_item", "co": 1, "da": {"hI": False}})
         self.filter_search("load")
 
+    def clear_all(self, _):
+        self.items = []
+
+        dpg.configure_item("inventory", default_value="")
+        self.filter_search("clear_all", dpg.get_value("item_filter"))
+
+    def mark_all(self, _):
+        for item in self.items:
+            if "da" in item:
+                item["da"]["hI"] = True
+            else:
+                item["da"] = {"hI": True}
+        
+        print("Marked all items as interacted")
+        self.open_item("remove", chr(self.item_index + REMAP_START))
+
     def create_item_settings(self):
         with dpg.group(
             parent="item_settings",
@@ -432,6 +448,19 @@ class InventoryTab:
                 dpg.add_button(
                     label=i18n["paste_code"],
                     callback=self.paste,
+                )
+
+            dpg.add_separator()
+            dpg.add_text(i18n["inventory"])
+
+            with dpg.group(horizontal=True):
+                dpg.add_button(
+                    label=i18n["clear_all"],
+                    callback=self.clear_all
+                )
+                dpg.add_button(
+                    label=i18n["mark_all"],
+                    callback=self.mark_all
                 )
 
     def gui(self):

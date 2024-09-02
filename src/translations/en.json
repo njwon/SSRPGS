@@ -164,6 +164,9 @@
         "craft_grappling_hook_lv2": "Upgrade Grappling Hook"
     },
 
+    "inventory": "Inventory",
+    "clear_all": "Clear all",
+    "mark_all": "Mark all",
     "item": "Item",
     "items": "Items",
     "all_items": "All items",
@@ -298,5 +301,9 @@
     "unique_date": "Unique date",
     "crystal_date": "Crystal date",
     "gold_date": "Gold date",
+    "referral_scotty": "Referral Scotty",
+    "available": "Available",
+    "expires": "Expires",
+    "brought_friends": "Brought friends",
     "next_treasure": "Next treasure"
 }

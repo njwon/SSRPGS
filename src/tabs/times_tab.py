@@ -16,6 +16,7 @@ class TimesTab:
         self.progress_data = self.save["progress_data"]
         self.trearuse_factory = self.save["progress_data"]["treasure_factory"]
         self.quest_data = self.save["progress_data"]["quest_data"]
+        self.custom_quests = self.save["progress_data"]["custom_quests"]
 
         # Crypt intro
         dpg.configure_item(
@@ -25,7 +26,24 @@ class TimesTab:
 
         # Treasure factory
         for value in ("uniqueDate", "crystalDate", "goldDate"):
-            dpg.configure_item(value, default_value=self.trearuse_factory[value])
+            dpg.configure_item(
+                value,
+                default_value=self.trearuse_factory[value]
+            )
+
+        # Referral Scotty
+        dpg.configure_item(
+            "scotRef",
+            default_value=self.custom_quests["scotRef"]
+        )
+        dpg.configure_item(
+            "referralExpiration",
+            default_value=self.custom_quests["referral"]["e"]
+        )
+        dpg.configure_item(
+            "referralTimes",
+            default_value=self.custom_quests["referral"]["t"]
+        )
 
         # Active offline run
         dpg.delete_item("active_run", children_only=True)
@@ -66,7 +84,7 @@ class TimesTab:
                     callback=self.change,
                     user_data=("quest_data", "activeRun", "seed")
                 )
-        
+
         # Rewards
         dpg.delete_item("rewards", children_only=True)
         with dpg.group(parent="rewards"):
@@ -106,6 +124,7 @@ class TimesTab:
             no_scrollbar=True,
             border=False
         ):
+            # Treasure factory
             dpg.add_text(i18n["treasure_factory"])
             dpg.add_input_text(
                 label=i18n["unique_date"],
@@ -126,8 +145,33 @@ class TimesTab:
                 user_data=("treasure_factory", "goldDate")
             )
 
+            # Referral Scotty
+            dpg.add_separator()
+            dpg.add_text(i18n["referral_scotty"])
+
+            dpg.add_checkbox(
+                label=i18n["available"],
+                tag="scotRef",
+                callback=self.change,
+                user_data=("custom_quests", "scotRef")
+            )
+            dpg.add_input_text(
+                label=i18n["expires"],
+                tag="referralExpiration",
+                callback=self.change,
+                user_data=("custom_quests", "referral", "e")
+            )
+            dpg.add_input_int(
+                label=i18n["brought_friends"],
+                tag="referralTimes",
+                callback=self.change,
+                user_data=("custom_quests", "referral", "t")
+            )
+
+            # Undead crypt
             dpg.add_separator()
             dpg.add_text(i18n["locations"]["undead_crypt_intro"])
+
             dpg.add_input_text(
                 label=i18n["next_treasure"],
                 tag="nextTreasureAvailableDate",
@@ -135,6 +179,8 @@ class TimesTab:
                 user_data=("crypt_intro", "nextTreasureAvailableDate")
             )
 
+            # Rewards
             dpg.add_group(tag="rewards")
 
+            # Offline run
             dpg.add_group(tag="active_run")
