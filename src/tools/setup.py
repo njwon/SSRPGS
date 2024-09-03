@@ -62,27 +62,6 @@ def get_language():
 
     return language
 
-def configure_language(_, language):
-    for code in languages:
-        if languages[code] != language:
-            continue
-
-        settings["language"] = code
-
-        update_settings()
-        print(f"Default language is set to {code}")
-
-def configure_upscale(_, upscale):
-    settings["upscale"] = upscale
-
-    update_settings()
-    print(f"Upscale is set to {upscale}")
-
-def update_settings():
-    with open("settings.toml", "w", encoding="utf-8") as config:
-        config.write(f'language = "{settings["language"]}"\n')
-        config.write(f'upscale = {str(settings["upscale"]).lower()}\n')
-
 # Load translation dict
 i18n = TranslationDict(
     json.load(

@@ -7,6 +7,7 @@ from .cryptors import encrypt, decrypt
 class Save:
     def __init__(self):
         self.save_file_name = ""
+        self.encrypt_saves = False
         
         self.save_json = {}
         self.save_slots = []
@@ -160,7 +161,19 @@ class Save:
         if file_name is None:
             file_name = self.save_file_name
 
-        sjsonized = self.sjsonize(copy.deepcopy(self.save_json))
+        save_copy = copy.deepcopy(self.save_json)
+
+        # Encrypt progress data
+        if self.encrypt_saves:
+            for save_slot in self.save_slots:
+                save_copy[save_slot]["progress_data"] = encrypt(
+                    self.sjsonize(save_copy[save_slot]["progress_data"])
+                ).decode("ascii")
+
+                save_copy[save_slot]["encrypted"] = True
+        
+        sjsonized = self.sjsonize(save_copy)
+        
         with open(file_name, "w", encoding="utf-8") as j:
             j.write(sjsonized)
 

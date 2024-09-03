@@ -19,6 +19,7 @@ from tools.utils import loading, add_help
 class Editor:
     def __init__(self):
         self.save = Save()
+        self.save.encrypt_saves = settings["encrypt_saves"]
 
         self.main_tab = MainTab(self.save)
         self.progress_tab = ProgressTab(self.save)
@@ -89,6 +90,37 @@ class Editor:
         self.quests_tab.load()
         self.times_tab.load()
 
+    def configure_language(self, _, language):
+        for code in languages:
+            if languages[code] != language:
+                continue
+
+            settings["language"] = code
+
+            self.update_settings()
+            print(f"Default language is set to {code}")
+
+    def configure_upscale(self, _, upscale):
+        settings["upscale"] = upscale
+
+        self.update_settings()
+        print(f"Upscale is set to {upscale}")
+
+    def configure_save_encryption(self,_, encrypt_saves):
+        self.save.encrypt_saves = encrypt_saves
+        settings["encrypt_saves"] = encrypt_saves
+
+        self.update_settings()
+        print(f"Encryptions is set to {encrypt_saves}")
+
+    def update_settings(self):
+        with open("settings.toml", "w", encoding="utf-8") as config:
+            config.write(f"# Save editor\n")
+            config.write(f"encrypt_saves = {str(settings["encrypt_saves"]).lower()}\n")
+            config.write(f"\n# Files\n")
+            config.write(f"language = \"{settings["language"]}\"\n")
+            config.write(f"upscale = {str(settings["upscale"]).lower()}\n")
+
     def gui(self):
         with dpg.window(tag="Editor"):
             # Header
@@ -119,22 +151,39 @@ class Editor:
                         dpg.add_text(i18n["info_label"])
                         dpg.add_text(i18n["info"])
 
+                        # Settings
                         dpg.add_separator()
-                        dpg.add_text(i18n["settings"])
-                        dpg.add_combo(
-                            label=i18n["language"],
-                            default_value=i18n["language-name"],
-                            items=list(languages.values()),
-                            callback=configure_language
-                        )
-                        add_help(i18n["language_info"])
+                        with dpg.table(header_row=False, resizable=True):
+                            dpg.add_table_column()
+                            dpg.add_table_column()
 
-                        if IS_NT:
-                            dpg.add_checkbox(
-                                label=i18n["double_resolution"],
-                                default_value=settings["upscale"],
-                                callback=configure_upscale
-                            )
+                            with dpg.table_row():
+                                # Editor settings
+                                with dpg.group():
+                                    dpg.add_text(i18n["settings"])
+                                    dpg.add_combo(
+                                        label=i18n["language"],
+                                        default_value=i18n["language-name"],
+                                        items=list(languages.values()),
+                                        callback=self.configure_language
+                                    )
+                                    add_help(i18n["language_info"])
+
+                                    if IS_NT:
+                                        dpg.add_checkbox(
+                                            label=i18n["double_resolution"],
+                                            default_value=settings["upscale"],
+                                            callback=self.configure_upscale
+                                        )
+
+                                # File settings
+                                with dpg.group():
+                                    dpg.add_text("Файлы")
+                                    dpg.add_checkbox(
+                                        label="Шифровать сохранение",
+                                        default_value=settings["encrypt_saves"],
+                                        callback=self.configure_save_encryption
+                                    )
 
                 with dpg.tab(label=i18n["main_tab"]):
                     self.main_tab.gui()
