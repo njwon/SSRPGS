@@ -178,9 +178,9 @@ class Editor:
 
                                 # File settings
                                 with dpg.group():
-                                    dpg.add_text("Файлы")
+                                    dpg.add_text(i18n["files"])
                                     dpg.add_checkbox(
-                                        label="Шифровать сохранение",
+                                        label=i18n["encrypt_saves"],
                                         default_value=settings["encrypt_saves"],
                                         callback=self.configure_save_encryption
                                     )

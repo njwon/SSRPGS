@@ -1,4 +1,8 @@
 # Folders
+dist
+build
+src/setup.py
+
 tests
 .DS_Store
 __pycache__
