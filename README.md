@@ -36,7 +36,8 @@ With editor you can do:
     - Create and remove items
     - Change item data, enchantments, count
     - Create and remove tags, signatures, shiny
-    <!-- - Mark all items as interacted -->
+    - Mark all items as interacted
+    - Clear inventory
 - Cosmetics
     - Edit all golden skins
     - Edit all prismatic skins
@@ -53,3 +54,18 @@ With editor you can do:
     - Fix cheaters negative chest count
 - Export save file as editable JSON
     - Configure any data of save file by hands
+
+## Compilation
+Compiled app will be in dist folder.
+
+- On Windows:
+    ```bash
+    cd build
+    setup.bat
+    ```
+
+- On macOS:
+    ```bash
+    cd build
+    make all
+    ```

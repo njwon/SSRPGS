@@ -1,7 +1,9 @@
 import dearpygui.dearpygui as dpg
 
 from subprocess import check_output
+from tkinter import filedialog
 from sys import executable
+from os import path, remove
 
 from save.save import Save
 
@@ -30,11 +32,28 @@ class Editor:
         self.times_tab = TimesTab(self.save)
 
     def load(self):
-        save_file = check_output(
-            [executable, "save/get_file.py"]
-        )  # I don't know what's wrong with dpg
+        if IS_NT:
+            filetypes = [
+                ("Save file (.txt)", "*.txt"),
+                ("Json file (.json)", "*.json")
+            ]
 
-        save_file = str(save_file, encoding="utf-8")
+            initialdir = path.join(
+                path.expandvars('%USERPROFILE%'),
+                'AppData/LocalLow/Martian Rex, Inc_/Stone Story/'
+            )
+ 
+            save_file = filedialog.askopenfilename(
+                filetypes=filetypes,
+                initialdir=initialdir
+            )
+        else:
+            save_file = check_output([
+                executable,
+                "save/get_file.py"
+            ])  # I don't know what's wrong with dpg
+            save_file = str(save_file, encoding="utf-8")
+
         print(f"Gathered save file {save_file}")
 
         if save_file.endswith(".txt"):
@@ -63,11 +82,46 @@ class Editor:
         if not self.save.is_loaded():
             return
 
-        save_file = check_output(
-            [executable, "save/save_file.py", self.save.save_file_name]
-        )  # I don't know what's wrong with dpg
+        if IS_NT:
+            # Get path and filename
+            trace = self.save.save_file_name.split('/')
 
-        save_file = str(save_file, encoding="utf-8")
+            defaultextension = trace[-1].split('.')[-1]
+            initialdir = '/'.join(trace[:-1])
+            initialfile = trace[-1]
+            filetypes = [
+                ("Save file (.txt)", "*.txt"),
+                ("Json file (.json)", "*.json")
+            ]
+
+            if defaultextension == "json":
+                filetypes.reverse()
+
+            file = filedialog.asksaveasfile(
+                confirmoverwrite=False,
+                defaultextension=defaultextension,
+                filetypes=filetypes,
+                initialdir=initialdir,
+                initialfile=initialfile
+            )
+
+            if file is not None:
+                # Delete touched file
+                file.close()
+                remove(file.name)
+
+                save_file = file.name
+            else:
+                save_file = ""
+
+        else:
+            save_file = check_output([
+                executable,
+                "save/save_file.py",
+                self.save.save_file_name
+            ])  # I don't know what's wrong with dpg
+            save_file = str(save_file, encoding="utf-8")
+
         print(f"Gathered save file {save_file}")
 
         if save_file.endswith(".txt"):
