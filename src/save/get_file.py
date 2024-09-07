@@ -1,33 +1,19 @@
 from tkinter import filedialog
 from getpass import getuser
-from os import path, name
 
-import tomllib
+filetypes = [
+    ("Save file", "*.txt"),
+    ("Json file", "*.json")
+]
 
-with open("settings.toml", "rb") as f:
-    settings = tomllib.load(f)
+initialdir = (
+    f"/Users/{getuser()}/Library/"
+    "Application Support/Martian Rex, Inc_/Stone Story/"
+)
 
-    if settings["upscale"]:
-        import ctypes
-        ctypes.windll.shcore.SetProcessDpiAwareness(2)
-
-if name == "nt":
-    initialdir = path.join(
-        path.expandvars('%USERPROFILE%'),
-        'AppData/LocalLow/Martian Rex, Inc_/Stone Story/'
-    )
-else:
-    initialdir = (
-        f"/Users/{getuser()}/Library/"
-        "Application Support/Martian Rex, Inc_/Stone Story/"
-    )
-
-file = filedialog.askopenfilename(
-    filetypes=[
-        ("Save file", "*.txt"),
-        ("Json file", "*.json")
-    ],
+save_file = filedialog.askopenfilename(
+    filetypes=filetypes,
     initialdir=initialdir
 )
 
-print(file, end="")
+print(save_file, end="")

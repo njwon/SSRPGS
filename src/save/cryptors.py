@@ -34,7 +34,7 @@ def decrypt(cipher):
     sg = pprp.data_source_gen(array2, blocksize)
     dg = CBC_decrypt(kbytes, sg, rgbIV, blocksize);
     decrypted = pprp.decrypt_sink(dg, blocksize).decode("utf-8")
-    
+
     return decrypted
 
 # Rijndael 256 with CBC (iv + salt) encryption

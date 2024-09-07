@@ -2,8 +2,9 @@ import dearpygui.dearpygui as dpg
 import tomllib
 import locale
 import json
+import sys 
 
-from os import name
+from os import name, chdir
 
 WIDTH = 600
 HEIGHT = 394
@@ -16,6 +17,10 @@ REMAP_START = 0x10ec77
 REMAP_END = 0x10ffff
 
 IS_NT = name == "nt"  # Windows
+
+# Fix paths for compiled NT app
+if IS_NT and getattr(sys, 'frozen', False):
+    chdir(sys._MEIPASS)
 
 # Load settings
 with open("settings.toml", "rb") as f:

@@ -2,15 +2,6 @@ from tkinter import filedialog
 from os import remove
 from sys import argv
 
-import tomllib
-
-with open("settings.toml", "rb") as f:
-    settings = tomllib.load(f)
-
-    if settings["upscale"]:
-        import ctypes
-        ctypes.windll.shcore.SetProcessDpiAwareness(2)
-
 # Get path and filename
 trace = argv[1].split('/')
 
@@ -34,10 +25,7 @@ file = filedialog.asksaveasfile(
 )
 
 if file is not None:
-    # Delete touched file
-    file.close()
-    remove(file.name)
-
+    remove(file.name)  # Delete touched file
     print(file.name, end="")
 else:
     print("", end="")
