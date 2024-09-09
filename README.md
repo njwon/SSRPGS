@@ -56,16 +56,27 @@ With editor you can do:
     - Configure any data of save file by hands
 
 ## Compilation
-Compiled app will be in dist folder.
+Compilation can be done in ./build folder.
+Compiled app will be in ./build/dist folder.
 
 - On Windows:
-    ```bash
-    cd build
-    setup.bat
-    ```
+    - Install dependencies
+        ```bash
+        pip install pyinstaller setuptools
+        ```
+    - Make a build
+        ```bash
+        cd build
+        setup.bat
+        ```
 
 - On macOS:
-    ```bash
-    cd build
-    make all
-    ```
+    - Install dependencies
+        ```bash
+        pip3 install py2app setuptools
+        ```
+    - Make a build
+        ```bash
+        cd build
+        make all
+        ```
