@@ -32,17 +32,22 @@ class TimesTab:
             )
 
         # Referral Scotty
+        scotRef = "scotRef" in self.custom_quests
+        referral = "referral" in self.custom_quests
+        e = referral and "e" in self.custom_quests["referral"]
+        t = referral and "t" in self.custom_quests["referral"]
+        
         dpg.configure_item(
             "scotRef",
-            default_value=self.custom_quests["scotRef"]
+            default_value=self.custom_quests["scotRef"] if scotRef else False
         )
         dpg.configure_item(
             "referralExpiration",
-            default_value=self.custom_quests["referral"]["e"]
+            default_value=self.custom_quests["referral"]["e"] if e else ""
         )
         dpg.configure_item(
             "referralTimes",
-            default_value=self.custom_quests["referral"]["t"]
+            default_value=self.custom_quests["referral"]["t"] if t else 0
         )
 
         # Active offline run
@@ -111,6 +116,9 @@ class TimesTab:
                 )
 
     def change(self, _, value, path):
+        if path[1] == "referral" and "referral" not in self.custom_quests:
+            self.custom_quests["referral"] = {}
+
         head = self.progress_data
         for key in path[:-1]:
             head = head[key]
