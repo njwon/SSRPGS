@@ -6,7 +6,7 @@ import sys
 
 from os import name, chdir
 
-WIDTH = 600
+WIDTH = 620
 HEIGHT = 394
 
 HEIGHT_OFFSET = 0

@@ -83,6 +83,10 @@ projects = (
     "craft_fishing_rod",
     "craft_goal_book",
     "craft_grappling_hook_lv2",
+    "fetch_water_green",
+    "prepare_paint_green",
+    "upgrade_triskelion",
+    "upgrade_fissure_stone"
 )
 
 class ProgressTab:

@@ -170,10 +170,10 @@ class Editor:
     def update_settings(self):
         with open("settings.toml", "w", encoding="utf-8") as config:
             config.write(f"# Save editor\n")
-            config.write(f"encrypt_saves = {str(settings["encrypt_saves"]).lower()}\n")
-            config.write(f"\n# Files\n")
             config.write(f"language = \"{settings["language"]}\"\n")
             config.write(f"upscale = {str(settings["upscale"]).lower()}\n")
+            config.write(f"\n# Files\n")
+            config.write(f"encrypt_saves = {str(settings["encrypt_saves"]).lower()}\n")
 
     def gui(self):
         with dpg.window(tag="Editor"):

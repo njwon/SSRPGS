@@ -163,7 +163,11 @@
         "prepare_paint_yellow": "Prepare Paint",
         "craft_fishing_rod": "Craft Fishing Rod",
         "craft_goal_book": "Craft R&D Book",
-        "craft_grappling_hook_lv2": "Upgrade Grappling Hook"
+        "craft_grappling_hook_lv2": "Upgrade Grappling Hook",
+        "fetch_water_green": "Fetch Water (green)",
+        "prepare_paint_green": "Prepare Paint (green)",
+        "upgrade_triskelion": "Upgrade Triskelion",
+        "upgrade_fissure_stone": "Upgrade Fissure Stone"
     },
 
     "inventory": "Inventory",
@@ -192,11 +196,13 @@
         "effects": "Effects",
         "items_list": "Items list",
         "items": "Items",
+        "second_enchantments": "Second enchantments",
         "enchantments": "Enchantments",
         "enchantments_level": "Level",
         "enchantments_quality": "Quality",
         "enchantments_seed": "Seed",
         "rarity_type": "Rarity type",
+        "second_rarity_type": "Second rarity",
         "minimum": "Minimum",
         "maximum": "Maximum",
         "seeds": "Seeds",

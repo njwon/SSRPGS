@@ -1,6 +1,6 @@
 # Save editor
-encrypt_saves = true
-
-# Files
 language = "auto"
 upscale = false
+
+# Files
+encrypt_saves = true

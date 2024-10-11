@@ -44,6 +44,7 @@ items = {
             "da itms": "items",
             "da itms _ id": "name",
             "da itms _ t": "rarity_type",
+            "da itms _ st": "second_rarity_type",
             "da itms _ lv": "level",
             "da itms _ min": "minimum",
             "da itms _ max": "maximum",
@@ -58,6 +59,15 @@ items = {
             "da ra lv": "enchantments_level",
             "da ra ql": "enchantments_quality",
             "da ra sSS": "enchantments_seed",
+        }
+    },
+    "Second enchantments": {
+        "name": "second_enchantments",
+        "fields": {
+            "da sra": "second_enchantments",
+            "da sra lv": "enchantments_level",
+            "da sra ql": "enchantments_quality",
+            "da sra sSS": "enchantments_seed",
         }
     },
     "RNG's": {
@@ -95,6 +105,7 @@ fields = {
     "da sh": True,
     "da c": "",
     "da ra": {"lv": 21, "ql": 12049, "sSS": 0},
+    "da sra": {"lv": 21, "ql": 12049, "sSS": 0},
     "da abs": [""],
     "da abs _": "",
 }
@@ -119,6 +130,7 @@ sorting_order = [
     # Chest items
     "itms",
     "t",
+    "st",
     "e",
     "showC",
     "rB",
@@ -126,6 +138,7 @@ sorting_order = [
     "max",
     # Enchantments
     "ra",
+    "sra",
     "ql",
     "sSS",
     # RNG seeds
