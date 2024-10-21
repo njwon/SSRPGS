@@ -26,6 +26,7 @@ items = {
     "Improvements": {
         "name": "improvements",
         "fields": {
+            "da time": "time",
             "da lv": "level",
             "da lC": "lost_item_elements",
             "da lBU": "lost_item_upgrades",

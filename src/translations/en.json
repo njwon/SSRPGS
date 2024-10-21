@@ -189,6 +189,7 @@
         "tag": "Tag",
         "signature": "Signature",
         "improvements": "Improvements",
+        "time": "Time",
         "level": "Level",
         "lost_item_elements": "Lost elements",
         "lost_item_upgrades": "Upgrades",
