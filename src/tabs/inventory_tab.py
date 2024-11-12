@@ -103,6 +103,7 @@ fields = {
     "da lv": 1,
     "da hI": True,
     "da sig": "",
+    "da tag": "",
     "da sh": True,
     "da c": "",
     "da ra": {"lv": 21, "ql": 12049, "sSS": 0},

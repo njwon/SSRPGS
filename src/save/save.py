@@ -12,16 +12,16 @@ class Save:
         self.save_json = {}
         self.save_slots = []
         self.save_slot = ""
-        
+
     def __getitem__(self, key):
         return self.save_json[self.save_slot][key]
-    
+
     def __setitem__(self, key, value):
         self.save_json[self.save_slot][key] = value
 
     def is_loaded(self):
         return self.save_slot != ""
-    
+
     def jsonize(self, text):
         text = text.replace('\n\t', '\n')
         text = text.replace('\\[', '\\\\［')
@@ -32,7 +32,7 @@ class Save:
         for m in finditer(r"\".*?\"|\[([^{]+?,)*?[^{]*?\]", text):
             if m.group(0)[0] != "[":
                 continue
-            
+
             array = m.group(0).replace("\n", '')
             start_len = len(m.group(0))
             inner_shift = 0
@@ -46,7 +46,7 @@ class Save:
                 if value[0] != '"':
                     array = f'{array[:start]}"{value}"{array[end:]}'
                     inner_shift += 2
-            
+
             start = m.start() + shift
             end = m.end() + shift
             text = f'{text[:start]}{array}{text[end:]}'
@@ -88,7 +88,7 @@ class Save:
         text = text.replace('\\\\］', '\\\\]')
 
         return text
-    
+
     def open(self, save_file_name):
         jsonized = self.jsonize(
             open(
@@ -111,7 +111,9 @@ class Save:
 
                 progress_data = decrypt(self.save_json[field]["progress_data"])
                 progress_json = self.jsonize(progress_data)
-                
+
+                progress_json = progress_json.replace("\\", "\\\\")  # \o/ fix
+
                 # print("SLIM_JSON:", progress_data)
                 # print("JSONIZED_TEXT:", progress_json)
 
@@ -192,9 +194,9 @@ class Save:
         with open(file_name, "w", encoding="utf-8") as j:
             j.write(json.dumps(self.save_json, indent=4, ensure_ascii=False))
 
-# Load from json and write
+# # Load from json and write
 # save = Save()
-# save.open_from_json("formatted.json")
+# save.open_from_json("../../tests/formatted.json")
 
 # # Get all unique tags from inventory items
 # unique = {}

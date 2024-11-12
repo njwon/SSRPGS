@@ -66,7 +66,7 @@
     "location_stars": "Stars",
     "add_location": "Add location",
     "mark_location_as_completed": "Mark as completed",
-    "locations_list_info": "Location names:\nrocky_plateau    Rocky Plateau\ndeadwood_valley  Deadwood Canyon\ncaustic_caves    Caves of Fear\nfungus_forest    Mushroom Forest\nundead_crypt     Haunted Halls\nbronze_mine      Boiling Mine\nicy_ridge        Icy Ridge\ntemple           Temple\n\nLevels:\n★ 1-5    White\n★ 6-10   Cyan\n★ 11-15  Yellow\n\nThe maximum available location level\ndepends on the level of the Star Stone",
+    "locations_list_info": "Levels:\n★ 1-5    White\n★ 6-10   Cyan\n★ 11-15  Yellow\n★ 16-20  Green\n\nThe maximum available location level\ndepends on the level of the Star Stone",
     "location_resources_info": "Each location contain it's own resource:\no    Stone   Rocky Plateau\n_/`  Wood    Deadwood Canyon\n≈    Tar     Caves of Fear\n:.   Bronze  Boiling Mine\n",
     "average_run_data": "Average run data",
     "time_measured_in_frames_info": "Time measured by frames:\n30 frames = 1 second",

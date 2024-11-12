@@ -43,9 +43,9 @@ def CBC_encrypt(key, s, iv, block_size=32):
 
     i = 0
     for block in s:
-        len_ = len(block)
-        if len_ < block_size:
-            padding_size = block_size - len_
+        size = len(block)
+        if size < block_size:
+            padding_size = block_size - size
             block += (chr(padding_size) * padding_size).encode('ASCII')
         
         xored = xor(block, iv)
