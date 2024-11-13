@@ -14,8 +14,11 @@ python3 editor.py
 ```
 
 ### Images
-| ![Inventory tab](screenshots/inventory_tab.png) | ![Cosmetics tab](screenshots/cosmetics_tab.png) |
+| ![Main](./screenshots/main_tab.png) | ![General](./screenshots/general_tab.png) |
 |-|-|
+| ![Progress](./screenshots/progress_tab.png) | ![Locations](./screenshots/locations_tab.png) |
+| ![Inventory](./screenshots/inventory_tab.png) | ![Cosmetics](./screenshots/cosmetics_tab.png) |
+| ![Quests](./screenshots/quests_tab.png) | ![Time](./screenshots/time_tab.png) |
 
 ### Features
 With editor you can do:
