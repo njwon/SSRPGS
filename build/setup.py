@@ -37,10 +37,10 @@ OPTIONS = {
     "plist": {
         "CFBundleName": APP_NAME,
         "CFBundleDisplayName": APP_NAME,
-        "CFBundleGetInfoString": "Mouse can walk",
-        "CFBundleIdentifier": "com.catalyst.mousewalk",
-        "CFBundleVersion": "1.1.0",
-        "CFBundleShortVersionString": "1.1.0",
+        "CFBundleGetInfoString": "Save editor for Stone Story RPG game",
+        "CFBundleIdentifier": "com.catalyst.ssrpgs",
+        "CFBundleVersion": "1.1.1",
+        "CFBundleShortVersionString": "1.1.1",
         "NSHumanReadableCopyright": u"Copyright © 2024, Catalyst",
         "LSUIElement": True
     }
