@@ -30,7 +30,7 @@ class QuestsTab:
                 value,
                 default_value=self.quests[value]
             )
-        
+
         dpg.configure_item("daily_and_weekly", show=False)
 
         # Active quests
@@ -104,7 +104,7 @@ class QuestsTab:
                                     self.events[sId]["objs"][task_id]["p"] = 0
                             else:
                                 self.events[sId]["objs"][task_id] = {"p": 0}
-                            
+
                             dpg.add_input_int(
                                 label=task_id,
                                 default_value=task_progress,
