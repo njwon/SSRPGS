@@ -3,4 +3,4 @@ language = "auto"
 upscale = false
 
 # Files
-encrypt_saves = true
+encrypt_saves = false

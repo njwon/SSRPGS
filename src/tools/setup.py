@@ -88,7 +88,7 @@ if IS_NT:
         HEIGHT_OFFSET = 38 * 2 - 6
         SCALE = 2
 
-        import ctypes
+        import ctypes  # Make x2 resolution for Retina screens
         ctypes.windll.shcore.SetProcessDpiAwareness(2)
 
 def init_font():
@@ -102,18 +102,6 @@ def init_font():
             dpg.add_font_chars([ord(c) for c in "♦≈★"])
 
             dpg.set_global_font_scale(0.5)
-
-            # Fix russian input (visually)
-            # if IS_NT:
-            #     dpg.add_char_remap(0xa8, 0x401)  # Ёё
-            #     dpg.add_char_remap(0xb8, 0x451)
-                
-            #     # Othes glyphs
-            #     utf = 0x410
-            #     for i in range(0xc0, 0x100):
-            #         dpg.add_char_remap(i, utf)
-
-            #         utf += 1
 
             # Remap 5k of Unicode chars to indexes for inventory tab
             dpg.add_font_range(REMAP_START, REMAP_END)

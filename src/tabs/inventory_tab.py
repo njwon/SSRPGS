@@ -425,7 +425,7 @@ class InventoryTab:
         self.filter_search("load")
 
     def clear_all(self, _):
-        self.items = []
+        self.items.clear()
 
         dpg.configure_item("inventory", default_value="")
         self.filter_search("clear_all", dpg.get_value("item_filter"))
