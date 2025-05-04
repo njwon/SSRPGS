@@ -6,7 +6,7 @@ from setuptools import setup
 APP = ["../src/editor.py"]
 
 APP_NAME = "Stone Story RPG Save editor"
-APP_VERSION = "1.1.1"
+APP_VERSION = "1.2.0"
 
 DATA_FILES = [
     "../src/translations",
@@ -42,7 +42,7 @@ OPTIONS = {
         "CFBundleIdentifier": "com.catalyst.ssrpgs",
         "CFBundleVersion": APP_VERSION,
         "CFBundleShortVersionString": APP_VERSION,
-        "NSHumanReadableCopyright": u"Copyright © 2024, Catalyst",
+        "NSHumanReadableCopyright": u"Copyright © 2025, Catalyst",
         "LSUIElement": True
     }
 }

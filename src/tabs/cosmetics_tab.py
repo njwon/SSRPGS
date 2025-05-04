@@ -66,30 +66,36 @@ class CosmeticsTab:
         self.golden = None
         self.prismatic = None
         self.extra = None
-      
+
     def load(self):
         self.cosmetics = self.save["progress_data"]["cosmetics"]
-        
-        # Ensure golden and prismatics lists
-        for skin_type in ("golden", "prismatic", "extra"):
+
+        # Ensure golden, glitch and prismatics lists
+        for skin_type in ("golden", "glitch", "prismatic", "extra"):
             if skin_type not in self.cosmetics:
                 self.cosmetics[skin_type] = []
 
         self.golden = self.cosmetics["golden"]
+        self.glitch = self.cosmetics["glitch"]
         self.prismatic = self.cosmetics["prismatic"]
         self.extra = self.cosmetics["extra"]
 
         # Check global switchers
         all_golden = len(self.golden) == len(items)
         all_golden_new = all([item.endswith(";new") for item in self.golden] + [len(self.golden)])
+        all_glitch = len(self.glitch) == len(items)
+        all_glitch_new = all([item.endswith(";new") for item in self.glitch] + [len(self.glitch)])
         all_prismatic = len(self.prismatic) == len(items)
         all_prismatic_new = all([item.endswith(";new") for item in self.prismatic] + [len(self.prismatic)])
-        
+
         dpg.configure_item("golden", default_value=all_golden)
         dpg.configure_item("golden-new", default_value=all_golden_new)
+
+        dpg.configure_item("glitch", default_value=all_glitch)
+        dpg.configure_item("glitch-new", default_value=all_glitch_new)
+
         dpg.configure_item("prismatic", default_value=all_prismatic)
         dpg.configure_item("prismatic-new", default_value=all_prismatic_new)
-        dpg.configure_item("extra", default_value=(0, 0, 0, 0))
 
         # Check switchers for each item
         for item in items:
@@ -99,6 +105,13 @@ class CosmeticsTab:
             if index != -1:
                 golden = True
                 golden_is_new = self.cosmetics["golden"][index].endswith(";new")
+
+            glitch = False
+            glitch_is_new = False
+            index = self.get_index(item, "glitch")
+            if index != -1:
+                glitch = True
+                glitch_is_new = self.cosmetics["glitch"][index].endswith(";new")
 
             prismatic = False
             prismatic_is_new = False
@@ -113,6 +126,10 @@ class CosmeticsTab:
 
             dpg.configure_item(f"{item}-golden", default_value=golden)
             dpg.configure_item(f"{item}-golden-new", default_value=golden_is_new, show=golden)
+
+            dpg.configure_item(f"{item}-glitch", default_value=glitch)
+            dpg.configure_item(f"{item}-glitch-new", default_value=glitch_is_new, show=glitch)
+
             dpg.configure_item(f"{item}-prismatic", default_value=prismatic)
             dpg.configure_item(f"{item}-prismatic-new", default_value=prismatic_is_new, show=prismatic)
             dpg.configure_item(f"{item}-extra", default_value=extra, show=prismatic)
@@ -120,7 +137,7 @@ class CosmeticsTab:
     def open(self, _, value, group_and_item):
         if not self.cosmetics:
             return
-        
+
         group, item = group_and_item
         index = self.get_index(item, group)
 
@@ -129,10 +146,10 @@ class CosmeticsTab:
             if group == "prismatic":
                 self.cosmetics["extra"].append({"c": "#000000"})
                 dpg.configure_item(f"{item}-extra", default_value=(0, 0, 0), show=True)
-            
+
             dpg.configure_item(f"{item}-{group}-new", default_value=True, show=True)
             print(f"Opened {item} {group} skin")
-        
+
         elif not value and index != -1:  # Close
             self.cosmetics[group].pop(index)
             if group == "prismatic":
@@ -145,7 +162,7 @@ class CosmeticsTab:
     def open_all(self, _, value, group):
         if not self.cosmetics:
             return
-    
+
         for item in items:
             self.open(_, value, (group, item))
             dpg.configure_item(f"{item}-{group}", default_value=value)
@@ -153,7 +170,7 @@ class CosmeticsTab:
     def mark(self, _, value, group_and_item):
         if not self.cosmetics:
             return
-        
+
         group, item = group_and_item
         index = self.get_index(item, group)
 
@@ -207,55 +224,40 @@ class CosmeticsTab:
                 f"{item}-{group}",
                 default_value=list(map(lambda x: int(x * 255), value))
             )
-        
-    def gui(self):
-        with dpg.child_window(no_scrollbar=True, border=False):
-            with dpg.table(
-                tag="cosmetics_table",
-                header_row=False,
-                resizable=True,
-                policy=dpg.mvTable_SizingStretchProp
-            ):
-                dpg.add_table_column()
-                dpg.add_table_column()
-                dpg.add_table_column()
-                
-                with dpg.table_row():
-                    dpg.add_text(i18n["item"])
-                    dpg.add_text(i18n["golden"])
-                    dpg.add_text(i18n["prismatic"])
 
-                with dpg.table_row():
-                    dpg.add_text(i18n["all_items"])
+    def prepare_table(self, table_type):
+        with dpg.table(
+            tag=f"{table_type}_table",
+            header_row=False,
+            resizable=True,
+        ):
+            dpg.add_table_column()
+            dpg.add_table_column()
 
-                    with dpg.group(horizontal=True):
-                        dpg.add_checkbox(
-                            label=i18n["opened"],
-                            tag="golden",
-                            callback=self.open_all,
-                            user_data=("golden")
-                        )
-                        dpg.add_checkbox(
-                            label=i18n["golden_new"],
-                            tag="golden-new",
-                            callback=self.mark_all,
-                            user_data=("golden")
-                        )
+            # Header
+            with dpg.table_row():
+                dpg.add_text(i18n["item"])
+                dpg.add_text(i18n[table_type])
 
-                    with dpg.group(horizontal=True):
-                        dpg.add_checkbox(
-                            label=i18n["opened"],
-                            tag="prismatic",
-                            callback=self.open_all,
-                            user_data=("prismatic")
-                        )
-                        dpg.add_checkbox(
-                            label=i18n["prismatic_new"],
-                            tag="prismatic-new",
-                            callback=self.mark_all,
-                            user_data=("prismatic")
-                        )
-                    
+            # Mark all
+            with dpg.table_row():
+                dpg.add_text(i18n["all_items"])
+
+                with dpg.group(horizontal=True):
+                    dpg.add_checkbox(
+                        label=i18n["opened"],
+                        tag=table_type,
+                        callback=self.open_all,
+                        user_data=(table_type)
+                    )
+                    dpg.add_checkbox(
+                        label=i18n[f"{table_type}_new"],
+                        tag=f"{table_type}-new",
+                        callback=self.mark_all,
+                        user_data=(table_type)
+                    )
+
+                    if table_type == "prismatic":
                         dpg.add_color_edit(
                             label=i18n["color"],
                             tag="extra",
@@ -267,39 +269,27 @@ class CosmeticsTab:
                             no_tooltip=True,
                             no_inputs=True
                         )
+                                        
+            # Swithers for each item
+            for item in items:
+                with dpg.table_row():
+                    dpg.add_text(i18n["cosmetics"][items[item]])
 
-                for item in items:
-                    with dpg.table_row():
-                        dpg.add_text(i18n["cosmetics"][items[item]])
+                    with dpg.group(horizontal=True):
+                        dpg.add_checkbox(
+                            label=i18n["opened"],
+                            tag=f"{item}-{table_type}",
+                            callback=self.open,
+                            user_data=(table_type, item)
+                        )
+                        dpg.add_checkbox(
+                            label=i18n[f"{table_type}_new"],
+                            tag=f"{item}-{table_type}-new",
+                            callback=self.mark,
+                            user_data=(table_type, item)
+                        )
 
-                        with dpg.group(horizontal=True):
-                            dpg.add_checkbox(
-                                label=i18n["opened"],
-                                tag=f"{item}-golden",
-                                callback=self.open,
-                                user_data=("golden", item)
-                            )
-                            dpg.add_checkbox(
-                                label=i18n["golden_new"],
-                                tag=f"{item}-golden-new",
-                                callback=self.mark,
-                                user_data=("golden", item)
-                            )
-
-                        with dpg.group(horizontal=True):
-                            dpg.add_checkbox(
-                                label=i18n["opened"],
-                                tag=f"{item}-prismatic",
-                                callback=self.open,
-                                user_data=("prismatic", item)
-                            )
-                            dpg.add_checkbox(
-                                label=i18n["prismatic_new"],
-                                tag=f"{item}-prismatic-new",
-                                callback=self.mark,
-                                user_data=("prismatic", item)
-                            )
-                        
+                        if table_type == "prismatic":
                             dpg.add_color_edit(
                                 label=i18n["color"],
                                 tag=f"{item}-extra",
@@ -309,5 +299,14 @@ class CosmeticsTab:
                                 no_tooltip=True,
                                 no_inputs=True,
                                 callback=self.color,
-                                user_data=("prismatic", item)
+                                user_data=(table_type, item)
                             )
+
+    def gui(self):
+        with dpg.child_window(no_scrollbar=True, border=False):
+            for table_type in ["golden", "glitch", "prismatic"]:
+                with dpg.collapsing_header(
+                    label=i18n[table_type],
+                    default_open=True
+                ):
+                    self.prepare_table(table_type)
