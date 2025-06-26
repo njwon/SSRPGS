@@ -1,0 +1,37 @@
+name: Decrypt Stone Story Save
+
+on:
+  workflow_dispatch:
+
+jobs:
+  decrypt-save:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Decrypt save to JSON
+        run: |
+          python src/editor.py --input path/to/primary_save.txt --export-json decrypted.json
+
+      - name: Commit decrypted JSON
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add decrypted.json
+          git diff --quiet || git commit -m "Update decrypted save" --allow-empty
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
